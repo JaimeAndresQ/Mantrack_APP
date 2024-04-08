@@ -100,7 +100,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 "Skip",
                 style: TextStyle(color: Colors.grey),
               ),
-              onPressed: () => controller.jumpToPage(page: 3)
+              onPressed: () => controller.jumpToPage(page: 4)
               ,
             )),
         Positioned(

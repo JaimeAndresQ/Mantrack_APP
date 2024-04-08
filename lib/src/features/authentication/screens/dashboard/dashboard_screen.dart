@@ -1,10 +1,13 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mantrack_app/src/constants/colors.dart';
 import 'package:mantrack_app/src/constants/image_strings.dart';
 import 'package:mantrack_app/src/constants/sizes.dart';
+import 'package:mantrack_app/src/features/authentication/controller/login_&_register/auth_api.dart';
+import 'package:mantrack_app/src/features/authentication/screens/welcome/welcome_screen.dart';
 import 'activos_widget.dart';
 import 'ball_widget.dart';
 
@@ -17,9 +20,9 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-
-
   int _selectedIndex = 0;
+
+  AuthController authController = AuthController();
 
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
@@ -62,7 +65,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   late String email;
   late String name;
   late String lastname;
-  
+
   late dynamic tokenw;
 
   @override
@@ -75,7 +78,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       email = jwtDecodedToken['correo'];
       name = jwtDecodedToken['nombres'];
       lastname = jwtDecodedToken['apellidos'];
-        
     }
   }
 
@@ -95,7 +97,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  authController.eliminarTokenU();
+                  Get.to(() => WelcomeScreen());
+                },
                 icon: const Image(
                   image: AssetImage(tPersonIcon),
                   color: Colors.white,

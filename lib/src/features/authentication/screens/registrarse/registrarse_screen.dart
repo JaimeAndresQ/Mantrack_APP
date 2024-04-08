@@ -3,11 +3,31 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mantrack_app/src/constants/image_strings.dart';
 import 'package:mantrack_app/src/constants/sizes.dart';
 import 'package:mantrack_app/src/features/authentication/screens/registrarse/registarse_form_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 
-class RegistrarseScreen extends StatelessWidget {
+class RegistrarseScreen extends StatefulWidget {
   const RegistrarseScreen({super.key});
+
+  @override
+  State<RegistrarseScreen> createState() => _RegistrarseScreenState();
+}
+
+class _RegistrarseScreenState extends State<RegistrarseScreen> {
+
+  late SharedPreferences prefs;
+
+  @override
+  void initState() {
+    super.initState();
+    initSharedPrefs();
+  }
+
+  Future<void> initSharedPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +55,7 @@ class RegistrarseScreen extends StatelessWidget {
                   "Crea un nuevo usuario para Mantrack",
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                RegistrarseForm(),
+                RegistrarseForm(prefs: prefs),
               ],
             ),
           ),
