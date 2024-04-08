@@ -60,6 +60,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   late String email;
+  late String name;
+  late String lastname;
+  
   late dynamic tokenw;
 
   @override
@@ -70,6 +73,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(widget.token);
       tokenw = jwtDecodedToken;
       email = jwtDecodedToken['correo'];
+      name = jwtDecodedToken['nombres'];
+      lastname = jwtDecodedToken['apellidos'];
+        
     }
   }
 
@@ -170,7 +176,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         height: 5,
                       ),
                       Text(
-                        "Juan Perez",
+                        "$name $lastname",
                         style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w400,
