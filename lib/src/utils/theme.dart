@@ -9,8 +9,10 @@ class TAppTheme {
     fontFamily: "Schyler",
     textTheme: const TextTheme(
       titleMedium: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      titleSmall: TextStyle(fontSize: 24, fontWeight: FontWeight.w500, color: Colors.black),
       bodyMedium: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.black54),
       bodySmall: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.black)
+      
     )
     );
 
