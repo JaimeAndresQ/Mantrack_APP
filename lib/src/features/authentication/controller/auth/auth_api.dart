@@ -2,15 +2,14 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:mantrack_app/src/features/authentication/screens/login/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'auth_config.dart';
 
 class AuthController {
+  // Controladores de texto de Inicio de Sesion y Registro
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController cellphoneController = TextEditingController();
@@ -21,13 +20,25 @@ class AuthController {
   final TextEditingController cedulaciudadanaController =
       TextEditingController();
 
-  String nombreError = '';
-  String apellidoError = '';
-  String emailError = '';
-  String telefonoError = '';
-  String cedulaError = '';
-  String fechaNacimientoError = '';
-  String contraseniaError = '';
+  // Controladores de Activos
+  final TextEditingController idvehicuController = TextEditingController();
+  final TextEditingController marcaVehiController = TextEditingController();
+  final TextEditingController modeloVehiController = TextEditingController();
+  final TextEditingController lineaVehiController = TextEditingController();
+  final TextEditingController colorVehiController = TextEditingController();
+  final TextEditingController capacidadVehiController = TextEditingController();
+  final TextEditingController claseVehiController = TextEditingController();
+  final TextEditingController cilindrajeVehiController =
+      TextEditingController();
+  final TextEditingController tipoCombustibleVehiemailController =
+      TextEditingController();
+  final TextEditingController numeroMotorController = TextEditingController();
+  final TextEditingController numeroChasisController = TextEditingController();
+  final TextEditingController vinVehiController = TextEditingController();
+  final TextEditingController ciudadRegristroVehiController =
+      TextEditingController();
+  final TextEditingController fechaMatriculoVehiController =
+      TextEditingController();
 
   void handleRegistrationError(int statusCode, String errorMsg) {
     switch (statusCode) {
@@ -54,7 +65,6 @@ class AuthController {
         updateErrorMessages(
           emailError: errorMsg,
         );
-
         break;
       default:
         // Otros códigos de error
@@ -175,35 +185,54 @@ class AuthController {
     }
   }
 
-  Future verificarTokenU() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? tokenActual = prefs.getString('token');
-    print(prefs.getString('token'));
+  Future<int?> registrarActivoU(String? token) async {
+    try {
+      if (idvehicuController.text.isNotEmpty) {
+        Map<String, String> regBodyActivo = {
+          "id_vehiculo": idvehicuController.text,
+          "marca": marcaVehiController.text,
+          "modelo": modeloVehiController.text,
+          "linea": lineaVehiController.text,
+          "color": colorVehiController.text,
+          "capacidad": capacidadVehiController.text,
+          "clase_vehiculo": claseVehiController.text,
+          "cilindraje": cilindrajeVehiController.text,
+          "tipo_combustible": tipoCombustibleVehiemailController.text,
+          "numero_motor": numeroMotorController.text,
+          "numero_chasis": numeroChasisController.text,
+          "vin": vinVehiController.text,
+          "ciudad_registro": ciudadRegristroVehiController.text,
+          "fecha_matricula": fechaMatriculoVehiController.text
+        };
+        var response = await http.post(
+          Uri.parse(registrarActivoUrl),
+          headers: {
+            "Authorization":"Bearer $token", 
+            "Content-Type":"application/json", 
+          },
+          body: jsonEncode(regBodyActivo),
+        );
 
-    // Verificar si el token está presente y está expirado
-    if (tokenActual != null && JwtDecoder.isExpired(tokenActual)) {
-      // Borrar el token si está expirado
-      await prefs.remove('token');
-      print('Token expirado. Se ha eliminado.');
-      return "NoToken";
-    } else {
-      return "Token";
+        var jsonActivoResponse = jsonDecode(response.body);
+
+        print("este es el response $jsonActivoResponse y el codigo ${response.statusCode}");
+
+        if (response.statusCode == 200) {
+          print("Vehiculo registrado");
+          return 200;
+        } else if (response.statusCode == 400) {
+          throw Exception("Falta llenar más campos.");
+        } else if (response.statusCode == 409) {
+          // handleRegistrationError(response.statusCode, jsonActivoResponse['msg']);
+        } else {
+          throw Exception("Error desconocido al registrar vehiculo.");
+        }
+      } else {
+        throw Exception("La placa del vehiculo es obligatorio");
+      }
+    } catch (e) {
+      print("Error al registrar usuario: $e");
     }
-  }
-
-  Future eliminarTokenU() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? tokenActual = prefs.getString('token');
-    print(prefs.getString('token'));
-
-    // Verificar si el token está presente
-    if (tokenActual != null) {
-      // Borrar el token si está expirado
-      await prefs.remove('token');
-      print('Token expirado. Se ha eliminado.');
-      return "NoToken";
-    } else {
-      return "Token";
-    }
+    return null;
   }
 }

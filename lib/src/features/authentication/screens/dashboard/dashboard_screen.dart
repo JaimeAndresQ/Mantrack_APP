@@ -6,13 +6,18 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mantrack_app/src/constants/colors.dart';
 import 'package:mantrack_app/src/constants/image_strings.dart';
 import 'package:mantrack_app/src/constants/sizes.dart';
-import 'package:mantrack_app/src/features/authentication/controller/login_&_register/auth_api.dart';
+import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
+import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
+import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos_registrar.dart';
 import 'package:mantrack_app/src/features/authentication/screens/welcome/welcome_screen.dart';
-import 'activos_widget.dart';
+
 import 'ball_widget.dart';
 
+import 'package:provider/provider.dart';
+
 class DashboardScreen extends StatefulWidget {
-  final token;
+  final String? token;
   const DashboardScreen({super.key, this.token});
 
   @override
@@ -20,52 +25,14 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  int _selectedIndex = 0;
-
   AuthController authController = AuthController();
-
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
-    ActivosHome(),
-    Text(
-      'Index 2: Recursos Humanos',
-      style: optionStyle,
-    ),
-  ];
 
   static const TextStyle optionMenuStyle =
       TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white);
-  static const List<Widget> _titleAppbarOptions = <Widget>[
-    Text(
-      'Dashboard',
-      style: optionMenuStyle,
-    ),
-    Text(
-      'Activos',
-      style: optionMenuStyle,
-    ),
-    Text(
-      'Recursos Humanos',
-      style: optionMenuStyle,
-    ),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   late String email;
   late String name;
   late String lastname;
-
   late dynamic tokenw;
 
   @override
@@ -73,7 +40,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.initState();
     // Si se proporciona un token, se extrae la información del usuario del token decodificado y se obtienen los datos de los artículos favoritos.
     if (widget.token != null) {
-      Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(widget.token);
+      Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(widget.token!);
       tokenw = jwtDecodedToken;
       email = jwtDecodedToken['correo'];
       name = jwtDecodedToken['nombres'];
@@ -83,11 +50,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedIndexProvider =
+        Provider.of<SelectedDashboardProvider>(context);
+    final tokenProvider = Provider.of<TokenProvider>(context);
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xFFEEEEEE),
         appBar: AppBar(
-          title: _titleAppbarOptions[_selectedIndex],
+          title: Text(
+            selectedIndexProvider.getTitle(selectedIndexProvider.selectedIndex),
+            style: optionMenuStyle,
+          ),
           backgroundColor: tPrimaryColor,
           elevation: 0,
           actions: [
@@ -98,7 +71,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               child: IconButton(
                 onPressed: () {
-                  authController.eliminarTokenU();
+                  tokenProvider.eliminarTokenU();
                   Get.to(() => WelcomeScreen());
                 },
                 icon: const Image(
@@ -236,11 +209,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   color: tPrimaryColor,
                 ),
                 title: const Text('Activos'),
-                selected: _selectedIndex == 1,
+                selected: selectedIndexProvider.selectedIndex == 1,
                 selectedTileColor: tPrimaryOpacity,
                 onTap: () {
                   // Update the state of the app
-                  _onItemTapped(1);
+                  selectedIndexProvider.updateSelectedIndex(1);
                   // Then close the drawer
 
                   Navigator.pop(context);
@@ -252,11 +225,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   color: tPrimaryColor,
                 ),
                 title: const Text('Recursos Humanos'),
-                selected: _selectedIndex == 2,
+                selected: selectedIndexProvider.selectedIndex == 2,
                 selectedTileColor: tPrimaryOpacity,
                 onTap: () {
                   // Update the state of the app
-                  _onItemTapped(2);
+                  selectedIndexProvider.updateSelectedIndex(2);
                   // Then close the drawer
                   Navigator.pop(context);
                 },
@@ -265,12 +238,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         body: DashboardPage(
-          widgetOptions: _widgetOptions[_selectedIndex],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          tooltip: 'Increment',
-          child: const Icon(Icons.add),
+          widgetOptions: selectedIndexProvider.getSelectedWidget(),
         ),
       ),
     );

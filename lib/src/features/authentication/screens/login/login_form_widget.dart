@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mantrack_app/src/features/authentication/controller/login_&_register/auth_api.dart';
+import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/dashboard_screen.dart';
 import 'package:mantrack_app/src/features/authentication/screens/registrarse/registrarse_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,7 +24,7 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  //  Inicializa una instancia de AuthController para gestionar la autenticación JWT y la clase en general.
+  //  Inicializa una instancia de AuthController y StreamAuthController para gestionar la autenticación JWT y los errores en general.
   AuthController authController = AuthController();
 
   // Inicializamos una variable para controlar la visibilidad de la contraseña

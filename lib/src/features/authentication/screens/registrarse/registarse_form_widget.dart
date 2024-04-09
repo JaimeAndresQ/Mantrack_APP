@@ -1,15 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:mantrack_app/src/features/authentication/controller/login_&_register/auth_api.dart';
+import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/screens/login/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../constants/colors.dart';
 import '../../../../constants/sizes.dart';
 import 'package:intl/intl.dart';
-import '../dashboard/dashboard_screen.dart';
+
 
 // ignore: must_be_immutable
 class RegistrarseForm extends StatefulWidget {
@@ -60,6 +59,19 @@ class _RegistrarseFormState extends State<RegistrarseForm> {
     _errorSubscription.cancel();
     super.dispose();
   }
+
+  void validateAndSetErrors() {
+    setState(() {
+      nombreError = authController.nombreController.text.isEmpty ? 'Ingrese un nombre' : '';
+      apellidoError = authController.apellidoController.text.isEmpty ? 'Ingrese un apellido' : '';
+      emailError = authController.emailController.text.isEmpty ? 'Ingrese un correo electrónico' : '';
+      telefonoError = authController.cellphoneController.text.isEmpty ? 'Ingrese un número de teléfono válido' : '';
+      cedulaError = authController.cedulaciudadanaController.text.isEmpty ? 'Ingrese un número de identificación' : '';
+      fechaNacimientoError = authController.fechanacimientoController.text.isEmpty ? 'Ingrese una fecha de nacimiento' : '';
+      contraseniaError = authController.passwordController.text.isEmpty ? 'Ingrese una contraseña' : '';
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -205,60 +217,9 @@ class _RegistrarseFormState extends State<RegistrarseForm> {
             child: ElevatedButton(
                 onPressed: () async {
                   try {
-                    // Limpiar mensajes de error antes de la validación
-                    setState(() {
-                      nombreError = '';
-                      apellidoError = '';
-                      emailError = '';
-                      telefonoError = '';
-                      cedulaError = '';
-                      fechaNacimientoError = '';
-                      contraseniaError = '';
-                    });
-
-                    // Validar campos y actualizar mensajes de error
-                    if (authController.nombreController.text.isEmpty) {
-                      setState(() {
-                        nombreError = 'Ingrese un nombre';
-                      });
-                    }
-
-                    if (authController.apellidoController.text.isEmpty) {
-                      setState(() {
-                        apellidoError = 'Ingrese un apellido';
-                      });
-                    }
-
-                    if (authController.emailController.text.isEmpty) {
-                      setState(() {
-                        emailError = 'Ingrese un correo electronico';
-                      });
-                    }
-
-                    if (authController.cellphoneController.text.isEmpty) {
-                      setState(() {
-                        telefonoError = 'Ingrese un numero de telefono valido';
-                      });
-                    }
-
-                    if (authController.cedulaciudadanaController.text.isEmpty) {
-                      setState(() {
-                        cedulaError = 'Ingrese un numero de identificacion';
-                      });
-                    }
-
-                    if (authController.fechanacimientoController.text.isEmpty) {
-                      setState(() {
-                        fechaNacimientoError =
-                            'Ingrese una fecha de nacimiento';
-                      });
-                    }
-
-                    if (authController.passwordController.text.isEmpty) {
-                      setState(() {
-                        contraseniaError = 'Ingrese una contraseña';
-                      });
-                    }
+                    
+                    // Validamos los campos de error
+                    validateAndSetErrors();
 
                     // Agregar más validaciones para los demás campos según sea necesario
 
