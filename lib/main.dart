@@ -19,7 +19,7 @@ void main() async {
   TokenProvider tokenProvider = TokenProvider();
 
   // Llamar al método verificarTokenU() y esperar su resultado
-  String? token = await tokenProvider.verificarTokenU();
+  String? token = await tokenProvider.getTokenU();
   
 
   runApp(App(token: token,));

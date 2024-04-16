@@ -41,15 +41,28 @@ class TokenProvider extends ChangeNotifier {
       await prefs.remove('token');
       Get.to(() => const WelcomeScreen());
       throw Exception("El token ha expirado!");
-      
     } else if (tokenActual != null) {
       // ignore: avoid_print
       print(tokenActual);
       return tokenActual;
-
     } else {
       Get.to(() => const WelcomeScreen());
       throw Exception("No hay token");
+    }
+  }
+
+  Future<String?> getTokenU() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? tokenActual = prefs.getString('token');
+    // Verificar si el token está presente y está expirado
+    if (tokenActual != null && JwtDecoder.isExpired(tokenActual)) {
+      // Borrar el token si está expirado
+      await prefs.remove('token');
+      return tokenActual;
+    } else {
+      // ignore: avoid_print
+      print(tokenActual);
+      return tokenActual;
     }
   }
 
