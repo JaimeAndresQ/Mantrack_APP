@@ -47,8 +47,8 @@ class _ActivosDetallesState extends State<ActivosDetalles> {
                     const SizedBox(
                       width: 15.5,
                     ),
-                      const Text(
-                  "FSN-115",
+                      Text(
+                  selectedIndexProvider.selectedActivo.id_vehiculo,
                   style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w400,

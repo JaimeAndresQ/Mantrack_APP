@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:get/get_connect/http/src/response/response.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'auth_config.dart';
@@ -231,4 +232,37 @@ class AuthController {
     }
     return null;
   }
+
+  Future<List<dynamic>> obtenerActivosU(String? token) async {
+    try {
+        var response = await http.get(
+          Uri.parse(getActivosUrl),
+          headers: {
+            "Authorization":"Bearer $token", 
+            "Content-Type":"application/json", 
+          }
+        );
+
+        var jsonActivoResponse = jsonDecode(response.body);
+
+        print("este es el response $jsonActivoResponse y el codigo ${response.statusCode}");
+
+        if (response.statusCode == 200) {
+          print("Vehiculo Encontrado");
+          return jsonActivoResponse;
+        } else if (response.statusCode == 404) {
+          throw Exception("No hay vehiculos.");
+        } else {
+          throw Exception("Error desconocido al obtener vehiculos.");
+        }
+
+    } catch (e) {
+      print("Error al registrar usuario: $e");
+    }
+    return [];
+  }
+
+
 }
+  
+

@@ -370,6 +370,7 @@ class _ActivosRegistrarState extends State<ActivosRegistrar> {
 
                                   if (statusCode == 200) {
                                     showDialog(
+                                        // ignore: use_build_context_synchronously
                                         context: context,
                                         builder: (BuildContext context) =>
                                             CustomDialog(

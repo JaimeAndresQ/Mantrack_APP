@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mantrack_app/src/features/authentication/model/activos_modal.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_detalles.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_registrar.dart';
 import '../../screens/dashboard/activos/activos_widget.dart';
@@ -6,6 +7,15 @@ import '../../screens/dashboard/activos/activos_widget.dart';
 class SelectedDashboardProvider extends ChangeNotifier {
 
   int _selectedIndex = 0;
+
+  late Activos _selectedActivo;
+
+  Activos get selectedActivo => _selectedActivo;
+
+  void updateSelectedActivo(Activos activo){
+    _selectedActivo = activo;
+    notifyListeners();
+  }
 
   int get selectedIndex => _selectedIndex;
 
