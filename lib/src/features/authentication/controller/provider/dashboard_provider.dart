@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos_registrar.dart';
-import '../../screens/dashboard/activos_widget.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_detalles.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_registrar.dart';
+import '../../screens/dashboard/activos/activos_widget.dart';
 
 class SelectedDashboardProvider extends ChangeNotifier {
 
@@ -20,7 +21,7 @@ class SelectedDashboardProvider extends ChangeNotifier {
       case 1:
         return ActivosHome();
       case 2:
-        return Text('Index 2: Recursos Humanos');
+        return ActivosDetalles();
       case 3:
         return ActivosRegistrar();
       default:
@@ -35,7 +36,7 @@ class SelectedDashboardProvider extends ChangeNotifier {
       case 1:
         return 'Activos';
       case 2:
-        return 'Recursos Humanos';
+        return 'Detalles del Activo';
       case 3:
         return 'Registro Activos';
       default:

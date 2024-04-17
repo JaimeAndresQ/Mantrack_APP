@@ -1,5 +1,4 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -9,11 +8,8 @@ import 'package:mantrack_app/src/constants/sizes.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
-import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos_registrar.dart';
 import 'package:mantrack_app/src/features/authentication/screens/welcome/welcome_screen.dart';
-
-import 'ball_widget.dart';
-
+import '../../model/widgets/ball_widget.dart';
 import 'package:provider/provider.dart';
 
 class DashboardScreen extends StatefulWidget {

@@ -4,8 +4,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'auth_config.dart';
 
 class AuthController {
@@ -187,7 +185,7 @@ class AuthController {
 
   Future<int?> registrarActivoU(String? token) async {
     try {
-      if (idvehicuController.text.isNotEmpty) {
+
         Map<String, String> regBodyActivo = {
           "id_vehiculo": idvehicuController.text,
           "marca": marcaVehiController.text,
@@ -227,9 +225,7 @@ class AuthController {
         } else {
           throw Exception("Error desconocido al registrar vehiculo.");
         }
-      } else {
-        throw Exception("La placa del vehiculo es obligatorio");
-      }
+
     } catch (e) {
       print("Error al registrar usuario: $e");
     }

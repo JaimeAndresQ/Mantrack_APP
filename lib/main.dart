@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
 import 'package:mantrack_app/src/features/authentication/screens/welcome/welcome_screen.dart';
 import 'package:mantrack_app/src/utils/theme.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'src/features/authentication/controller/provider/dashboard_provider.dart';
 import 'src/features/authentication/screens/dashboard/dashboard_screen.dart';
 import 'src/features/authentication/screens/on_boarding/on_boarding_screen.dart';
