@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:mantrack_app/src/features/authentication/model/activos_modal.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_detalles.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_registrar.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/perfil/perfil_widget.dart';
 import '../../screens/dashboard/activos/activos_widget.dart';
 
 class SelectedDashboardProvider extends ChangeNotifier {
-
-  int _selectedIndex = 0;
 
   late Activos _selectedActivo;
 
@@ -16,6 +15,8 @@ class SelectedDashboardProvider extends ChangeNotifier {
     _selectedActivo = activo;
     notifyListeners();
   }
+
+  int _selectedIndex = 0;
 
   int get selectedIndex => _selectedIndex;
 
@@ -34,8 +35,10 @@ class SelectedDashboardProvider extends ChangeNotifier {
         return ActivosDetalles();
       case 3:
         return ActivosRegistrar();
+      case 7:
+        return PerfilScreen();
       default:
-        return Container(); // Puedes devolver un widget vacío o manejar el caso por defecto según tu lógica.
+        return Container(); // Puedes devolver un widget vacío o manejar el caso por defecto
     }
   }
 
@@ -49,12 +52,11 @@ class SelectedDashboardProvider extends ChangeNotifier {
         return 'Detalles del Activo';
       case 3:
         return 'Registro Activos';
+      case 7:
+        return 'Perfil';
       default:
         return '';
     }
   }
 
-  void eliminarToken() {
-    // Lógica para eliminar el token, si es necesario
-  }
 }

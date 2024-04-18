@@ -67,8 +67,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               child: IconButton(
                 onPressed: () {
-                  tokenProvider.eliminarTokenU();
-                  Get.to(() => WelcomeScreen());
+                  
+                  selectedIndexProvider.updateSelectedIndex(7);
                 },
                 icon: const Image(
                   image: AssetImage(tPersonIcon),
@@ -221,11 +221,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   color: tPrimaryColor,
                 ),
                 title: const Text('Recursos Humanos'),
-                selected: selectedIndexProvider.selectedIndex == 2,
+                selected: selectedIndexProvider.selectedIndex == 0,
                 selectedTileColor: tPrimaryOpacity,
                 onTap: () {
                   // Update the state of the app
-                  selectedIndexProvider.updateSelectedIndex(2);
+                  selectedIndexProvider.updateSelectedIndex(0);
                   // Then close the drawer
                   Navigator.pop(context);
                 },

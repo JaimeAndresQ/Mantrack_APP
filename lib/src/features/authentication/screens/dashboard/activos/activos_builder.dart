@@ -57,12 +57,10 @@ class _ActivosBuilderState extends State<ActivosBuilder> {
       future: futureCardsData,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          print(snapshot);
           return ListView.separated(
             itemCount: snapshot.data!.length,
             separatorBuilder: (context, index) => const SizedBox(),
             itemBuilder: (context, index) {
-              print("Este es el index: $index");
               return MyActivos(
                 selectedIndexProvider: selectedIndexProvider,
                 activoData: snapshot.data![index],
