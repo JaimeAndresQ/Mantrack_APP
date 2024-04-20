@@ -6,3 +6,4 @@ const registrationUrl = "http://$iPv4:80/api/users/newUser";
 const loginUrl = "http://$iPv4:80/api/users/user";
 const registrarActivoUrl = "http://$iPv4:80/api/vehiculos/newVehiculo";
 const getActivosUrl = "http://$iPv4:80/api/vehiculos/getAll";
+const getActivoEspecificoUrl = "http://$iPv4:80/api/vehiculos/vehiculo/";

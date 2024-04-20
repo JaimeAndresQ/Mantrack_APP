@@ -12,7 +12,7 @@ class Activos {
     required this.linea,
   });
 
-  factory Activos.fromJson(Map<String, dynamic> json, int index) {
+  factory Activos.fromJson(Map<String, dynamic> json) {
     return Activos(
       id_vehiculo: json['id_vehiculo'] ?? "Sin id",
       marca: json['veh_marca'] ?? "Sin marca",

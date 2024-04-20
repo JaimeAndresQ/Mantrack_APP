@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:mantrack_app/src/constants/colors.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
@@ -9,7 +7,7 @@ import 'package:mantrack_app/src/features/authentication/model/activos_modal.dar
 import 'package:provider/provider.dart';
 
 class ActivosBuilder extends StatefulWidget {
-  const ActivosBuilder({Key? key}) : super(key: key);
+  const ActivosBuilder({super.key});
 
   @override
   State<ActivosBuilder> createState() => _ActivosBuilderState();
@@ -24,20 +22,20 @@ class _ActivosBuilderState extends State<ActivosBuilder> {
   // Obtener una instancia del AuthController
   AuthController authController = AuthController();
 
-  Future<List<Activos>>? fetchPhotos() async {
-    // Llamar al método verificarTokenU() y esperar su resultado
+  Future<List<Activos>>? fetchActivos() async {
+    // Llamar al método verificarTokenU() y esperar su resultado del token si existe
     String? token = await tokenProvider.verificarTokenU();
 
+    // Llamar al metodo obtenerActivosU() para tener el json de los activos con el token valido
     dynamic response = await authController.obtenerActivosU(token);
-    print("response actual $response");
-    return parsePhotos(response);
+    return parseActivos(response);
     
   }
 
-  List<Activos> parsePhotos(List<dynamic> responseBody) {
+  List<Activos> parseActivos(List<dynamic> responseBody) {
     return responseBody
         .asMap()
-        .map((index, json) => MapEntry(index, Activos.fromJson(json, index)))
+        .map((index, json) => MapEntry(index, Activos.fromJson(json)))
         .values
         .toList();
   }
@@ -45,7 +43,7 @@ class _ActivosBuilderState extends State<ActivosBuilder> {
   @override
   void initState() {
     super.initState();
-    futureCardsData = fetchPhotos();
+    futureCardsData = fetchActivos();
   }
 
   @override
@@ -106,7 +104,7 @@ class MyActivos extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Icon(
-              Icons.inventory_2_outlined,
+              Icons.token_outlined,
               color: tPrimaryColor,
             ),
             const SizedBox(

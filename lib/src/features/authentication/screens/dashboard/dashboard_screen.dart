@@ -1,14 +1,11 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mantrack_app/src/constants/colors.dart';
 import 'package:mantrack_app/src/constants/image_strings.dart';
 import 'package:mantrack_app/src/constants/sizes.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
-import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
-import 'package:mantrack_app/src/features/authentication/screens/welcome/welcome_screen.dart';
 import '../../model/widgets/ball_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -48,7 +45,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final selectedIndexProvider =
         Provider.of<SelectedDashboardProvider>(context);
-    final tokenProvider = Provider.of<TokenProvider>(context);
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xFFEEEEEE),
@@ -67,7 +64,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               child: IconButton(
                 onPressed: () {
-                  
                   selectedIndexProvider.updateSelectedIndex(7);
                 },
                 icon: const Image(
@@ -187,6 +183,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                         child: IconButton(
                             onPressed: () {
+                              // Update to home page
+                              selectedIndexProvider.updateSelectedIndex(0);
                               Navigator.pop(context);
                             },
                             icon: Icon(
@@ -205,7 +203,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   color: tPrimaryColor,
                 ),
                 title: const Text('Activos'),
-                selected: selectedIndexProvider.selectedIndex == 1,
+                selected: selectedIndexProvider.selectedIndex == 1 ||
+                    selectedIndexProvider.selectedIndex == 2 ||
+                    selectedIndexProvider.selectedIndex == 3 ||
+                    selectedIndexProvider.selectedIndex == 4,
                 selectedTileColor: tPrimaryOpacity,
                 onTap: () {
                   // Update the state of the app

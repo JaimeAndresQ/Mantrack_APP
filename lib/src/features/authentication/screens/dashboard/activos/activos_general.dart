@@ -7,19 +7,20 @@ import 'package:mantrack_app/src/features/authentication/controller/auth/auth_ap
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
 import 'package:mantrack_app/src/features/authentication/model/widgets/dialog_widget.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_registrar.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/widgets/header_saver.dart';
 import 'package:provider/provider.dart';
 
-class ActivosRegistrar extends StatefulWidget {
-  const ActivosRegistrar({
+class ActivosGeneral extends StatefulWidget {
+  const ActivosGeneral({
     super.key,
   });
 
   @override
-  State<ActivosRegistrar> createState() => _ActivosRegistrarState();
+  State<ActivosGeneral> createState() => _ActivosGeneralState();
 }
 
-class _ActivosRegistrarState extends State<ActivosRegistrar> {
+class _ActivosGeneralState extends State<ActivosGeneral> {
   AuthController authController = AuthController();
 
   String idvehicuError = '';
@@ -99,6 +100,48 @@ class _ActivosRegistrarState extends State<ActivosRegistrar> {
 
     final tokenProvider = Provider.of<TokenProvider>(context);
 
+    authController.idvehicuController.text =
+        selectedIndexProvider.selectedActivoxPlaca.id_vehiculo;
+
+    authController.marcaVehiController.text =
+        selectedIndexProvider.selectedActivoxPlaca.marca;
+
+    authController.modeloVehiController.text =
+        selectedIndexProvider.selectedActivoxPlaca.modelo.toString();
+
+    authController.lineaVehiController.text =
+        selectedIndexProvider.selectedActivoxPlaca.linea;
+
+    authController.colorVehiController.text =
+        selectedIndexProvider.selectedActivoxPlaca.color;
+
+    authController.capacidadVehiController.text =
+        selectedIndexProvider.selectedActivoxPlaca.capacidad;
+
+    authController.claseVehiController.text =
+        selectedIndexProvider.selectedActivoxPlaca.clase;
+
+    authController.cilindrajeVehiController.text =
+        selectedIndexProvider.selectedActivoxPlaca.cilindraje.toString();
+
+    authController.tipoCombustibleVehiemailController.text =
+        selectedIndexProvider.selectedActivoxPlaca.combustible;
+
+    authController.numeroMotorController.text =
+        selectedIndexProvider.selectedActivoxPlaca.numeroMotor;
+
+    authController.numeroChasisController.text =
+        selectedIndexProvider.selectedActivoxPlaca.numeroChasis;
+
+    authController.vinVehiController.text =
+        selectedIndexProvider.selectedActivoxPlaca.vin;
+
+    authController.ciudadRegristroVehiController.text =
+        selectedIndexProvider.selectedActivoxPlaca.ciudad_registro;
+
+    authController.fechaMatriculoVehiController.text =
+        selectedIndexProvider.selectedActivoxPlaca.fecha_matricula;
+
     return Container(
         margin: const EdgeInsets.all(10),
         height: size.height * 0.88,
@@ -107,59 +150,9 @@ class _ActivosRegistrarState extends State<ActivosRegistrar> {
         decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(15)),
         child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-          HeaderSave(
-              size: size,
-              titulo: "General Registro",
-              flechaAtras: () {
-                selectedIndexProvider.updateSelectedIndex(1);
-              },
-              botonGuardar: () async {
-                try {
-                  validateAndSetErrors();
-
-                  if (idvehicuError.isEmpty &&
-                      marcaVehiError.isEmpty &&
-                      modeloVehiError.isEmpty &&
-                      lineaVehiError.isEmpty &&
-                      colorVehiError.isEmpty &&
-                      capacidadVehiError.isEmpty &&
-                      claseVehiError.isEmpty &&
-                      cilindrajeVehiError.isEmpty &&
-                      tipoCombustibleVehiemailError.isEmpty &&
-                      numeroMotorError.isEmpty &&
-                      numeroChasisError.isEmpty &&
-                      vinVehiError.isEmpty &&
-                      ciudadRegristroVehiError.isEmpty &&
-                      fechaMatriculoVehiError.isEmpty) {
-                    // Llamar a la funcion del provider
-                    String? token = await tokenProvider.verificarTokenU();
-                    if (token != null) {
-                      int? statusCode =
-                          await authController.registrarActivoU(token);
-
-                      if (statusCode == 200) {
-                        showDialog(
-                            // ignore: use_build_context_synchronously
-                            context: context,
-                            builder: (BuildContext context) => CustomDialog(
-                                  title: '¡Perfecto!',
-                                  message:
-                                      'Se registro exitosamente el vehiculo',
-                                  onPressed: () {
-                                    selectedIndexProvider
-                                        .updateSelectedIndex(1);
-
-                                    Navigator.pop(context);
-                                  },
-                                ));
-                      }
-                    }
-                  }
-                } catch (e) {
-                  print("Error al registrar usuario: $e");
-                  // Manejar otros posibles errores aquí
-                }
-              }),
+          HeaderSave(size: size, titulo: "General", flechaAtras: () {
+            selectedIndexProvider.updateSelectedIndex(2);
+          }, botonGuardar: (){},),
           Expanded(
             child: SingleChildScrollView(
               clipBehavior: Clip.hardEdge,
@@ -374,49 +367,4 @@ class _ActivosRegistrarState extends State<ActivosRegistrar> {
   }
 }
 
-class Formulario extends StatefulWidget {
-  const Formulario({
-    super.key,
-    required this.controller,
-    required this.nombreError,
-    required this.errorStyle,
-    required this.texto,
-    required this.icono,
-    this.permitirSoloNumeros,
-    this.maxCaracteres,
-  });
 
-  final String texto;
-  final TextEditingController controller;
-  final String? nombreError;
-  final TextStyle errorStyle;
-  final Icon icono;
-  final TextInputType? permitirSoloNumeros;
-  final int? maxCaracteres;
-
-  @override
-  State<Formulario> createState() => _FormularioState();
-}
-
-class _FormularioState extends State<Formulario> {
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      style: Theme.of(context).textTheme.bodySmall,
-      controller: widget.controller,
-      decoration: InputDecoration(
-          prefixIcon: widget.icono,
-          labelText: widget.texto,
-          hintText: widget.texto,
-          hintStyle: Theme.of(context).textTheme.bodyMedium,
-          labelStyle: Theme.of(context).textTheme.bodyMedium,
-          errorText: widget.nombreError,
-          errorStyle: widget.errorStyle,
-          border: const OutlineInputBorder()),
-      inputFormatters: [
-        LengthLimitingTextInputFormatter(widget.maxCaracteres),
-      ],
-      keyboardType: widget.permitirSoloNumeros,
-    );
-  }
-}

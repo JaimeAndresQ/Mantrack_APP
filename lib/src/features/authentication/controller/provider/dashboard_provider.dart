@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mantrack_app/src/features/authentication/model/activos_modal.dart';
+import 'package:mantrack_app/src/features/authentication/model/activos_placa_modal.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_detalles.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_general.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_registrar.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/perfil/perfil_widget.dart';
 import '../../screens/dashboard/activos/activos_widget.dart';
@@ -13,6 +15,15 @@ class SelectedDashboardProvider extends ChangeNotifier {
 
   void updateSelectedActivo(Activos activo){
     _selectedActivo = activo;
+    notifyListeners();
+  }
+
+  late ActivoPlaca _selectedActivoxPlaca;
+
+  ActivoPlaca get selectedActivoxPlaca => _selectedActivoxPlaca;
+
+  void updateSelectedActivoxPlaca(ActivoPlaca activo){
+    _selectedActivoxPlaca = activo;
     notifyListeners();
   }
 
@@ -35,6 +46,8 @@ class SelectedDashboardProvider extends ChangeNotifier {
         return ActivosDetalles();
       case 3:
         return ActivosRegistrar();
+      case 4:
+        return ActivosGeneral();
       case 7:
         return PerfilScreen();
       default:
@@ -52,6 +65,8 @@ class SelectedDashboardProvider extends ChangeNotifier {
         return 'Detalles del Activo';
       case 3:
         return 'Registro Activos';
+      case 4:
+        return 'Activos General';
       case 7:
         return 'Perfil';
       default:

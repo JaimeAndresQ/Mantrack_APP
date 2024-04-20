@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'package:get/get_connect/http/src/response/response.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'auth_config.dart';
@@ -260,6 +259,37 @@ class AuthController {
       print("Error al registrar usuario: $e");
     }
     return [];
+  }
+
+  Future<Map<String, dynamic>> obtenerActivoByPlacaU(String? token, String placa) async {
+    try {
+        var response = await http.get(
+          Uri.parse("$getActivoEspecificoUrl$placa"),
+          headers: {
+            "Authorization":"Bearer $token", 
+            "Content-Type":"application/json", 
+          }
+        );
+
+        var jsonActivoResponse = jsonDecode(response.body);
+
+        print("este es el response $jsonActivoResponse y el codigo ${response.statusCode}");
+
+        if (response.statusCode == 200) {
+          print("Vehiculo con la placa $placa encontrado");
+          return jsonActivoResponse;
+        } else if (response.statusCode == 400) {
+          throw Exception("La placa es obligatoria.");
+        } else if (response.statusCode == 404) {
+          throw Exception("Vehiculo con la placa $placa no encontrado.");
+        } else {
+          throw Exception("Error desconocido al obtener vehiculos.");
+        }
+
+    } catch (e) {
+      print("Error al registrar usuario: $e");
+    }
+    return {};
   }
 
 
