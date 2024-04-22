@@ -3,6 +3,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
 import 'package:provider/provider.dart';
 
+import 'widgets/avatar.dart';
 import 'widgets/info_list.dart';
 
 class PerfilScreen extends StatefulWidget {
@@ -69,7 +70,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              SizedBox(height: 10), // Espacio entre el avatar y la lista
+              const SizedBox(height: 10), 
+              const CircularAvatar(size: 100, imageUrl: 'https://cdn4.iconfinder.com/data/icons/avatars-xmas-giveaway/128/batman_hero_avatar_comics-512.png'),
+              const SizedBox(height: 10), // Espacio entre el avatar y la lista
               ProfileInfoList(email: email, name: name, lastname: lastname),
             ],
           ),
