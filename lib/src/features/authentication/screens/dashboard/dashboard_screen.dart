@@ -231,6 +231,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Navigator.pop(context);
                 },
               ),
+              ListTile(
+                leading: Icon(
+                  Icons.edit_calendar,
+                  color: tPrimaryColor,
+                ),
+                title: const Text('Plan de Tareas'),
+                selected: selectedIndexProvider.selectedIndex == 8,
+                selectedTileColor: tPrimaryOpacity,
+                onTap: () {
+                  // Update the state of the app
+                  selectedIndexProvider.updateSelectedIndex(8);
+                  // Then close the drawer
+                  Navigator.pop(context);
+                },
+              ),
             ],
           ),
         ),

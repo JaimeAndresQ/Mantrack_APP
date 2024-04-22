@@ -38,6 +38,13 @@ class AuthController {
   final TextEditingController fechaMatriculoVehiController =
       TextEditingController();
 
+
+  // Controladores de Tareas
+  final TextEditingController descTareaController = TextEditingController();
+  final TextEditingController asociadasTareasController = TextEditingController();
+  final TextEditingController activosVinculadosTareaController = TextEditingController();
+  
+
   void handleRegistrationError(int statusCode, String errorMsg) {
     switch (statusCode) {
       case 400:

@@ -7,7 +7,7 @@ class HeaderSave extends StatelessWidget {
     required this.size,
     required this.titulo,
     required this.flechaAtras,
-    required this.botonGuardar,
+    this.botonGuardar,
   });
 
   final Size size;

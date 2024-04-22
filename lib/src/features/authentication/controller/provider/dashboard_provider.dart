@@ -5,6 +5,9 @@ import 'package:mantrack_app/src/features/authentication/screens/dashboard/activ
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_general.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_registrar.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/perfil/perfil_widget.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_general.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_screen.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_widget.dart';
 import '../../screens/dashboard/activos/activos_widget.dart';
 
 class SelectedDashboardProvider extends ChangeNotifier {
@@ -50,6 +53,12 @@ class SelectedDashboardProvider extends ChangeNotifier {
         return ActivosGeneral();
       case 7:
         return PerfilScreen();
+      case 8:
+        return TareaWidget();
+      case 9:
+        return TareaScreen();
+      case 10:
+        return TareaGeneral();
       default:
         return Container(); // Puedes devolver un widget vacío o manejar el caso por defecto
     }

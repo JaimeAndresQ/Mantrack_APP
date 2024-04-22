@@ -15,18 +15,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
-  late SharedPreferences prefs;
-
-  @override
-  void initState() {
-    super.initState();
-    initSharedPrefs();
-  }
-
-  Future<void> initSharedPrefs() async {
-    prefs = await SharedPreferences.getInstance();
-    setState(() {});
-  }
 
 
   @override
@@ -53,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   "Ingresa tus credenciales para iniciar",
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                LoginForm(prefs: prefs,),
+                LoginForm(),
               ],
             ),
           ),

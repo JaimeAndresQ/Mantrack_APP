@@ -66,6 +66,13 @@ class TokenProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> setTokenU(String result) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('token', result);
+  }
+
+
+
   Future<void> eliminarTokenU() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? tokenActual = prefs.getString('token');

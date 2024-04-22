@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
+import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/dashboard_screen.dart';
 import 'package:mantrack_app/src/features/authentication/screens/registrarse/registrarse_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../constants/colors.dart';
@@ -12,11 +14,10 @@ import '../../../../constants/sizes.dart';
 
 // ignore: must_be_immutable
 class LoginForm extends StatefulWidget {
-  final SharedPreferences prefs;
+
 
   LoginForm({
     super.key,
-    required this.prefs,
   });
 
   @override
@@ -64,6 +65,8 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
+  final selectedTokenProvider =
+        Provider.of<TokenProvider>(context);
     return Form(
         child: Container(
       padding: const EdgeInsets.symmetric(vertical: tFormHeight - 10),
@@ -147,7 +150,7 @@ class _LoginFormState extends State<LoginForm> {
                       // Llamar a la función de registro en el AuthController
                       String result = await authController.loginU();
                       if (result != "error") {
-                        widget.prefs.setString('token', result);
+                        selectedTokenProvider.setTokenU(result);
                         Get.to(() => DashboardScreen(
                               token: result,
                             ));

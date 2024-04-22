@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
 import 'package:mantrack_app/src/features/authentication/screens/welcome/welcome_screen.dart';
