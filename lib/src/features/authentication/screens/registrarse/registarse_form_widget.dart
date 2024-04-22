@@ -131,6 +131,7 @@ class _RegistrarseFormState extends State<RegistrarseForm> {
           TextFormField(
             style: Theme.of(context).textTheme.bodySmall,
             controller: authController.cellphoneController,
+            keyboardType: TextInputType.number,
             decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.numbers),
                 labelText: "No Telefono",
@@ -147,6 +148,7 @@ class _RegistrarseFormState extends State<RegistrarseForm> {
           TextFormField(
             style: Theme.of(context).textTheme.bodySmall,
             controller: authController.cedulaciudadanaController,
+            keyboardType: TextInputType.number,
             decoration: InputDecoration(
               prefixIcon: const Icon(Icons.badge_outlined),
               labelText: "Cedula de Ciudadania",
