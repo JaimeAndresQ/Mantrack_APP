@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/screens/login/login_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../constants/colors.dart';
 import '../../../../constants/sizes.dart';
 import 'package:intl/intl.dart';
@@ -12,10 +11,9 @@ import 'package:intl/intl.dart';
 
 // ignore: must_be_immutable
 class RegistrarseForm extends StatefulWidget {
-  final SharedPreferences prefs;
   const RegistrarseForm({
     super.key,
-    required this.prefs,
+    
   });
 
   @override

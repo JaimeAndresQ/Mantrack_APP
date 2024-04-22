@@ -3,12 +3,11 @@ import 'package:mantrack_app/src/constants/colors.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
-import 'package:mantrack_app/src/features/authentication/model/activos_modal.dart';
 import 'package:mantrack_app/src/features/authentication/model/activos_placa_modal.dart';
 import 'package:provider/provider.dart';
 
 class ActivosDetalles extends StatefulWidget {
-  ActivosDetalles({Key? key}) : super(key: key);
+  const ActivosDetalles({super.key});
 
   @override
   State<ActivosDetalles> createState() => _ActivosDetallesState();

@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:mantrack_app/src/constants/colors.dart';
 import 'package:mantrack_app/src/constants/sizes.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
-import 'package:mantrack_app/src/features/authentication/model/widgets/dialog_widget.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_registrar.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/widgets/header_saver.dart';
 import 'package:provider/provider.dart';
@@ -98,7 +95,7 @@ class _ActivosGeneralState extends State<ActivosGeneral> {
     final selectedIndexProvider =
         Provider.of<SelectedDashboardProvider>(context);
 
-    final tokenProvider = Provider.of<TokenProvider>(context);
+    // final tokenProvider = Provider.of<TokenProvider>(context);
 
     authController.idvehicuController.text =
         selectedIndexProvider.selectedActivoxPlaca.id_vehiculo;

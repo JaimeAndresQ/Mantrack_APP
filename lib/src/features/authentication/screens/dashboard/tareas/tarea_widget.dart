@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mantrack_app/src/constants/sizes.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
-import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/widgets/activos_builder.dart';
 import 'package:provider/provider.dart';
 
 class TareaWidget extends StatelessWidget {
