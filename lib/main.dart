@@ -41,6 +41,7 @@ class App extends StatelessWidget {
         ),
       ],
       child: GetMaterialApp(
+        scrollBehavior: MyBehavior(), // Quita el effecto azulejo al hacer un overscroll
         initialRoute: (token != null) ? 'dashboard' : '/',
         routes: {
           '/': (context) => const OnBoardingScreen(),
@@ -56,4 +57,10 @@ class App extends StatelessWidget {
       ),
     );
   }
+}
+
+
+class MyBehavior extends ScrollBehavior {
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) => const BouncingScrollPhysics();
 }

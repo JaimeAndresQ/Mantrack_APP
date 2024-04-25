@@ -58,7 +58,6 @@ class _TareaWidgetState extends State<TareaWidget> {
                   MyActivos(
                     selectedIndexProvider: selectedIndexProvider,
                     isPressed: isPressed,
-
                   ),
                 ],
               )),

@@ -21,7 +21,7 @@ class TAppTheme {
     brightness: Brightness.dark,
     useMaterial3: false,
 
-    primaryColor: Colors.blueAccent,
+    primaryColor: const Color.fromARGB(255, 14, 50, 112),
     fontFamily: "Schyler"
 
     );

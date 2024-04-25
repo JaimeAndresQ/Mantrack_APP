@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mantrack_app/src/constants/colors.dart';
@@ -23,6 +24,8 @@ class TareaMantenimiento extends StatefulWidget {
 
 class _TareaMantenimientoState extends State<TareaMantenimiento> {
   bool isPressed = false;
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -83,10 +86,18 @@ class _TareaMantenimientoState extends State<TareaMantenimiento> {
             onPressed: () {
               showModalBottomSheet(
                 context: context,
+                
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(20),
+                    
+                  )
+                ),
                 builder: (BuildContext context) {
                   return DrawerMantenimiento(
-                    selectedIndexProvider: selectedIndexProvider,
-                  );
+                      selectedIndexProvider: selectedIndexProvider,
+                    );
+                  
                 },
               );
             },
@@ -132,7 +143,7 @@ class _DrawerMantenimientoState extends State<DrawerMantenimiento> {
   TextStyle errorStyle = const TextStyle(
       fontSize: 14, fontWeight: FontWeight.w500, fontStyle: FontStyle.italic);
 
-  String? _selectedValue;
+
 
   @override
   Widget build(BuildContext context) {
@@ -141,95 +152,112 @@ class _DrawerMantenimientoState extends State<DrawerMantenimiento> {
     final selectedIndexProvider =
         Provider.of<SelectedDashboardProvider>(context);
     final selectedTokenProvider = Provider.of<TokenProvider>(context);
-    return Drawer(
-        child: Container(
-            margin: const EdgeInsets.all(10),
-            height: size.height * 0.88,
-            width: size.width * 0.95,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(15)),
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-              HeaderSave(
-                size: size,
-                titulo: "Nuevo Mantenimiento",
-                flechaAtras: () {
-                  Navigator.pop(context);
-                },
-                botonGuardar: () async {
-                  // Llamar a la funcion del provider
-                  String? token = await selectedTokenProvider.verificarTokenU();
-                  if (token != null) {
-                    int? statusCode = 200;
-
-                    if (statusCode == 200) {
-                      showDialog(
-                          // ignore: use_build_context_synchronously
-                          context: context,
-                          builder: (BuildContext context) => CustomDialog(
-                                title: '¡Perfecto!',
-                                message:
-                                    '¡Se creó exitosamente el mantenimiento!',
-                                onPressed: () {
-                                  selectedIndexProvider.updateSelectedIndex(2);
-
-                                  Navigator.pop(context);
-                                },
-                              ));
+    
+    return SizedBox(
+      height: size.height * 0.45,
+      
+      child: Drawer(
+        
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(20)
+          )
+        ),
+          child: Container(
+              margin: const EdgeInsets.all(10),
+              height: size.height * 0.88,
+              width: size.width * 0.95,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(15)),
+              child:
+                  Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                HeaderSave(
+                  size: size,
+                  titulo: "Nuevo Mantenimiento",
+                  flechaAtras: () {
+                    Navigator.pop(context);
+                  },
+                  botonGuardar: () async {
+                    // Llamar a la funcion del provider
+                    String? token = await selectedTokenProvider.verificarTokenU();
+                    if (token != null) {
+                      int? statusCode = 200;
+      
+                      if (statusCode == 200) {
+                        showDialog(
+                            // ignore: use_build_context_synchronously
+                            context: context,
+                            builder: (BuildContext context) => CustomDialog(
+                                  title: '¡Perfecto!',
+                                  message:
+                                      '¡Se creó exitosamente el mantenimiento!',
+                                  onPressed: () {
+                                    selectedIndexProvider.updateSelectedIndex(2);
+      
+                                    Navigator.pop(context);
+                                  },
+                                ));
+                      }
                     }
-                  }
-                },
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  clipBehavior: Clip.hardEdge,
-                  child: Form(
-                      child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: tFormHeight - 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Formulario(
-                          controller: authController.idvehicuController,
-                          nombreError:
-                              idvehicuError.isNotEmpty ? idvehicuError : null,
-                          errorStyle: errorStyle,
-                          texto: "Descripcion",
-                          icono: const Icon(Icons.description_outlined),
-                        ),
-                        const SizedBox(
-                          height: tFormHeight,
-                        ),
-                        FormularioSelect(
-                          opciones: const ["Preventivo", "Correctivo"],
-                          controller: authController.marcaVehiController,
-                          nombreError:
-                              marcaVehiError.isNotEmpty ? marcaVehiError : null,
-                          errorStyle: errorStyle,
-                          texto: "Tipo de Mantenimiento",
-                          icono: const Icon(Icons.handyman_outlined),
-                        ),
-                        const SizedBox(
-                          height: tFormHeight,
-                        ),
-                        Formulario(
-                          controller: authController.modeloVehiController,
-                          nombreError: modeloVehiError.isNotEmpty
-                              ? modeloVehiError
-                              : null,
-                          errorStyle: errorStyle,
-                          texto: "Duracion del Mantenimiento",
-                          icono: const Icon(Icons.timelapse_sharp),
-                          permitirSoloNumeros: TextInputType.number,
-                          maxCaracteres: 4,
-                        ),
-                      ],
-                    ),
-                  )),
+                  },
                 ),
-              )
-            ])));
+                Expanded(
+                  child: SingleChildScrollView(
+
+                    physics: BouncingScrollPhysics(),
+                    clipBehavior: Clip.hardEdge,
+                    child: Form(
+                        child: Container(
+                      padding:
+                          const EdgeInsets.symmetric(vertical: tFormHeight - 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Formulario(
+                            controller: authController.idvehicuController,
+                            nombreError:
+                                idvehicuError.isNotEmpty ? idvehicuError : null,
+                            errorStyle: errorStyle,
+                            texto: "Descripcion",
+                            icono: const Icon(Icons.description_outlined),
+                          ),
+                          const SizedBox(
+                            height: tFormHeight,
+                          ),
+                          FormularioSelect(
+                            opciones: const ["Preventivo", "Correctivo"],
+                            controller: authController.marcaVehiController,
+                            nombreError:
+                                marcaVehiError.isNotEmpty ? marcaVehiError : null,
+                            errorStyle: errorStyle,
+                            texto: "Tipo de Mantenimiento",
+                            icono: const Icon(Icons.handyman_outlined),
+                          ),
+                          const SizedBox(
+                            height: tFormHeight,
+                          ),
+                          Formulario(
+                            controller: authController.modeloVehiController,
+                            nombreError: modeloVehiError.isNotEmpty
+                                ? modeloVehiError
+                                : null,
+                            errorStyle: errorStyle,
+                            texto: "Duracion del Mantenimiento",
+                            icono: const Icon(Icons.timelapse_sharp),
+                            permitirSoloNumeros: TextInputType.number,
+                            maxCaracteres: 4,
+                          ),
+                         
+                          
+                        ],
+                      ),
+                    )),
+                  ),
+                )
+              ]))),
+    );
   }
 }
+
+

@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_string_interpolations
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mantrack_app/src/constants/colors.dart';
@@ -29,6 +29,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   late String lastname;
   late String imagen;
   late dynamic tokenw;
+  late NetworkImage imagenCargada;
 
   @override
   void initState() {
@@ -41,6 +42,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       name = jwtDecodedToken['nombres'];
       lastname = jwtDecodedToken['apellidos'];
       imagen = authController.getImageU(email);
+      imagenCargada = NetworkImage(imagen);
     }
   }
 
@@ -48,10 +50,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final selectedIndexProvider =
         Provider.of<SelectedDashboardProvider>(context);
-    final selectedTokenProvider = Provider.of<TokenProvider>(context);
+    // final selectedTokenProvider = Provider.of<TokenProvider>(context);
 
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         backgroundColor: Color(0xFFEEEEEE),
         appBar: AppBar(
           title: Text(
@@ -141,7 +144,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                               clipBehavior: Clip.hardEdge,
                               child: Image(
-                                image: NetworkImage(imagen),
+                                image: imagenCargada,
                                 fit: BoxFit.cover,
                                 loadingBuilder: (BuildContext context,
                                     Widget child,
@@ -268,7 +271,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   color: tPrimaryColor,
                 ),
                 title: const Text('Plan de Tareas'),
-                selected: selectedIndexProvider.selectedIndex == 8,
+                selected: selectedIndexProvider.selectedIndex == 8 ||
+                    selectedIndexProvider.selectedIndex == 9 ||
+                    selectedIndexProvider.selectedIndex == 10 ||
+                    selectedIndexProvider.selectedIndex == 11 ||
+                    selectedIndexProvider.selectedIndex == 12,
                 selectedTileColor: tPrimaryOpacity,
                 onTap: () {
                   // Update the state of the app
@@ -298,6 +305,9 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(child: widgetOptions);
+    return SingleChildScrollView(
+      physics: ClampingScrollPhysics(),
+      child: widgetOptions
+      );
   }
 }
