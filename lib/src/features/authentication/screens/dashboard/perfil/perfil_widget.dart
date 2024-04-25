@@ -3,6 +3,9 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
 import 'package:provider/provider.dart';
 
+import 'widgets/avatar.dart';
+import 'widgets/info_list.dart';
+
 class PerfilScreen extends StatefulWidget {
   const PerfilScreen({super.key});
 
@@ -11,8 +14,6 @@ class PerfilScreen extends StatefulWidget {
 }
 
 class _PerfilScreenState extends State<PerfilScreen> {
-
-
   late TokenProvider tokenProvider;
   late String? token;
   late Map<String, dynamic> tokenw;
@@ -21,14 +22,13 @@ class _PerfilScreenState extends State<PerfilScreen> {
   late String lastname;
   bool _isLoading = true; // Estado de carga inicial
 
-
   @override
   void initState() {
     super.initState();
     _initWidget(); // Llamada a la función de inicialización diferida
   }
 
-void _initWidget() async {
+  void _initWidget() async {
     tokenProvider = TokenProvider();
     try {
       token = await tokenProvider.verificarTokenU();
@@ -59,22 +59,25 @@ void _initWidget() async {
       return const Center(
         child: CircularProgressIndicator(),
       );
-    } else { 
+    } else {
       return Container(
-          margin: const EdgeInsets.all(10),
-          height: size.height * 0.88,
-          width: size.width * 0.95,
-          decoration: BoxDecoration(
-              color: Colors.white, borderRadius: BorderRadius.circular(15)),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Text("$email"),
-              ],
-            ),
+        margin: const EdgeInsets.all(10),
+        height: size.height * 0.88,
+        width: size.width * 0.95,
+        decoration: BoxDecoration(
+            color: Colors.white, borderRadius: BorderRadius.circular(15)),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 10), 
+              const CircularAvatar(size: 100, imageUrl: 'https://cdn4.iconfinder.com/data/icons/avatars-xmas-giveaway/128/batman_hero_avatar_comics-512.png'),
+              const SizedBox(height: 10), // Espacio entre el avatar y la lista
+              ProfileInfoList(email: email, name: name, lastname: lastname),
+            ],
           ),
-        );
+        ),
+      );
     }
   }
 }
