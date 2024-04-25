@@ -1,11 +1,16 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:mantrack_app/src/constants/colors.dart';
 import 'package:mantrack_app/src/constants/sizes.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
 import 'package:mantrack_app/src/features/authentication/model/widgets/dialog_widget.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/widgets/activos_formulario.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/widgets/header_saver.dart';
 import 'package:provider/provider.dart';
 
@@ -89,6 +94,17 @@ class _ActivosRegistrarState extends State<ActivosRegistrar> {
     });
   }
 
+  File? _imgFile;
+
+  void takeSnapshot() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result == null) return;
+    setState(() {
+      _imgFile =
+          File(result.files.single.path!); // convert it to a Dart:io file
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -129,12 +145,13 @@ class _ActivosRegistrarState extends State<ActivosRegistrar> {
                       numeroChasisError.isEmpty &&
                       vinVehiError.isEmpty &&
                       ciudadRegristroVehiError.isEmpty &&
-                      fechaMatriculoVehiError.isEmpty) {
+                      fechaMatriculoVehiError.isEmpty &&
+                      _imgFile != null) {
                     // Llamar a la funcion del provider
                     String? token = await tokenProvider.verificarTokenU();
                     if (token != null) {
                       int? statusCode =
-                          await authController.registrarActivoU(token);
+                          await authController.registrarActivoU(token, _imgFile!);
 
                       if (statusCode == 200) {
                         showDialog(
@@ -168,6 +185,57 @@ class _ActivosRegistrarState extends State<ActivosRegistrar> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          _imgFile == null
+                              ? const Text('No hay imagen seleccionado.')
+                              : Container(
+                                  height: 150,
+                                  width: 150,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.rectangle,
+                                    borderRadius: const BorderRadius.all(Radius.circular(20)),
+                                    image: _imgFile != null
+                                        ? DecorationImage(
+                                            image: FileImage(_imgFile!),
+                                            fit: BoxFit.cover,
+                                          )
+                                        : null,
+                                  ),
+                                  child: _imgFile == null
+                                      ? const Icon(
+                                          Icons.person_outline_outlined,
+                                          size: 50)
+                                      : null, // Icono predeterminado si no hay imagen seleccionada
+                                ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              takeSnapshot();
+                            },
+                            child: Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.rectangle,
+                                    borderRadius: const BorderRadius.all(Radius.circular(5)),
+                                    border: Border.all(
+                                        color: tPrimaryColor, width: 1.5)),
+                                child: const Icon(
+                                  Icons.image_search_sharp,
+                                  size: 25,
+                                  color: tPrimaryColor,
+                                )),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: tFormHeight - 10,
+                    ),
                     Formulario(
                       controller: authController.idvehicuController,
                       nombreError:
@@ -362,8 +430,6 @@ class _ActivosRegistrarState extends State<ActivosRegistrar> {
                         }
                       },
                     ),
-                    
-                    
                   ],
                 ),
               )),
@@ -373,49 +439,4 @@ class _ActivosRegistrarState extends State<ActivosRegistrar> {
   }
 }
 
-class Formulario extends StatefulWidget {
-  const Formulario({
-    super.key,
-    required this.controller,
-    required this.nombreError,
-    required this.errorStyle,
-    required this.texto,
-    required this.icono,
-    this.permitirSoloNumeros,
-    this.maxCaracteres,
-  });
 
-  final String texto;
-  final TextEditingController controller;
-  final String? nombreError;
-  final TextStyle errorStyle;
-  final Icon icono;
-  final TextInputType? permitirSoloNumeros;
-  final int? maxCaracteres;
-
-  @override
-  State<Formulario> createState() => _FormularioState();
-}
-
-class _FormularioState extends State<Formulario> {
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      style: Theme.of(context).textTheme.bodySmall,
-      controller: widget.controller,
-      decoration: InputDecoration(
-          prefixIcon: widget.icono,
-          labelText: widget.texto,
-          hintText: widget.texto,
-          hintStyle: Theme.of(context).textTheme.bodyMedium,
-          labelStyle: Theme.of(context).textTheme.bodyMedium,
-          errorText: widget.nombreError,
-          errorStyle: widget.errorStyle,
-          border: const OutlineInputBorder()),
-      inputFormatters: [
-        LengthLimitingTextInputFormatter(widget.maxCaracteres),
-      ],
-      keyboardType: widget.permitirSoloNumeros,
-    );
-  }
-}

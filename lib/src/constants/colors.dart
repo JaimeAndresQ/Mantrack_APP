@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 const tPrimaryColor = Color(0xff438afe);
 const tPrimaryOpacity = Color(0x1F4489FF);
+const tBackgroundScaffoldColor = Color(0xFFEEEEEE);
 
 // -- Colores On Boarding
 

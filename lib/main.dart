@@ -9,29 +9,28 @@ import 'src/features/authentication/screens/on_boarding/on_boarding_screen.dart'
 import 'package:provider/provider.dart';
 
 void main() async {
-    // Garantiza que los widgets estén inicializados antes de ejecutar la aplicación.
+  
+  // Garantiza que los widgets estén inicializados antes de ejecutar la aplicación.
   WidgetsFlutterBinding.ensureInitialized();
 
-
-// Obtener una instancia de TokenProvider
+  // Obtener una instancia de TokenProvider
   TokenProvider tokenProvider = TokenProvider();
 
   // Llamar al método verificarTokenU() y esperar su resultado
   String? token = await tokenProvider.getTokenU();
-  
 
-  runApp(App(token: token,));
+  runApp(App(
+    token: token,
+  ));
 }
 
 class App extends StatelessWidget {
-
   final String? token;
-  
+
   const App({super.key, required this.token});
 
   @override
   Widget build(BuildContext context) {
-
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<SelectedDashboardProvider>(
@@ -46,7 +45,9 @@ class App extends StatelessWidget {
         routes: {
           '/': (context) => const OnBoardingScreen(),
           'welcome': (context) => const WelcomeScreen(),
-          'dashboard': (context) => DashboardScreen(token: token,),
+          'dashboard': (context) => DashboardScreen(
+                token: token,
+              ),
         },
         theme: TAppTheme.lightTheme,
         darkTheme: TAppTheme.darkTheme,

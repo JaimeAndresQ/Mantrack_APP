@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mantrack_app/src/constants/colors.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
 import 'package:mantrack_app/src/features/authentication/model/activos_placa_modal.dart';
@@ -62,6 +63,7 @@ class Detalles extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.only(bottom: 10),
+                
                 decoration: const BoxDecoration(
                     border: Border(bottom: BorderSide(width: 0.2))),
                 child: Row(
@@ -77,12 +79,15 @@ class Detalles extends StatelessWidget {
                       width: 15.5,
                     ),
                     
-                      const Text(
-                        "a",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black54,
+                      const Expanded(
+                        child: Text(
+                          "Nombre del Plan de Mantenimiento",
+                          style: TextStyle(
+                            overflow: TextOverflow.clip,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black54,
+                          ),
                         ),
                       )
 
@@ -142,7 +147,7 @@ class Detalles extends StatelessWidget {
                 selectedTileColor: tPrimaryOpacity,
                 onTap: () {
                   // Update the state of the app
-                  
+                  selectedIndexProvider.updateSelectedIndex(11);
                 },
               ),
               ListTile(
@@ -164,7 +169,7 @@ class Detalles extends StatelessWidget {
                 selectedTileColor: tPrimaryOpacity,
                 onTap: () {
                   // Update the state of the app
-                  
+                  selectedIndexProvider.updateSelectedIndex(12);
                 },
               ),
             ]));

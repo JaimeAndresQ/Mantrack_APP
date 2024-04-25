@@ -8,16 +8,16 @@ import 'package:mantrack_app/src/features/authentication/model/widgets/dialog_wi
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/widgets/header_saver.dart';
 import 'package:provider/provider.dart';
 
-class TareaGeneral extends StatefulWidget {
-  const TareaGeneral({
+class TareaRegistrar extends StatefulWidget {
+  const TareaRegistrar({
     super.key,
   });
 
   @override
-  State<TareaGeneral> createState() => _TareaGeneralState();
+  State<TareaRegistrar> createState() => _TareaRegistrarState();
 }
 
-class _TareaGeneralState extends State<TareaGeneral> {
+class _TareaRegistrarState extends State<TareaRegistrar> {
   AuthController authController = AuthController();
 
   String descripError = '';
@@ -56,7 +56,7 @@ class _TareaGeneralState extends State<TareaGeneral> {
         child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
           HeaderSave(
               size: size,
-              titulo: "General Registro",
+              titulo: "Registrar un Plan",
               flechaAtras: () {
                 selectedIndexProvider.updateSelectedIndex(8);
               },
@@ -68,8 +68,8 @@ class _TareaGeneralState extends State<TareaGeneral> {
                     // Llamar a la funcion del provider
                     String? token = await tokenProvider.verificarTokenU();
                     if (token != null) {
-                      int? statusCode =
-                          await authController.registrarActivoU(token);
+                      int? statusCode = 200;
+                      // int? statusCode = await authController.registrarActivoU(token, );
 
                       if (statusCode == 200) {
                         showDialog(
@@ -123,6 +123,7 @@ class _TareaGeneralState extends State<TareaGeneral> {
                       texto: "Tareas asociadas",
                       icono: const Icon(Icons.list_alt_sharp),
                       maxCaracteres: 10,
+                      enabled: false,
                     ),
                     const SizedBox(
                       height: tFormHeight,
@@ -136,6 +137,7 @@ class _TareaGeneralState extends State<TareaGeneral> {
                       icono: const Icon(Icons.library_add_check_rounded),
                       permitirSoloNumeros: TextInputType.number,
                       maxCaracteres: 4,
+                      enabled: false,
                       
                     ),
                     
@@ -160,6 +162,7 @@ class Formulario extends StatefulWidget {
     required this.icono,
     this.permitirSoloNumeros,
     this.maxCaracteres,
+    this.enabled,
   });
 
   final String texto;
@@ -169,6 +172,7 @@ class Formulario extends StatefulWidget {
   final Icon icono;
   final TextInputType? permitirSoloNumeros;
   final int? maxCaracteres;
+  final bool? enabled;
 
   @override
   State<Formulario> createState() => _FormularioState();
@@ -193,6 +197,7 @@ class _FormularioState extends State<Formulario> {
         LengthLimitingTextInputFormatter(widget.maxCaracteres),
       ],
       keyboardType: widget.permitirSoloNumeros,
+      enabled: widget.enabled,
     );
   }
 }

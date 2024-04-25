@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mantrack_app/src/constants/colors.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
@@ -53,7 +54,8 @@ class _ActivosDetallesState extends State<ActivosDetalles> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedIndexProvider = Provider.of<SelectedDashboardProvider>(context);
+    final selectedIndexProvider =
+        Provider.of<SelectedDashboardProvider>(context);
 
     final size = MediaQuery.of(context).size;
 
@@ -62,25 +64,33 @@ class _ActivosDetallesState extends State<ActivosDetalles> {
     String segundaParte = idVehiculo.substring(3); // Últimos 3 caracteres
     String idVehiculoFormateado = '$primeraParte•$segundaParte';
 
+    String imagen = authController.getImageVehiculoU(idVehiculo);
+
     return FutureBuilder<List<ActivoPlaca>>(
       future: futureCardsData,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           ActivoPlaca activo = snapshot.data![0];
-          return Detalles(size: size, selectedIndexProvider: selectedIndexProvider, idVehiculo: idVehiculo, 
-          idVehiculoFormateado: idVehiculoFormateado, textoListitle: textoListitle, activoplaca: activo,);
+          return Detalles(
+            size: size,
+            selectedIndexProvider: selectedIndexProvider,
+            idVehiculo: idVehiculo,
+            idVehiculoFormateado: idVehiculoFormateado,
+            textoListitle: textoListitle,
+            activoplaca: activo,
+            imageUrl: imagen,
+          );
         } else if (snapshot.hasError) {
-           return const Text('Error al cargar los activos');
+          return const Text('Error al cargar los activos');
         }
         return const CircularProgressIndicator();
-
       },
     );
   }
 }
 
 class Detalles extends StatelessWidget {
-  const Detalles({
+  Detalles({
     super.key,
     required this.size,
     required this.selectedIndexProvider,
@@ -88,6 +98,7 @@ class Detalles extends StatelessWidget {
     required this.idVehiculoFormateado,
     required this.textoListitle,
     required this.activoplaca,
+    required this.imageUrl,
   });
 
   final Size size;
@@ -96,6 +107,9 @@ class Detalles extends StatelessWidget {
   final String idVehiculoFormateado;
   final TextStyle textoListitle;
   final ActivoPlaca activoplaca;
+  final String imageUrl;
+
+  AuthController authController = AuthController();
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +126,7 @@ class Detalles extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.only(bottom: 10),
+                margin: EdgeInsets.only(bottom: 5),
                 decoration: const BoxDecoration(
                     border: Border(bottom: BorderSide(width: 0.2))),
                 child: Row(
@@ -147,6 +162,47 @@ class Detalles extends StatelessWidget {
                   ],
                 ),
               ),
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 15),
+                  height: 175,
+                  width: 175,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ),
+                  clipBehavior: Clip.hardEdge,
+                  child: Image(
+                    image: NetworkImage(imageUrl),
+                    loadingBuilder: (BuildContext context, Widget child,
+                        ImageChunkEvent? loadingProgress) {
+                      if (loadingProgress == null) {
+                        return child;
+                      }
+                      return Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      );
+                    },
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      // Devolver la imagen predeterminada o el icono aquí
+                      return const Image(
+                        image: NetworkImage(
+                            "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1665px-No-Image-Placeholder.svg.png"),
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
+                  // Icono predeterminado si no hay imagen seleccionada
+                ),
+              ),
+              Divider(thickness: 1, color: Colors.black26),
               Container(
                 margin:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 10),

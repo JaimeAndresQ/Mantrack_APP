@@ -5,8 +5,10 @@ import 'package:mantrack_app/src/features/authentication/screens/dashboard/activ
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_general.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_registrar.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/perfil/perfil_widget.dart';
-import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_general.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_registrar.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_mantenimiento.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_screen.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_vinculadas.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_widget.dart';
 import '../../screens/dashboard/activos/activos_widget.dart';
 
@@ -58,7 +60,11 @@ class SelectedDashboardProvider extends ChangeNotifier {
       case 9:
         return TareaScreen();
       case 10:
-        return TareaGeneral();
+        return TareaRegistrar();
+      case 11:
+        return TareaMantenimiento();
+      case 12:
+        return TareaVinculados();
       default:
         return Container(); // Puedes devolver un widget vacío o manejar el caso por defecto
     }
@@ -78,6 +84,16 @@ class SelectedDashboardProvider extends ChangeNotifier {
         return 'Activos General';
       case 7:
         return 'Perfil';
+      case 8:
+        return 'Plan de Tareas';
+      case 9:
+        return 'Detalles del Plan';
+      case 10:
+        return 'Registrar un Plan';
+      case 11:
+        return 'Tareas';
+      case 12:
+        return 'Vehiculos Asociados';
       default:
         return '';
     }

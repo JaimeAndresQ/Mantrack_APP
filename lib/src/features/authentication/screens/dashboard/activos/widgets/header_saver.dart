@@ -37,6 +37,7 @@ class HeaderSave extends StatelessWidget {
               Text(
                 titulo,
                 style: const TextStyle(
+                  
                     fontSize: 20,
                     fontWeight: FontWeight.w400,
                     color: Colors.black54),

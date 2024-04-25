@@ -7,13 +7,14 @@ import 'package:mantrack_app/src/features/authentication/screens/login/login_scr
 import '../../../../constants/colors.dart';
 import '../../../../constants/sizes.dart';
 import 'package:intl/intl.dart';
+import 'package:file_picker/file_picker.dart';
 
+import 'dart:io';
 
 // ignore: must_be_immutable
 class RegistrarseForm extends StatefulWidget {
   const RegistrarseForm({
     super.key,
-    
   });
 
   @override
@@ -60,16 +61,52 @@ class _RegistrarseFormState extends State<RegistrarseForm> {
 
   void validateAndSetErrors() {
     setState(() {
-      nombreError = authController.nombreController.text.isEmpty ? 'Ingrese un nombre' : '';
-      apellidoError = authController.apellidoController.text.isEmpty ? 'Ingrese un apellido' : '';
-      emailError = authController.emailController.text.isEmpty ? 'Ingrese un correo electrónico' : '';
-      telefonoError = authController.cellphoneController.text.isEmpty ? 'Ingrese un número de teléfono válido' : '';
-      cedulaError = authController.cedulaciudadanaController.text.isEmpty ? 'Ingrese un número de identificación' : '';
-      fechaNacimientoError = authController.fechanacimientoController.text.isEmpty ? 'Ingrese una fecha de nacimiento' : '';
-      contraseniaError = authController.passwordController.text.isEmpty ? 'Ingrese una contraseña' : '';
+      nombreError = authController.nombreController.text.isEmpty
+          ? 'Ingrese un nombre'
+          : '';
+      apellidoError = authController.apellidoController.text.isEmpty
+          ? 'Ingrese un apellido'
+          : '';
+      emailError = authController.emailController.text.isEmpty
+          ? 'Ingrese un correo electrónico'
+          : '';
+      telefonoError = authController.cellphoneController.text.isEmpty
+          ? 'Ingrese un número de teléfono válido'
+          : '';
+      cedulaError = authController.cedulaciudadanaController.text.isEmpty
+          ? 'Ingrese un número de identificación'
+          : '';
+      fechaNacimientoError =
+          authController.fechanacimientoController.text.isEmpty
+              ? 'Ingrese una fecha de nacimiento'
+              : '';
+      contraseniaError = authController.passwordController.text.isEmpty
+          ? 'Ingrese una contraseña'
+          : '';
     });
   }
 
+  // File? _selectedImage;
+
+  // Future<void> _pickImage(ImageSource source) async {
+  //   final XFile? pickedFile = await ImagePicker().pickImage(source: source);
+  //   if (pickedFile != null) {
+  //     setState(() {
+  //       _selectedImage = File(pickedFile.path);
+  //     });
+  //   }
+  // }
+
+  File? _imgFile;
+
+  void takeSnapshot() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result == null) return;
+    setState(() {
+      _imgFile =
+          File(result.files.single.path!); // convert it to a Dart:io file
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +117,52 @@ class _RegistrarseFormState extends State<RegistrarseForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                _imgFile == null
+                    ? const Text('No hay avatar seleccionado.')
+                    : Container(
+                        height: 150,
+                        width: 150,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          borderRadius: const BorderRadius.all(Radius.circular(20)),
+                          image: _imgFile != null
+                              ? DecorationImage(
+                                  image: FileImage(_imgFile!),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
+                        ),
+                        child: _imgFile == null
+                            ? const Icon(Icons.person_outline_outlined, size: 50)
+                            : null, // Icono predeterminado si no hay imagen seleccionada
+                      ),
+                const SizedBox(
+                  width: 10,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    takeSnapshot();
+                  },
+                  
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.rectangle,
+                      borderRadius: const BorderRadius.all(Radius.circular(5)),
+                      border: Border.all(color: tPrimaryColor, width: 1.5)
+                    ),
+                    child: const Icon(Icons.image_search_sharp, size: 25, color: tPrimaryColor,)),
+                ),
+              ],
+            ),
+          ),
+                    const SizedBox(
+            height: tFormHeight,
+          ),
           TextFormField(
             style: Theme.of(context).textTheme.bodySmall,
             controller: authController.nombreController,
@@ -217,7 +300,6 @@ class _RegistrarseFormState extends State<RegistrarseForm> {
             child: ElevatedButton(
                 onPressed: () async {
                   try {
-                    
                     // Validamos los campos de error
                     validateAndSetErrors();
 
@@ -230,113 +312,116 @@ class _RegistrarseFormState extends State<RegistrarseForm> {
                         telefonoError.isEmpty &&
                         cedulaError.isEmpty &&
                         fechaNacimientoError.isEmpty &&
-                        contraseniaError.isEmpty) {
+                        contraseniaError.isEmpty &&
+                        _imgFile != null) {
                       // Llamar a la función de registro en el AuthController
-                      int? statusCode = await authController.registerU();
+                      int? statusCode = await authController.registerU(_imgFile!);
 
                       if (statusCode == 201) {
-                          showDialog<String>(
-                          
-                            // ignore: use_build_context_synchronously
-                            context: context,
-                            builder: (BuildContext context) => Dialog(
-                              child: Stack(
-                                alignment: Alignment.center,
-                                clipBehavior: Clip.none,
-                                children: [
-                                  Positioned(
-                                      top: size.height / -13.2,
-                                      child: Container(
-                                        decoration: const BoxDecoration(
-                                          borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-                                        color: tPrimaryColor,
-                                        ),
-                                        width: 332,
-                                        height: 70,
-                                      )),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 25),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        const SizedBox(
-                                          height: tDefaultSize,
-                                        ),
-                                        const Text(
-                                          '¡Perfecto!',
-                                          style: TextStyle(
-                                            fontSize: 30,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.black,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        const SizedBox(
-                                          height: tDefaultSize - 5,
-                                        ),
-                                        const SizedBox(
-                                            width: 290,
-                                            child: Text(
-                                              'Se creo tu usuario de forma exitosa, ya puedes iniciar sesion en Mantrack.',
-                                              style: TextStyle(
-                                                  fontSize: 17,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Colors.black87),
-                                              textAlign: TextAlign.center,
-                                            )),
-                                        const SizedBox(height: tDefaultSize - 5),
-                                        SizedBox(
-                                          width: double.infinity,
-                                          child: ElevatedButton(
-                                              onPressed: () {
-                                                Get.to(() => const LoginScreen());
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                  elevation: 0,
-                                                  backgroundColor: tPrimaryColor,
-                                                  side: const BorderSide(
-                                                      color: tPrimaryColor),
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                          vertical: tButtonHeight)),
-                                              child: const Text(
-                                                "OK",
-                                                style: TextStyle(fontSize: 16),
-                                              )),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Positioned(
-                                    top: size.height / -19.4,
+                        showDialog<String>(
+                          // ignore: use_build_context_synchronously
+                          context: context,
+                          builder: (BuildContext context) => Dialog(
+                            child: Stack(
+                              alignment: Alignment.center,
+                              clipBehavior: Clip.none,
+                              children: [
+                                Positioned(
+                                    top: size.height / -13.2,
                                     child: Container(
-                                      height: 80,
-                                      width: 80,
-                                      decoration: BoxDecoration(
+                                      decoration: const BoxDecoration(
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(10),
+                                            topRight: Radius.circular(10)),
+                                        color: tPrimaryColor,
+                                      ),
+                                      width: 332,
+                                      height: 70,
+                                    )),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 25),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      const SizedBox(
+                                        height: tDefaultSize,
+                                      ),
+                                      const Text(
+                                        '¡Perfecto!',
+                                        style: TextStyle(
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      const SizedBox(
+                                        height: tDefaultSize - 5,
+                                      ),
+                                      const SizedBox(
+                                          width: 290,
+                                          child: Text(
+                                            'Se creo tu usuario de forma exitosa, ya puedes iniciar sesion en Mantrack.',
+                                            style: TextStyle(
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.black87),
+                                            textAlign: TextAlign.center,
+                                          )),
+                                      const SizedBox(height: tDefaultSize - 5),
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: ElevatedButton(
+                                            onPressed: () {
+                                              Get.to(() => const LoginScreen());
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                                elevation: 0,
+                                                backgroundColor: tPrimaryColor,
+                                                side: const BorderSide(
+                                                    color: tPrimaryColor),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical:
+                                                            tButtonHeight)),
+                                            child: const Text(
+                                              "OK",
+                                              style: TextStyle(fontSize: 16),
+                                            )),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Positioned(
+                                  top: size.height / -19.4,
+                                  child: Container(
+                                    height: 80,
+                                    width: 80,
+                                    decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         color: tPrimaryColor,
-                                        border: Border.all(color: Colors.white)
-                                      ),
-                                      child: IconButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        icon: const Icon(
-                                          Icons.check_rounded,
-                                          size: 50,
-                                          color: Colors.white,
-                                        ),
+                                        border:
+                                            Border.all(color: Colors.white)),
+                                    child: IconButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      icon: const Icon(
+                                        Icons.check_rounded,
+                                        size: 50,
+                                        color: Colors.white,
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          );
-                        }
+                          ),
+                        );
                       }
+                    }
                   } catch (e) {
                     print("Error al registrar usuario: $e");
                     // Manejar otros posibles errores aquí

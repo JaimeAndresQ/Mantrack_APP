@@ -3,7 +3,9 @@
     <application
         android:label="mantrack_app"
         android:name="${applicationName}"
-        android:icon="@mipmap/logo_mantrack">
+        android:icon="@mipmap/logo_mantrack"
+        >
+        
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -31,5 +33,7 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    
 </manifest>

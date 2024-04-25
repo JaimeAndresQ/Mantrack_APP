@@ -6,6 +6,7 @@ import 'package:mantrack_app/src/constants/image_strings.dart';
 import 'package:mantrack_app/src/constants/sizes.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
+import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
 import '../../model/widgets/ball_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -26,6 +27,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   late String email;
   late String name;
   late String lastname;
+  late String imagen;
   late dynamic tokenw;
 
   @override
@@ -38,6 +40,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       email = jwtDecodedToken['correo'];
       name = jwtDecodedToken['nombres'];
       lastname = jwtDecodedToken['apellidos'];
+      imagen = authController.getImageU(email);
     }
   }
 
@@ -45,6 +48,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final selectedIndexProvider =
         Provider.of<SelectedDashboardProvider>(context);
+    final selectedTokenProvider = Provider.of<TokenProvider>(context);
 
     return SafeArea(
       child: Scaffold(
@@ -64,6 +68,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               child: IconButton(
                 onPressed: () {
+                  // selectedTokenProvider.eliminarTokenU();
                   selectedIndexProvider.updateSelectedIndex(7);
                 },
                 icon: const Image(
@@ -128,17 +133,43 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         alignment: Alignment.center,
                         children: [
                           Container(
-                            padding: EdgeInsets.all(15),
-                            decoration: BoxDecoration(
-                              color: Color(0xFFbdbdbd),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.person,
-                              color: Colors.white,
-                              size: 40,
-                            ),
-                          ),
+                              height: 50,
+                              width: 50,
+                              decoration: BoxDecoration(
+                                color: Color(0xFFbdbdbd),
+                                shape: BoxShape.circle,
+                              ),
+                              clipBehavior: Clip.hardEdge,
+                              child: Image(
+                                image: NetworkImage(imagen),
+                                fit: BoxFit.cover,
+                                loadingBuilder: (BuildContext context,
+                                    Widget child,
+                                    ImageChunkEvent? loadingProgress) {
+                                  if (loadingProgress == null) {
+                                    return child;
+                                  }
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                              : null,
+                                    ),
+                                  );
+                                },
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Icon(
+                                      Icons
+                                          .person, // Puedes cambiar este icono por cualquier otro
+                                      color: Colors.white,
+                                      size: 40);
+                                },
+                              )),
                           Positioned(top: 0, left: -10, child: PulsatingBall()),
                         ],
                       ),
