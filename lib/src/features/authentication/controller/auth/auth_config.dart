@@ -24,3 +24,4 @@ const getActivoEspecificoUrl = "http://$iPv4:80/api/vehiculos/vehiculo/";
 
 // Urls de post de tareas
 const registrarMantenimientoUrl = "http://$iPv4:80/api/planesMantenimientos/newMantenimiento";
+const getAllPlanesMantenimientoUrl = "http://$iPv4:80/api/planesMantenimientos/getAll";

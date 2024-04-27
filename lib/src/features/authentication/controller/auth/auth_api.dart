@@ -552,4 +552,35 @@ class AuthController {
     }
     return null;
   }
+
+  Future<Map<String, dynamic>> obtenerPlanesMantenimientoU(String? token) async {
+      try {
+        var response = await http.get(Uri.parse(getAllPlanesMantenimientoUrl), headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        });
+
+        var jsonActivoResponse = jsonDecode(response.body);
+
+        print(
+            "este es el response $jsonActivoResponse y el codigo ${response.statusCode}");
+
+        if (response.statusCode == 200) {
+          print("Planes de Mantenimientos Encontrados");
+          return jsonActivoResponse;
+        } else if (response.statusCode == 404) {
+          throw Exception("No hay planes de mantenimiento.");
+        } else {
+          throw Exception("Error desconocido al obtener los planes de mantenimiento.");
+        }
+      } catch (e) {
+        print("Error al realizar la peticion: $e");
+      }
+      return {};
+    }
+
+
+
 }
+
+

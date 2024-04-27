@@ -98,6 +98,27 @@ class _TareaMantenimientoState extends State<TareaMantenimiento> {
             child: const Icon(Icons.add),
           ),
         ),
+        Positioned(
+          right: tDefaultSize - 5,
+          bottom: tDefaultSize * 3.5,
+          child: FloatingActionButton(
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(20),
+                )),
+                builder: (BuildContext context) {
+                  return SizedBox();
+                },
+              );
+            },
+            tooltip: 'Increment',
+            child: const Icon(Icons.edit),
+          ),
+        ),
       ],
     );
   }
@@ -173,6 +194,7 @@ class _DrawerMantenimientoState extends State<DrawerMantenimiento> {
                         flechaAtras: () {
                           Navigator.pop(context);
                         },
+
                         botonGuardar: () async {
                           validateAndSetErrors();
 

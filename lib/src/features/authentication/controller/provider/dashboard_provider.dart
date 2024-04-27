@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mantrack_app/src/features/authentication/model/activos_modal.dart';
 import 'package:mantrack_app/src/features/authentication/model/activos_placa_modal.dart';
+import 'package:mantrack_app/src/features/authentication/model/planes_mantenimiento.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_detalles.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_general.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_registrar.dart';
@@ -14,6 +15,7 @@ import '../../screens/dashboard/activos/activos_widget.dart';
 
 class SelectedDashboardProvider extends ChangeNotifier {
 
+  // Modelo para Activos
   late Activos _selectedActivo;
 
   Activos get selectedActivo => _selectedActivo;
@@ -23,12 +25,25 @@ class SelectedDashboardProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Modelo para Activos Especificos con Placa
+
   late ActivoPlaca _selectedActivoxPlaca;
 
   ActivoPlaca get selectedActivoxPlaca => _selectedActivoxPlaca;
 
   void updateSelectedActivoxPlaca(ActivoPlaca activo){
     _selectedActivoxPlaca = activo;
+    notifyListeners();
+  }
+
+  // Modelo para los Planes de Mantenimiento
+
+  late PlanMantenimiento _selectedPlanManteniento;
+
+  PlanMantenimiento get selectedPlanMantenimiento => _selectedPlanManteniento;
+
+  void updateSelectedPlanMantenimiento(PlanMantenimiento activo){
+    _selectedPlanManteniento = activo;
     notifyListeners();
   }
 
