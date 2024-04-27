@@ -25,8 +25,6 @@ class TareaMantenimiento extends StatefulWidget {
 class _TareaMantenimientoState extends State<TareaMantenimiento> {
   bool isPressed = false;
 
-  
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -88,16 +86,11 @@ class _TareaMantenimientoState extends State<TareaMantenimiento> {
                 context: context,
                 isScrollControlled: true,
                 shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(20),
-                    
-                  )
-                ),
+                    borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(20),
+                )),
                 builder: (BuildContext context) {
-                  return DrawerMantenimiento(
-                      selectedIndexProvider: selectedIndexProvider,
-                    );
-                  
+                  return const DrawerMantenimiento();
                 },
               );
             },
@@ -113,10 +106,7 @@ class _TareaMantenimientoState extends State<TareaMantenimiento> {
 class DrawerMantenimiento extends StatefulWidget {
   const DrawerMantenimiento({
     super.key,
-    required this.selectedIndexProvider,
   });
-
-  final SelectedDashboardProvider selectedIndexProvider;
 
   @override
   State<DrawerMantenimiento> createState() => _DrawerMantenimientoState();
@@ -125,142 +115,174 @@ class DrawerMantenimiento extends StatefulWidget {
 class _DrawerMantenimientoState extends State<DrawerMantenimiento> {
   AuthController authController = AuthController();
 
-  String idvehicuError = '';
-  String marcaVehiError = '';
-  String modeloVehiError = '';
-  String lineaVehiError = '';
-  String colorVehiError = '';
-  String capacidadVehiError = '';
-  String claseVehiError = '';
-  String cilindrajeVehiError = '';
-  String tipoCombustibleVehiemailError = '';
-  String numeroMotorError = '';
-  String numeroChasisError = '';
-  String vinVehiError = '';
-  String ciudadRegristroVehiError = '';
-  String fechaMatriculoVehiError = '';
+  String descError = '';
+  String categoriaError = '';
+  String tipoManteError = '';
+  String duracionManteError = '';
 
   TextStyle errorStyle = const TextStyle(
       fontSize: 14, fontWeight: FontWeight.w500, fontStyle: FontStyle.italic);
 
-
+  void validateAndSetErrors() {
+    setState(() {
+      descError = authController.descripcionController.text.isEmpty
+          ? 'Ingrese una descripcion'
+          : '';
+      categoriaError =
+          authController.categoriaMantenimientoController.text.isEmpty
+              ? 'Elija una categoria'
+              : '';
+      tipoManteError = authController.tipoMantenimientoController.text.isEmpty
+          ? 'Elija un tipo de mantenimiento'
+          : '';
+      duracionManteError =
+          authController.duracionMantenimientoController.text.isEmpty
+              ? 'Ingrese una duracion en minutos'
+              : '';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    final selectedIndexProvider =
-        Provider.of<SelectedDashboardProvider>(context);
     final selectedTokenProvider = Provider.of<TokenProvider>(context);
-    
+
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: SizedBox(
         height: size.height * 0.45,
-        
         child: Drawer(
-          
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(20)
-            )
-          ),
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
             child: Container(
                 margin: const EdgeInsets.all(10),
                 height: size.height * 0.88,
                 width: size.width * 0.95,
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                    color: Colors.white, borderRadius: BorderRadius.circular(15)),
-                child:
-                    Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-                  HeaderSave(
-                    size: size,
-                    titulo: "Nuevo Mantenimiento",
-                    flechaAtras: () {
-                      Navigator.pop(context);
-                    },
-                    botonGuardar: () async {
-                      // Llamar a la funcion del provider
-                      String? token = await selectedTokenProvider.verificarTokenU();
-                      if (token != null) {
-                        int? statusCode = 200;
-        
-                        if (statusCode == 200) {
-                          showDialog(
-                              // ignore: use_build_context_synchronously
-                              context: context,
-                              builder: (BuildContext context) => CustomDialog(
-                                    title: '¡Perfecto!',
-                                    message:
-                                        '¡Se creó exitosamente el mantenimiento!',
-                                    onPressed: () {
-                                      selectedIndexProvider.updateSelectedIndex(2);
-        
-                                      Navigator.pop(context);
-                                    },
-                                  ));
-                        }
-                      }
-                    },
-                  ),
-                  Expanded(
-                    child: SingleChildScrollView(
-      
-                      physics: BouncingScrollPhysics(),
-                      clipBehavior: Clip.hardEdge,
-                      child: Form(
-                          child: Container(
-                        padding:
-                            const EdgeInsets.symmetric(vertical: tFormHeight - 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Formulario(
-                              controller: authController.idvehicuController,
-                              nombreError:
-                                  idvehicuError.isNotEmpty ? idvehicuError : null,
-                              errorStyle: errorStyle,
-                              texto: "Descripcion",
-                              icono: const Icon(Icons.description_outlined),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15)),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      HeaderSave(
+                        size: size,
+                        titulo: "Nuevo Mantenimiento",
+                        flechaAtras: () {
+                          Navigator.pop(context);
+                        },
+                        botonGuardar: () async {
+                          validateAndSetErrors();
+
+                          if (descError.isEmpty &&
+                              categoriaError.isEmpty &&
+                              tipoManteError.isEmpty &&
+                              duracionManteError.isEmpty) {
+                            // Llamar a la funcion del provider
+                            String? token =
+                                await selectedTokenProvider.verificarTokenU();
+                            if (token != null) {
+                              int? statusCode = await authController
+                                  .registrarMantenimientoU(token);
+
+                              if (statusCode == 200) {
+                                showDialog(
+                                    // ignore: use_build_context_synchronously
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        CustomDialog(
+                                          title: '¡Perfecto!',
+                                          message:
+                                              '¡Se creó exitosamente el mantenimiento!',
+                                          onPressed: () {
+                                            // Cerrar el diálogo
+                                            Navigator.pop(context);
+                                            // Cerrar el modal
+                                            Navigator.pop(context);
+                                          },
+                                        ));
+                              }
+                            }
+                          }
+                        },
+                      ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          physics: BouncingScrollPhysics(),
+                          clipBehavior: Clip.hardEdge,
+                          child: Form(
+                              child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: tFormHeight - 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Formulario(
+                                  controller:
+                                      authController.descripcionController,
+                                  nombreError:
+                                      descError.isNotEmpty ? descError : null,
+                                  errorStyle: errorStyle,
+                                  texto: "Descripcion",
+                                  icono: const Icon(Icons.description_outlined),
+                                ),
+                                const SizedBox(
+                                  height: tFormHeight,
+                                ),
+                                FormularioSelect(
+                                  opciones: const ["Preventivo", "Correctivo"],
+                                  controller: authController
+                                      .tipoMantenimientoController,
+                                  nombreError: tipoManteError.isNotEmpty
+                                      ? tipoManteError
+                                      : null,
+                                  errorStyle: errorStyle,
+                                  texto: "Tipo de Mantenimiento",
+                                  icono: const Icon(Icons.handyman_outlined),
+                                ),
+                                const SizedBox(
+                                  height: tFormHeight,
+                                ),
+                                FormularioSelect(
+                                  opciones: const [
+                                    "Mantenimiento general",
+                                    "Cambio de aceite",
+                                    "Reparación de motor"
+                                  ],
+                                  controller: authController
+                                      .categoriaMantenimientoController,
+                                  nombreError: categoriaError.isNotEmpty
+                                      ? categoriaError
+                                      : null,
+                                  errorStyle: errorStyle,
+                                  texto: "Categoria del Mantenimiento",
+                                  icono:
+                                      const Icon(Icons.type_specimen_outlined),
+                                ),
+                                const SizedBox(
+                                  height: tFormHeight,
+                                ),
+                                Formulario(
+                                  controller: authController
+                                      .duracionMantenimientoController,
+                                  nombreError: duracionManteError.isNotEmpty
+                                      ? duracionManteError
+                                      : null,
+                                  errorStyle: errorStyle,
+                                  texto: "Duracion del Mantenimiento",
+                                  icono: const Icon(Icons.timelapse_sharp),
+                                  permitirSoloNumeros: TextInputType.number,
+                                  maxCaracteres: 4,
+                                ),
+                              ],
                             ),
-                            const SizedBox(
-                              height: tFormHeight,
-                            ),
-                            FormularioSelect(
-                              opciones: const ["Preventivo", "Correctivo"],
-                              controller: authController.marcaVehiController,
-                              nombreError:
-                                  marcaVehiError.isNotEmpty ? marcaVehiError : null,
-                              errorStyle: errorStyle,
-                              texto: "Tipo de Mantenimiento",
-                              icono: const Icon(Icons.handyman_outlined),
-                            ),
-                            const SizedBox(
-                              height: tFormHeight,
-                            ),
-                            Formulario(
-                              controller: authController.modeloVehiController,
-                              nombreError: modeloVehiError.isNotEmpty
-                                  ? modeloVehiError
-                                  : null,
-                              errorStyle: errorStyle,
-                              texto: "Duracion del Mantenimiento",
-                              icono: const Icon(Icons.timelapse_sharp),
-                              permitirSoloNumeros: TextInputType.number,
-                              maxCaracteres: 4,
-                            ),
-                           
-                            
-                          ],
+                          )),
                         ),
-                      )),
-                    ),
-                  )
-                ]))),
+                      )
+                    ]))),
       ),
     );
   }
 }
-
-

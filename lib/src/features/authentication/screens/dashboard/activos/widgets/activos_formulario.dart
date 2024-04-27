@@ -95,6 +95,7 @@ class _FormularioSelectState extends State<FormularioSelect> {
       },
       items: widget.opciones.map((option) {
         return DropdownMenuItem<String>(
+          alignment: Alignment.centerLeft,
           value: option,
           child: Text(
             option,
@@ -111,6 +112,7 @@ class _FormularioSelectState extends State<FormularioSelect> {
         errorText: widget.nombreError,
         errorStyle: widget.errorStyle,
         border: const OutlineInputBorder(),
+        
       ),
     );
   }

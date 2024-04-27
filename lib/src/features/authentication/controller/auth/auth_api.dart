@@ -117,16 +117,16 @@ class AuthController {
         },
       );
 
-    print("Este es el response ${response.bodyBytes} y el código ${response.statusCode}");
+      print(
+          "Este es el response ${response.bodyBytes} y el código ${response.statusCode}");
 
-        if (response.statusCode == 200) {
-          print("Imagen encontrada");
-          // Retornar el contenido de la imagen en lugar de la URL
-          return response.bodyBytes; // Devuelve el buffer de imagen como bytes
-        } else {
-          throw Exception("Error desconocido al obtener imagen.");
-        }
-
+      if (response.statusCode == 200) {
+        print("Imagen encontrada");
+        // Retornar el contenido de la imagen en lugar de la URL
+        return response.bodyBytes; // Devuelve el buffer de imagen como bytes
+      } else {
+        throw Exception("Error desconocido al obtener imagen.");
+      }
     } catch (e) {
       print("Error al realizar la peticion: $e");
       return null;
@@ -143,16 +143,16 @@ class AuthController {
         },
       );
 
-    print("Este es el response ${response.bodyBytes} y el código ${response.statusCode}");
-    print("Codigo ${response.statusCode}");
-        if (response.statusCode == 200) {
-          print("Imagen del vehiculo encontrada");
-          // Retornar el contenido de la imagen en lugar de la URL
-          return response.bodyBytes; // Devuelve el buffer de imagen como bytes
-        } else {
-          throw Exception("Error desconocido al obtener imagen.");
-        }
-
+      print(
+          "Este es el response ${response.bodyBytes} y el código ${response.statusCode}");
+      print("Codigo ${response.statusCode}");
+      if (response.statusCode == 200) {
+        print("Imagen del vehiculo encontrada");
+        // Retornar el contenido de la imagen en lugar de la URL
+        return response.bodyBytes; // Devuelve el buffer de imagen como bytes
+      } else {
+        throw Exception("Error desconocido al obtener imagen.");
+      }
     } catch (e) {
       print("Error al realizar la peticion: $e");
       return null;
@@ -313,12 +313,11 @@ class AuthController {
       // Agregar encabezados a la solicitud
       request.headers.addAll({
         "Authorization": "Bearer $token",
-        "Content-Type" : "multipart/form-data",
+        "Content-Type": "multipart/form-data",
       });
 
       // Agregar el archivo al cuerpo de la solicitud
       request.files.add(
-
         await http.MultipartFile.fromPath(
           'file',
           file.path,
@@ -327,7 +326,6 @@ class AuthController {
 
       // Agregar otros campos al cuerpo de la solicitud
       request.fields['placa_vehiculo'] = idvehicuController.text;
-
 
       // Enviar la solicitud y obtener la respuesta
       var responseImagen = await request.send();
@@ -454,7 +452,7 @@ class AuthController {
         // Agregar encabezados a la solicitud
         request.headers.addAll({
           "Authorization": "Bearer $token",
-          "Content-Type" : "multipart/form-data",
+          "Content-Type": "multipart/form-data",
         });
 
         // Agregar el archivo al cuerpo de la solicitud
@@ -470,7 +468,6 @@ class AuthController {
 
         // Enviar la solicitud y obtener la respuesta
         var responseImagen = await request.send();
-
 
         // Leer la respuesta del servidor
         var responseJsonImagen = await responseImagen.stream.bytesToString();
@@ -491,6 +488,67 @@ class AuthController {
       }
     } catch (e) {
       print("Error al actualizar: $e");
+    }
+    return null;
+  }
+
+// Metodos de Tareas
+
+  // Controladores de Mantenimientos
+  final TextEditingController descripcionController = TextEditingController();
+  final TextEditingController tipoMantenimientoController =
+      TextEditingController();
+  final TextEditingController duracionMantenimientoController =
+      TextEditingController();
+  final TextEditingController categoriaMantenimientoController =
+      TextEditingController();
+
+
+  Future<int?> registrarMantenimientoU(String token) async {
+    try {
+
+      Map<String, int> categoriaMap = {
+        "Mantenimiento general": 1,
+        "Cambio de aceite": 2,
+        "Reparación de motor": 3,
+      };
+
+      var categoriaFk = categoriaMap[categoriaMantenimientoController.text];
+      print(categoriaFk);
+
+      Map<String, dynamic> regBodyActivo = {
+        "tipo_mantenimiento": tipoMantenimientoController.text,
+        "descripcion": descripcionController.text,
+        "duracion_estimada": duracionMantenimientoController.text,
+        "fk_id_categoria": categoriaFk,
+      };
+
+      print(regBodyActivo);
+
+      var response = await http.post(
+        Uri.parse(registrarMantenimientoUrl),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(regBodyActivo),
+      );
+
+      var jsonActivoResponse = jsonDecode(response.body);
+
+      print(
+          "este es el response $jsonActivoResponse y el codigo ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        print("Mantenimiento registrado");
+        return 200;
+      } else if (response.statusCode == 400) {
+        throw Exception("Falta llenar más campos.");
+      } else {
+        throw Exception("Error desconocido al registrar mantenimeinto.");
+      }
+    } catch (e) {
+      print("Error al realizar la peticion: $e");
     }
     return null;
   }
