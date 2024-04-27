@@ -17,3 +17,7 @@ const String tRegistrarImage1 = "assets/images/registrarse.svg";
 
 // Dasboard Page
 const String tPersonIcon = "assets/images/person.png";
+
+
+// No image found
+const String tNoImageFound = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1665px-No-Image-Placeholder.svg.png";

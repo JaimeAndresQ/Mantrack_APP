@@ -35,8 +35,8 @@ class _LoginFormState extends State<LoginForm> {
   String emailError = '';
   String contraseniaError = '';
 
-  TextStyle errorStyle = const TextStyle(
-      fontSize: 14, fontWeight: FontWeight.w500, fontStyle: FontStyle.italic);
+    TextStyle errorStyle = const TextStyle(
+        fontSize: 14, fontWeight: FontWeight.w500, fontStyle: FontStyle.italic);
 
   late StreamSubscription<Map<String, String>> _errorSubscription;
 

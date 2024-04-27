@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:mantrack_app/src/constants/image_strings.dart';
 import 'auth_config.dart';
 
 class AuthController {
@@ -106,16 +107,56 @@ class AuthController {
     _errorController.close();
   }
 
-  String getImageU(String email) {
-    String imagen = "$getImagenUrl$email";
+  Future<dynamic> getImageU(String email, String token) async {
+    try {
+      var response = await http.get(
+        Uri.parse("$getImagenUrl$email"),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "image/jpeg",
+        },
+      );
 
-    return imagen;
+    print("Este es el response ${response.bodyBytes} y el código ${response.statusCode}");
+
+        if (response.statusCode == 200) {
+          print("Imagen encontrada");
+          // Retornar el contenido de la imagen en lugar de la URL
+          return response.bodyBytes; // Devuelve el buffer de imagen como bytes
+        } else {
+          throw Exception("Error desconocido al obtener imagen.");
+        }
+
+    } catch (e) {
+      print("Error al realizar la peticion: $e");
+      return null;
+    }
   }
 
-  String getImageVehiculoU(String placa) {
-    String imagen = "$getVehiculoImagenUrl$placa";
+  Future<dynamic> getImageVehiculoU(String placa, String token) async {
+    try {
+      var response = await http.get(
+        Uri.parse("$getVehiculoImagenUrl$placa"),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "image/jpeg",
+        },
+      );
 
-    return imagen;
+    print("Este es el response ${response.bodyBytes} y el código ${response.statusCode}");
+    print("Codigo ${response.statusCode}");
+        if (response.statusCode == 200) {
+          print("Imagen del vehiculo encontrada");
+          // Retornar el contenido de la imagen en lugar de la URL
+          return response.bodyBytes; // Devuelve el buffer de imagen como bytes
+        } else {
+          throw Exception("Error desconocido al obtener imagen.");
+        }
+
+    } catch (e) {
+      print("Error al realizar la peticion: $e");
+      return null;
+    }
   }
 
   Future<int?> registerU(File file) async {
@@ -269,8 +310,15 @@ class AuthController {
         Uri.parse(registrationVehiculoImagenUrl),
       );
 
+      // Agregar encabezados a la solicitud
+      request.headers.addAll({
+        "Authorization": "Bearer $token",
+        "Content-Type" : "multipart/form-data",
+      });
+
       // Agregar el archivo al cuerpo de la solicitud
       request.files.add(
+
         await http.MultipartFile.fromPath(
           'file',
           file.path,
@@ -279,6 +327,7 @@ class AuthController {
 
       // Agregar otros campos al cuerpo de la solicitud
       request.fields['placa_vehiculo'] = idvehicuController.text;
+
 
       // Enviar la solicitud y obtener la respuesta
       var responseImagen = await request.send();
@@ -402,6 +451,12 @@ class AuthController {
           Uri.parse(registrationVehiculoImagenUrl),
         );
 
+        // Agregar encabezados a la solicitud
+        request.headers.addAll({
+          "Authorization": "Bearer $token",
+          "Content-Type" : "multipart/form-data",
+        });
+
         // Agregar el archivo al cuerpo de la solicitud
         request.files.add(
           await http.MultipartFile.fromPath(
@@ -415,6 +470,7 @@ class AuthController {
 
         // Enviar la solicitud y obtener la respuesta
         var responseImagen = await request.send();
+
 
         // Leer la respuesta del servidor
         var responseJsonImagen = await responseImagen.stream.bytesToString();

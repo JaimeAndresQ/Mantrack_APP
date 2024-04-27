@@ -1,6 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mantrack_app/src/constants/colors.dart';
+import 'package:mantrack_app/src/constants/image_strings.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
@@ -23,6 +26,9 @@ class _ActivosDetallesState extends State<ActivosDetalles> {
 
   // Obtener una instancia de TokenProvider
   TokenProvider tokenProvider = TokenProvider();
+
+  // Obtener una instancia de TokenProvider
+  SelectedDashboardProvider dashboardProvider = SelectedDashboardProvider();
 
   // Obtener una instancia del AuthController
   AuthController authController = AuthController();
@@ -52,6 +58,8 @@ class _ActivosDetallesState extends State<ActivosDetalles> {
     return [ActivoPlaca.fromJson(responseBody)];
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     final selectedIndexProvider =
@@ -64,7 +72,6 @@ class _ActivosDetallesState extends State<ActivosDetalles> {
     String segundaParte = idVehiculo.substring(3); // Últimos 3 caracteres
     String idVehiculoFormateado = '$primeraParte•$segundaParte';
 
-    String imagen = authController.getImageVehiculoU(idVehiculo);
 
     return FutureBuilder<List<ActivoPlaca>>(
       future: futureCardsData,
@@ -78,7 +85,6 @@ class _ActivosDetallesState extends State<ActivosDetalles> {
             idVehiculoFormateado: idVehiculoFormateado,
             textoListitle: textoListitle,
             activoplaca: activo,
-            imageUrl: imagen,
           );
         } else if (snapshot.hasError) {
           return const Text('Error al cargar los activos');
@@ -89,7 +95,7 @@ class _ActivosDetallesState extends State<ActivosDetalles> {
   }
 }
 
-class Detalles extends StatelessWidget {
+class Detalles extends StatefulWidget {
   Detalles({
     super.key,
     required this.size,
@@ -98,7 +104,7 @@ class Detalles extends StatelessWidget {
     required this.idVehiculoFormateado,
     required this.textoListitle,
     required this.activoplaca,
-    required this.imageUrl,
+
   });
 
   final Size size;
@@ -107,16 +113,54 @@ class Detalles extends StatelessWidget {
   final String idVehiculoFormateado;
   final TextStyle textoListitle;
   final ActivoPlaca activoplaca;
-  final String imageUrl;
 
+  @override
+  State<Detalles> createState() => _DetallesState();
+}
+
+class _DetallesState extends State<Detalles> {
   AuthController authController = AuthController();
+
+  TokenProvider tokenProvider = TokenProvider();
+
+  late Uint8List? imagenVehi;
+
+  // Manejar carga de las imagenes
+  bool isLoading = true;
+
+  void initState() {
+    fetchData();
+  }
+
+  void fetchData() async {
+    try {
+      String? token = await tokenProvider.verificarTokenU();
+      var vehiculoImage = await authController.getImageVehiculoU(widget.idVehiculo, token!);
+      if (vehiculoImage != null) {
+        setState(() {
+          imagenVehi = vehiculoImage;
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          imagenVehi = null;
+          isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("Error fetching imagen vehiculo: $error");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
         margin: const EdgeInsets.all(10),
-        height: size.height * 0.88,
-        width: size.width * 0.95,
+        height: widget.size.height * 0.88,
+        width: widget.size.width * 0.95,
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(15)),
@@ -126,14 +170,14 @@ class Detalles extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.only(bottom: 10),
-                margin: EdgeInsets.only(bottom: 5),
+                margin: const EdgeInsets.only(bottom: 5),
                 decoration: const BoxDecoration(
                     border: Border(bottom: BorderSide(width: 0.2))),
                 child: Row(
                   children: [
                     IconButton(
                       onPressed: () {
-                        selectedIndexProvider.updateSelectedIndex(1);
+                        widget.selectedIndexProvider.updateSelectedIndex(1);
                       },
                       icon: const Icon(Icons.arrow_back_ios_new_outlined,
                           color: tPrimaryColor, size: 28),
@@ -141,9 +185,9 @@ class Detalles extends StatelessWidget {
                     const SizedBox(
                       width: 15.5,
                     ),
-                    if ((idVehiculo.length == 6))
+                    if ((widget.idVehiculo.length == 6))
                       Text(
-                        idVehiculoFormateado,
+                        widget.idVehiculoFormateado,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w400,
@@ -152,7 +196,7 @@ class Detalles extends StatelessWidget {
                       )
                     else
                       Text(
-                        idVehiculo,
+                        widget.idVehiculo,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w400,
@@ -173,36 +217,22 @@ class Detalles extends StatelessWidget {
                     borderRadius: BorderRadius.all(Radius.circular(20)),
                   ),
                   clipBehavior: Clip.hardEdge,
-                  child: Image(
-                    image: NetworkImage(imageUrl),
-                    loadingBuilder: (BuildContext context, Widget child,
-                        ImageChunkEvent? loadingProgress) {
-                      if (loadingProgress == null) {
-                        return child;
-                      }
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
-                        ),
-                      );
-                    },
+                  child: !isLoading 
+                  ? imagenVehi != null 
+                  ? Image.memory(
+                    imagenVehi!,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      // Devolver la imagen predeterminada o el icono aquí
-                      return const Image(
+                  )
+                  : const Image(
                         image: NetworkImage(
-                            "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1665px-No-Image-Placeholder.svg.png"),
+                            tNoImageFound),
                         fit: BoxFit.cover,
-                      );
-                    },
-                  ),
+                      )
+                  : const CircularProgressIndicator()
                   // Icono predeterminado si no hay imagen seleccionada
                 ),
               ),
-              Divider(thickness: 1, color: Colors.black26),
+              const Divider(thickness: 1, color: Colors.black26),
               Container(
                 margin:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -227,14 +257,14 @@ class Detalles extends StatelessWidget {
                 ),
                 title: Text(
                   'General',
-                  style: textoListitle,
+                  style: widget.textoListitle,
                 ),
-                selected: selectedIndexProvider.selectedIndex == 1,
+                selected: widget.selectedIndexProvider.selectedIndex == 1,
                 selectedTileColor: tPrimaryOpacity,
                 onTap: () {
                   // Update the state of the app
-                  selectedIndexProvider.updateSelectedActivoxPlaca(activoplaca);
-                  selectedIndexProvider.updateSelectedIndex(4);
+                  widget.selectedIndexProvider.updateSelectedActivoxPlaca(widget.activoplaca);
+                  widget.selectedIndexProvider.updateSelectedIndex(4);
                 },
               ),
               ListTile(
@@ -250,13 +280,13 @@ class Detalles extends StatelessWidget {
                 ),
                 title: Text(
                   'Historiales',
-                  style: textoListitle,
+                  style: widget.textoListitle,
                 ),
-                selected: selectedIndexProvider.selectedIndex == 1,
+                selected: widget.selectedIndexProvider.selectedIndex == 1,
                 selectedTileColor: tPrimaryOpacity,
                 onTap: () {
                   // Update the state of the app
-                  selectedIndexProvider.updateSelectedIndex(1);
+                  widget.selectedIndexProvider.updateSelectedIndex(1);
                 },
               ),
               ListTile(
@@ -272,13 +302,13 @@ class Detalles extends StatelessWidget {
                 ),
                 title: Text(
                   'Gestión Documental',
-                  style: textoListitle,
+                  style: widget.textoListitle,
                 ),
-                selected: selectedIndexProvider.selectedIndex == 1,
+                selected: widget.selectedIndexProvider.selectedIndex == 1,
                 selectedTileColor: tPrimaryOpacity,
                 onTap: () {
                   // Update the state of the app
-                  selectedIndexProvider.updateSelectedIndex(1);
+                  widget.selectedIndexProvider.updateSelectedIndex(1);
                 },
               ),
             ]));

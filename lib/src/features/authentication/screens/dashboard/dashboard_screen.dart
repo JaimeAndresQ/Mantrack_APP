@@ -1,4 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_string_interpolations
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mantrack_app/src/constants/colors.dart';
@@ -27,9 +30,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   late String email;
   late String name;
   late String lastname;
-  late String imagen;
+  late Uint8List? imagen;
   late dynamic tokenw;
   late NetworkImage imagenCargada;
+
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -41,8 +46,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
       email = jwtDecodedToken['correo'];
       name = jwtDecodedToken['nombres'];
       lastname = jwtDecodedToken['apellidos'];
-      imagen = authController.getImageU(email);
-      imagenCargada = NetworkImage(imagen);
+      fetchData();
+    }
+  }
+
+  void fetchData() async {
+    try {
+      var userImage = await authController.getImageU(email, widget.token!);
+      if (userImage != null) {
+        setState(() {
+          imagen = userImage;
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          imagen = null;
+          isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("Error fetching imagen usuario: $error");
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -135,44 +161,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         clipBehavior: Clip.none,
                         alignment: Alignment.center,
                         children: [
-                          Container(
-                              height: 50,
-                              width: 50,
-                              decoration: BoxDecoration(
-                                color: Color(0xFFbdbdbd),
-                                shape: BoxShape.circle,
-                              ),
-                              clipBehavior: Clip.hardEdge,
-                              child: Image(
-                                image: imagenCargada,
-                                fit: BoxFit.cover,
-                                loadingBuilder: (BuildContext context,
-                                    Widget child,
-                                    ImageChunkEvent? loadingProgress) {
-                                  if (loadingProgress == null) {
-                                    return child;
-                                  }
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value:
-                                          loadingProgress.expectedTotalBytes !=
-                                                  null
-                                              ? loadingProgress
-                                                      .cumulativeBytesLoaded /
-                                                  loadingProgress
-                                                      .expectedTotalBytes!
-                                              : null,
-                                    ),
-                                  );
-                                },
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Icon(
-                                      Icons
-                                          .person, // Puedes cambiar este icono por cualquier otro
-                                      color: Colors.white,
-                                      size: 40);
-                                },
-                              )),
+                          !isLoading
+                              ? Container(
+                                  height: 50,
+                                  width: 50,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFFbdbdbd),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  clipBehavior: Clip.hardEdge,
+                                  child: imagen != null
+                                      ? Image.memory(
+                                          imagen!,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Image(
+                                          image: NetworkImage(tNoImageFound),
+                                          fit: BoxFit.cover,
+                                        ))
+                              : CircularProgressIndicator(),
                           Positioned(top: 0, left: -10, child: PulsatingBall()),
                         ],
                       ),
@@ -306,8 +313,6 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      physics: ClampingScrollPhysics(),
-      child: widgetOptions
-      );
+        physics: ClampingScrollPhysics(), child: widgetOptions);
   }
 }
