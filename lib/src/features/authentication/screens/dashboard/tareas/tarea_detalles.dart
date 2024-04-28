@@ -26,8 +26,6 @@ class _TareaScreenState extends State<TareaScreen> {
     final size = MediaQuery.of(context).size;
 
 
-    
-
     return Detalles(size: size, selectedIndexProvider: selectedIndexProvider, 
           textoListitle: textoListitle, );
 
@@ -79,10 +77,10 @@ class Detalles extends StatelessWidget {
                       width: 15.5,
                     ),
                     
-                      const Expanded(
+                       Expanded(
                         child: Text(
-                          "Nombre del Plan de Mantenimiento",
-                          style: TextStyle(
+                          selectedIndexProvider.selectedPlanMantenimiento.nombre,
+                          style: const TextStyle(
                             overflow: TextOverflow.clip,
                             fontSize: 20,
                             fontWeight: FontWeight.w400,
@@ -125,7 +123,7 @@ class Detalles extends StatelessWidget {
                 onTap: () {
                   // Update the state of the app
                   
-                  selectedIndexProvider.updateSelectedIndex(10);
+                  selectedIndexProvider.updateSelectedIndex(13);
                 },
               ),
               ListTile(

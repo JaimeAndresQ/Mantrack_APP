@@ -4,12 +4,14 @@ class CustomDialog extends StatelessWidget {
   final String title;
   final String message;
   final VoidCallback onPressed;
+  final bool? error;
 
   const CustomDialog({
     Key? key,
     required this.title,
     required this.message,
     required this.onPressed,
+    this.error,
   }) : super(key: key);
 
   @override
@@ -24,12 +26,12 @@ class CustomDialog extends StatelessWidget {
           Positioned(
             top: size.height / -13.2,
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(10),
                   topRight: Radius.circular(10),
                 ),
-                color: Colors.blue, // Cambiar el color según tu diseño
+                color: error != null ? Colors.red : Colors.blue, // Cambiar el color según tu diseño
               ),
               width: 332,
               height: 70,
@@ -71,8 +73,8 @@ class CustomDialog extends StatelessWidget {
                     onPressed: onPressed,
                     style: ElevatedButton.styleFrom(
                       elevation: 0,
-                      backgroundColor: Colors.blue, // Cambiar el color según tu diseño
-                      side: const BorderSide(color: Colors.blue), // Cambiar el color según tu diseño
+                      backgroundColor: error != null ? Colors.red : Colors.blue, // Cambiar el color según tu diseño
+                      side: BorderSide(color: error != null ? Colors.red : Colors.blue), // Cambiar el color según tu diseño
                       padding: const EdgeInsets.symmetric(vertical: 15),
                     ),
                     child: const Text(
@@ -91,15 +93,15 @@ class CustomDialog extends StatelessWidget {
               width: 80,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.blue, // Cambiar el color según tu diseño
+                color: error != null ? Colors.red : Colors.blue, // Cambiar el color según tu diseño
                 border: Border.all(color: Colors.white),
               ),
               child: IconButton(
                 onPressed: () {
                   
                 },
-                icon: const Icon(
-                  Icons.check_rounded,
+                icon: Icon(
+                  error != null ? Icons.close_rounded : Icons.check_rounded,
                   size: 50,
                   color: Colors.white,
                 ),

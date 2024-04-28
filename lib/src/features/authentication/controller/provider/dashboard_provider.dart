@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:mantrack_app/src/features/authentication/model/activos_modal.dart';
 import 'package:mantrack_app/src/features/authentication/model/activos_placa_modal.dart';
 import 'package:mantrack_app/src/features/authentication/model/planes_mantenimiento.dart';
+import 'package:mantrack_app/src/features/authentication/model/tareas_modal.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_detalles.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_general.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_registrar.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/perfil/perfil_widget.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_general.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_registrar.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_mantenimiento.dart';
-import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_screen.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_detalles.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_vinculadas.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_widget.dart';
 import '../../screens/dashboard/activos/activos_widget.dart';
@@ -44,8 +46,24 @@ class SelectedDashboardProvider extends ChangeNotifier {
 
   void updateSelectedPlanMantenimiento(PlanMantenimiento activo){
     _selectedPlanManteniento = activo;
+    print("Actualizado ${activo.planTareas.length}");
     notifyListeners();
   }
+
+  // Modelo para los Mantenimientos
+
+
+  late TareasMantenimiento _selectedMantenimientos;
+
+  TareasMantenimiento get selectedTareaMantenimiento => _selectedMantenimientos;
+
+  void updateSelectedTareasMantenimiento(TareasMantenimiento activo){
+    _selectedMantenimientos = activo;
+    notifyListeners();
+  }
+
+
+  // Index para manejo de vistas en el dashboard
 
   int _selectedIndex = 0;
 
@@ -80,6 +98,8 @@ class SelectedDashboardProvider extends ChangeNotifier {
         return TareaMantenimiento();
       case 12:
         return TareaVinculados();
+      case 13:
+        return TareaGeneral();
       default:
         return Container(); // Puedes devolver un widget vacío o manejar el caso por defecto
     }

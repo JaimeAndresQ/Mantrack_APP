@@ -3,22 +3,21 @@ import 'package:mantrack_app/src/constants/colors.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
-import 'package:mantrack_app/src/features/authentication/model/activos_placa_modal.dart';
 import 'package:mantrack_app/src/features/authentication/model/planes_mantenimiento.dart';
 import 'package:mantrack_app/src/features/authentication/model/tareas_modal.dart';
 import 'package:mantrack_app/src/features/authentication/model/widgets/dialog_widget.dart';
 import 'package:provider/provider.dart';
 
-class ActivosNoAsociadosBuilder extends StatefulWidget {
+class MantenimientoBuilder extends StatefulWidget {
   final int idplan;
-  const ActivosNoAsociadosBuilder({super.key, required this.idplan});
+  const MantenimientoBuilder({super.key, required this.idplan});
 
   @override
-  State<ActivosNoAsociadosBuilder> createState() => _ActivosNoAsociadosBuilderState();
+  State<MantenimientoBuilder> createState() => _MantenimientoBuilderState();
 }
 
-class _ActivosNoAsociadosBuilderState extends State<ActivosNoAsociadosBuilder> {
-  late Future<List<ActivoPlaca>>? futureCardsData;
+class _MantenimientoBuilderState extends State<MantenimientoBuilder> {
+  late Future<List<TareasMantenimiento>>? futureCardsData;
 
   // Obtener una instancia de TokenProvider
 
@@ -29,23 +28,22 @@ class _ActivosNoAsociadosBuilderState extends State<ActivosNoAsociadosBuilder> {
   // Obtener una instancia del AuthController
   AuthController authController = AuthController();
 
-  Future<List<ActivoPlaca>>? fetchActivos() async {
+  Future<List<TareasMantenimiento>>? fetchActivos() async {
     // Llamar al método verificarTokenU() y esperar su resultado del token si existe
     String? token = await tokenProvider.verificarTokenU();
 
     // Llamar al metodo obtenerActivosU() para tener el json de los activos con el token valido
     dynamic response =
-        await authController.obtenerActivosNoAsociadosU(token, widget.idplan);
-    print("${widget.idplan}");
+        await authController.obtenerMantenimientosU(token, widget.idplan);
     return parseActivos(response);
   }
 
-  List<ActivoPlaca> parseActivos(Map<String, dynamic> responseBody) {
-    final List<dynamic> items = responseBody['vehiculosNoAsociados'];
-    print("Llega?");
+  List<TareasMantenimiento> parseActivos(Map<String, dynamic> responseBody) {
+    final List<dynamic> items = responseBody['mantenimientosNoAsociados'];
     return items
         .asMap()
-        .map((index, json) => MapEntry(index, ActivoPlaca.fromJson(json)))
+        .map((index, json) =>
+            MapEntry(index, TareasMantenimiento.fromJson(json)))
         .values
         .toList();
   }
@@ -56,7 +54,7 @@ class _ActivosNoAsociadosBuilderState extends State<ActivosNoAsociadosBuilder> {
     futureCardsData = fetchActivos();
   }
 
-  // Actualiza los datos de la api
+   // Actualiza los datos de la api
   Future<void> _refreshData() async {
     setState(() {
       futureCardsData = fetchActivos();
@@ -70,10 +68,10 @@ class _ActivosNoAsociadosBuilderState extends State<ActivosNoAsociadosBuilder> {
 
     return RefreshIndicator(
       color: tPrimaryColor,
-      onRefresh: () {
-        return _refreshData();
+      onRefresh: (){
+         return _refreshData();
       },
-      child: FutureBuilder<List<ActivoPlaca>>(
+      child: FutureBuilder<List<TareasMantenimiento>>(
         future: futureCardsData,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -81,9 +79,9 @@ class _ActivosNoAsociadosBuilderState extends State<ActivosNoAsociadosBuilder> {
               itemCount: snapshot.data!.length,
               separatorBuilder: (context, index) => const SizedBox(),
               itemBuilder: (context, index) {
-                return MyActivosNoAsociados(
+                return Tareas(
                   selectedIndexProvider: selectedIndexProvider,
-                  activoData: snapshot.data![index],
+                  tareasData: snapshot.data![index],
                   index: index,
                 );
               },
@@ -98,25 +96,34 @@ class _ActivosNoAsociadosBuilderState extends State<ActivosNoAsociadosBuilder> {
   }
 }
 
-class MyActivosNoAsociados extends StatefulWidget {
-  final ActivoPlaca activoData;
+class Tareas extends StatefulWidget {
+  final TareasMantenimiento tareasData;
   final SelectedDashboardProvider selectedIndexProvider;
   final int index;
 
-
-  const MyActivosNoAsociados({
-    super.key,
-    required this.selectedIndexProvider,
-    required this.activoData,
-    required this.index,
-  });
+  const Tareas(
+      {super.key,
+      required this.selectedIndexProvider,
+      required this.tareasData,
+      required this.index});
 
   @override
-  State<MyActivosNoAsociados> createState() => _MyActivosNoAsociadosState();
+  State<Tareas> createState() => _TareasState();
 }
 
-class _MyActivosNoAsociadosState extends State<MyActivosNoAsociados> {
-  bool isChecked = false;
+class _TareasState extends State<Tareas> {
+  String getCategoriaText(int categoriaValue) {
+    switch (categoriaValue) {
+      case 1:
+        return 'Mantenimiento general';
+      case 2:
+        return 'Cambio de aceite';
+      case 3:
+        return 'Reparación de motor';
+      default:
+        return 'Sin categoría definida';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,17 +136,18 @@ class _MyActivosNoAsociadosState extends State<MyActivosNoAsociados> {
       onTap: () async {
         String? token = await tokenProvider.verificarTokenU();
         if (token != null) {
-          int? statusCode = await authController.asociarActivosU(
-              token, 
-              widget.selectedIndexProvider.selectedPlanMantenimiento.idPlanMantenimiento,
-              widget.activoData.id_vehiculo);
+          int? statusCode = await authController.asociarMantenimientosU(
+              token,
+              widget.selectedIndexProvider.selectedPlanMantenimiento
+                  .idPlanMantenimiento,
+              widget.tareasData.id);
           if (statusCode == 200) {
             showDialog(
                 // ignore: use_build_context_synchronously
                 context: context,
                 builder: (BuildContext context) => CustomDialog(
                       title: '¡Perfecto!',
-                      message: '¡Se asocio exitosamente el activo!',
+                      message: '¡Se asocio exitosamente el mantenimiento!',
                       onPressed: () {
                         // Cerrar el diálogo
                         Navigator.pop(context);
@@ -154,7 +162,7 @@ class _MyActivosNoAsociadosState extends State<MyActivosNoAsociados> {
                 builder: (BuildContext context) => CustomDialog(
                       title: '¡Ups!',
                       error: true,
-                      message: '¡No se pudo asociar el activo!',
+                      message: '¡No se pudo asociar el mantenimiento!',
                       onPressed: () {
                         // Cerrar el diálogo
                         Navigator.pop(context);
@@ -178,19 +186,71 @@ class _MyActivosNoAsociadosState extends State<MyActivosNoAsociados> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  widget.activoData.id_vehiculo,
-                  style: const TextStyle(
-                      fontSize: 19,
-                      fontWeight: FontWeight.w500,
-                      color: Color.fromARGB(164, 0, 0, 0)),
+                RichText(
+                  text: TextSpan(
+                    text:
+                        'Descripcion: ',
+                    style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                        color: tPrimaryColor),
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: widget.tareasData.descripcion,
+                          style: const TextStyle(color: Colors.black87)),
+                    ],
+                  ),
                 ),
-                Text(
-                  "// ${widget.activoData.marca} ${widget.activoData.linea} ${widget.activoData.modelo}",
-                  style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black45),
+                const SizedBox(
+                  height: 4,
+                ),
+                RichText(
+                  text: TextSpan(
+                    text: 'Duracion estimada: ',
+                    style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                        color: tPrimaryColor),
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: widget.tareasData.duracion.toString(),
+                          style: const TextStyle(color: Colors.black87)),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 4,
+                ),
+                RichText(
+                  text: TextSpan(
+                    text: 'Tipo de tarea: ',
+                    style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                        color: tPrimaryColor),
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: widget.tareasData.tipo,
+                          style: const TextStyle(color: Colors.black87)),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 4,
+                ),
+                RichText(
+                  text: TextSpan(
+                    text: 'Categoria: ',
+                    style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                        color: tPrimaryColor),
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: getCategoriaText(widget.tareasData.fkcategoria),
+                          style: const TextStyle(color: Colors.black87)),
+                    ],
+                  ),
                 ),
               ],
             )
@@ -200,5 +260,3 @@ class _MyActivosNoAsociadosState extends State<MyActivosNoAsociados> {
     );
   }
 }
-
-

@@ -8,16 +8,16 @@ import 'package:mantrack_app/src/features/authentication/model/widgets/dialog_wi
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/widgets/header_saver.dart';
 import 'package:provider/provider.dart';
 
-class TareaRegistrar extends StatefulWidget {
-  const TareaRegistrar({
+class TareaGeneral extends StatefulWidget {
+  const TareaGeneral({
     super.key,
   });
 
   @override
-  State<TareaRegistrar> createState() => _TareaRegistrarState();
+  State<TareaGeneral> createState() => _TareaGeneralState();
 }
 
-class _TareaRegistrarState extends State<TareaRegistrar> {
+class _TareaGeneralState extends State<TareaGeneral> {
   AuthController authController = AuthController();
 
   String descripError = '';
@@ -26,13 +26,6 @@ class _TareaRegistrarState extends State<TareaRegistrar> {
   TextStyle errorStyle = const TextStyle(
       fontSize: 14, fontWeight: FontWeight.w500, fontStyle: FontStyle.italic);
 
-  void validateAndSetErrors() {
-    setState(() {
-      descripError = authController.descTareaController.text.isEmpty
-          ? 'Ingrese una descripcion del plan'
-          : '';
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,11 +34,8 @@ class _TareaRegistrarState extends State<TareaRegistrar> {
     final selectedIndexProvider =
         Provider.of<SelectedDashboardProvider>(context);
 
-    final tokenProvider = Provider.of<TokenProvider>(context);
-
-    authController.asociadasTareasController.text = "0";
-    authController.activosVinculadosTareaController.text = "0";
-
+    authController.asociadasTareasController.text = selectedIndexProvider.selectedPlanMantenimiento.planTareas.length.toString();
+    authController.activosVinculadosTareaController.text = selectedIndexProvider.selectedPlanMantenimiento.planVehiculos.length.toString();
     return Container(
         margin: const EdgeInsets.all(10),
         height: size.height * 0.88,
@@ -56,43 +46,11 @@ class _TareaRegistrarState extends State<TareaRegistrar> {
         child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
           HeaderSave(
               size: size,
-              titulo: "Registrar un Plan",
+              titulo: "Detalles del Plan",
               flechaAtras: () {
-                selectedIndexProvider.updateSelectedIndex(8);
+                selectedIndexProvider.updateSelectedIndex(9);
               },
-              botonGuardar: () async {
-                try {
-                  validateAndSetErrors();
-
-                  if (descripError.isEmpty) {
-                    // Llamar a la funcion del provider
-                    String? token = await tokenProvider.verificarTokenU();
-                    if (token != null) {
-                      int? statusCode = await authController.registrarPlanTareasU(token);
-
-                      if (statusCode == 200) {
-                        showDialog(
-                            // ignore: use_build_context_synchronously
-                            context: context,
-                            builder: (BuildContext context) => CustomDialog(
-                                  title: '¡Perfecto!',
-                                  message:
-                                      'Se registro exitosamente el plan',
-                                  onPressed: () {
-                                    selectedIndexProvider
-                                        .updateSelectedIndex(8);
-
-                                    Navigator.pop(context);
-                                  },
-                                ));
-                      }
-                    }
-                  }
-                } catch (e) {
-                  print("Error al registrar usuario: $e");
-                  // Manejar otros posibles errores aquí
-                }
-              }),
+          ),
           Expanded(
             child: SingleChildScrollView(
               clipBehavior: Clip.hardEdge,
@@ -105,11 +63,12 @@ class _TareaRegistrarState extends State<TareaRegistrar> {
                     Formulario(
                       controller: authController.descTareaController,
                       nombreError:
-                          descripError.isNotEmpty ? descripError : null,
+                          null,
                       errorStyle: errorStyle,
-                      texto: "Descripcion",
+                      texto: selectedIndexProvider.selectedPlanMantenimiento.nombre,
                       icono: const Icon(Icons.description_outlined),
-                      
+                      maxCaracteres: 6,
+                      enabled: false,
                     ),
                     const SizedBox(
                       height: tFormHeight,
@@ -121,7 +80,7 @@ class _TareaRegistrarState extends State<TareaRegistrar> {
                       errorStyle: errorStyle,
                       texto: "Tareas asociadas",
                       icono: const Icon(Icons.list_alt_sharp),
-                      
+                      maxCaracteres: 10,
                       enabled: false,
                     ),
                     const SizedBox(
@@ -135,7 +94,7 @@ class _TareaRegistrarState extends State<TareaRegistrar> {
                       texto: "Activos Vinculados",
                       icono: const Icon(Icons.library_add_check_rounded),
                       permitirSoloNumeros: TextInputType.number,
-                      
+                      maxCaracteres: 4,
                       enabled: false,
                       
                     ),

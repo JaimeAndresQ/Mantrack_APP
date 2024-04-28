@@ -11,6 +11,8 @@ import 'package:mantrack_app/src/features/authentication/model/widgets/dialog_wi
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_registrar.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/widgets/activos_formulario.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/widgets/header_saver.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/widgets/mantenimiento_builder.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/widgets/tareasAsociadas_builder.dart';
 import 'package:provider/provider.dart';
 
 class TareaMantenimiento extends StatefulWidget {
@@ -25,12 +27,16 @@ class TareaMantenimiento extends StatefulWidget {
 class _TareaMantenimientoState extends State<TareaMantenimiento> {
   bool isPressed = false;
 
+  
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
     final selectedIndexProvider =
         Provider.of<SelectedDashboardProvider>(context);
+
+    print(selectedIndexProvider.selectedPlanMantenimiento.planTareas.length);
 
     return Stack(
       children: [
@@ -74,6 +80,16 @@ class _TareaMantenimientoState extends State<TareaMantenimiento> {
                       ],
                     ),
                   ),
+                  SizedBox(
+                        height: size.height * 0.78,
+                        width: size.width * 0.95,
+                        
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TareasAsociadasBuilder(
+                            dashboardProvider: selectedIndexProvider,
+                          ),
+                        )),
                 ]),
           ),
         ),
@@ -111,7 +127,9 @@ class _TareaMantenimientoState extends State<TareaMantenimiento> {
                   top: Radius.circular(20),
                 )),
                 builder: (BuildContext context) {
-                  return SizedBox();
+                  return const DrawerTareasNoAsociadas(
+
+                  );
                 },
               );
             },
@@ -123,6 +141,8 @@ class _TareaMantenimientoState extends State<TareaMantenimiento> {
     );
   }
 }
+
+// MantenimientoBuilder
 
 class DrawerMantenimiento extends StatefulWidget {
   const DrawerMantenimiento({
@@ -213,6 +233,7 @@ class _DrawerMantenimientoState extends State<DrawerMantenimiento> {
                                 showDialog(
                                     // ignore: use_build_context_synchronously
                                     context: context,
+
                                     builder: (BuildContext context) =>
                                         CustomDialog(
                                           title: '¡Perfecto!',
@@ -232,7 +253,7 @@ class _DrawerMantenimientoState extends State<DrawerMantenimiento> {
                       ),
                       Expanded(
                         child: SingleChildScrollView(
-                          physics: BouncingScrollPhysics(),
+                          physics: const BouncingScrollPhysics(),
                           clipBehavior: Clip.hardEdge,
                           child: Form(
                               child: Container(
@@ -303,6 +324,71 @@ class _DrawerMantenimientoState extends State<DrawerMantenimiento> {
                           )),
                         ),
                       )
+                    ]))),
+      ),
+    );
+  }
+}
+
+
+class DrawerTareasNoAsociadas extends StatefulWidget {
+  const DrawerTareasNoAsociadas({
+    super.key,
+  });
+
+  @override
+  State<DrawerTareasNoAsociadas> createState() => _DrawerTareasNoAsociadasState();
+}
+
+class _DrawerTareasNoAsociadasState extends State<DrawerTareasNoAsociadas> {
+  AuthController authController = AuthController();
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    final selectedDashboardProvider = Provider.of<SelectedDashboardProvider>(context);
+
+    return Padding(
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: SizedBox(
+        height: size.height * 0.45,
+        child: Drawer(
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+            child: Container(
+                margin: const EdgeInsets.all(10),
+                height: size.height * 0.88,
+                width: size.width * 0.95,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15)),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      HeaderSave(
+                        size: size,
+                        titulo: "Mantenimientos no Asociados",
+                        flechaAtras: () {
+                          Navigator.pop(context);
+                        },
+
+                      
+                      ),
+                      SingleChildScrollView(
+                        child: SizedBox(
+                        height: size.height * 0.33,
+                        width: size.width * 0.95,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: MantenimientoBuilder(
+                            idplan: selectedDashboardProvider.selectedPlanMantenimiento.idPlanMantenimiento,
+                          ),
+                        )),
+                      )
+                      
                     ]))),
       ),
     );

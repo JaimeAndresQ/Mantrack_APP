@@ -44,7 +44,8 @@ class HeaderSave extends StatelessWidget {
               ),
             ],
           ),
-          Container(
+          botonGuardar != null
+          ? Container(
             padding: const EdgeInsets.all(0.4),
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
@@ -58,6 +59,7 @@ class HeaderSave extends StatelessWidget {
                   color: tPrimaryColor,
                 )),
           )
+          : const SizedBox()
         ],
       ),
     );

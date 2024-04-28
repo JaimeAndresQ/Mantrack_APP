@@ -34,7 +34,6 @@ class _PlanesBuilderState extends State<PlanesBuilder> {
   }
 
   List<PlanMantenimiento> parseActivos(Map<String, dynamic> responseBody) {
-    print("Response del response: ${responseBody['planesMantenimiento']}");
     final List<dynamic> items = responseBody['planesMantenimiento'];
     return items
         .asMap()
@@ -66,6 +65,8 @@ class _PlanesBuilderState extends State<PlanesBuilder> {
                 selectedIndexProvider: selectedIndexProvider,
                 planesData: snapshot.data![index],
                 isPressed: widget.isPressed,
+                index: index,
+
               );
             },
           );
@@ -83,12 +84,14 @@ class Planes extends StatefulWidget {
   final PlanMantenimiento planesData;
   final SelectedDashboardProvider selectedIndexProvider;
   final bool isPressed;
+  final int index;
 
   const Planes({
     super.key,
     required this.selectedIndexProvider,
     required this.isPressed,
-    required this.planesData
+    required this.planesData,
+    required this.index
   });
 
   @override
@@ -150,9 +153,9 @@ class _PlanesState extends State<Planes> {
                 const SizedBox(
                   height: 4,
                 ),
-                const Text(
-                  "Tareas asociadas: 0",
-                  style: TextStyle(
+                Text(
+                  "Tareas vinculados: ${widget.planesData.planTareas.length}",
+                  style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w500,
                       color: tPrimaryColor),
@@ -160,9 +163,9 @@ class _PlanesState extends State<Planes> {
                 const SizedBox(
                   height: 4,
                 ),
-                const Text(
-                  "Activos vinculados: 0",
-                  style: TextStyle(
+                Text(
+                  "Activos vinculados: ${widget.planesData.planVehiculos.length}",
+                  style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w500,
                       color: tPrimaryColor),

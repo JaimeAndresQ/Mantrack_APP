@@ -9,43 +9,8 @@ import 'package:mantrack_app/src/constants/image_strings.dart';
 import 'auth_config.dart';
 
 class AuthController {
-  // Controladores de texto de Inicio de Sesion y Registro
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController cellphoneController = TextEditingController();
-  final TextEditingController nombreController = TextEditingController();
-  final TextEditingController apellidoController = TextEditingController();
-  final TextEditingController fechanacimientoController =
-      TextEditingController();
-  final TextEditingController cedulaciudadanaController =
-      TextEditingController();
 
-  // Controladores de Activos
-  final TextEditingController idvehicuController = TextEditingController();
-  final TextEditingController marcaVehiController = TextEditingController();
-  final TextEditingController modeloVehiController = TextEditingController();
-  final TextEditingController lineaVehiController = TextEditingController();
-  final TextEditingController colorVehiController = TextEditingController();
-  final TextEditingController capacidadVehiController = TextEditingController();
-  final TextEditingController claseVehiController = TextEditingController();
-  final TextEditingController cilindrajeVehiController =
-      TextEditingController();
-  final TextEditingController tipoCombustibleVehiemailController =
-      TextEditingController();
-  final TextEditingController numeroMotorController = TextEditingController();
-  final TextEditingController numeroChasisController = TextEditingController();
-  final TextEditingController vinVehiController = TextEditingController();
-  final TextEditingController ciudadRegristroVehiController =
-      TextEditingController();
-  final TextEditingController fechaMatriculoVehiController =
-      TextEditingController();
-
-  // Controladores de Tareas
-  final TextEditingController descTareaController = TextEditingController();
-  final TextEditingController asociadasTareasController =
-      TextEditingController();
-  final TextEditingController activosVinculadosTareaController =
-      TextEditingController();
+// Metodo de manejador de errores
 
   void handleRegistrationError(int statusCode, String errorMsg) {
     switch (statusCode) {
@@ -107,6 +72,8 @@ class AuthController {
     _errorController.close();
   }
 
+// Metodos de extraccion de imagenes
+
   Future<dynamic> getImageU(String email, String token) async {
     try {
       var response = await http.get(
@@ -132,6 +99,7 @@ class AuthController {
       return null;
     }
   }
+
 
   Future<dynamic> getImageVehiculoU(String placa, String token) async {
     try {
@@ -159,7 +127,22 @@ class AuthController {
     }
   }
 
-  Future<int?> registerU(File file) async {
+
+// Metodos de login y inicio de sesion 
+
+  // Controladores de texto de Inicio de Sesion y Registro
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController cellphoneController = TextEditingController();
+  final TextEditingController nombreController = TextEditingController();
+  final TextEditingController apellidoController = TextEditingController();
+  final TextEditingController fechanacimientoController =
+      TextEditingController();
+  final TextEditingController cedulaciudadanaController =
+      TextEditingController();
+
+
+ Future<int?> registerU(File file) async {
     try {
       if (emailController.text.isNotEmpty) {
         Map<String, String> regBody = {
@@ -271,6 +254,29 @@ class AuthController {
       return "error";
     }
   }
+
+// Metodos de los Activos
+
+  // Controladores de Activos
+  final TextEditingController idvehicuController = TextEditingController();
+  final TextEditingController marcaVehiController = TextEditingController();
+  final TextEditingController modeloVehiController = TextEditingController();
+  final TextEditingController lineaVehiController = TextEditingController();
+  final TextEditingController colorVehiController = TextEditingController();
+  final TextEditingController capacidadVehiController = TextEditingController();
+  final TextEditingController claseVehiController = TextEditingController();
+  final TextEditingController cilindrajeVehiController =
+      TextEditingController();
+  final TextEditingController tipoCombustibleVehiemailController =
+      TextEditingController();
+  final TextEditingController numeroMotorController = TextEditingController();
+  final TextEditingController numeroChasisController = TextEditingController();
+  final TextEditingController vinVehiController = TextEditingController();
+  final TextEditingController ciudadRegristroVehiController =
+      TextEditingController();
+  final TextEditingController fechaMatriculoVehiController =
+      TextEditingController();
+
 
   Future<int?> registrarActivoU(String? token, File file) async {
     try {
@@ -503,6 +509,13 @@ class AuthController {
   final TextEditingController categoriaMantenimientoController =
       TextEditingController();
 
+  // Controladores de Registro Plan
+  final TextEditingController descTareaController = TextEditingController();
+  final TextEditingController asociadasTareasController =
+      TextEditingController();
+  final TextEditingController activosVinculadosTareaController =
+      TextEditingController();
+
 
   Future<int?> registrarMantenimientoU(String token) async {
     try {
@@ -553,6 +566,124 @@ class AuthController {
     return null;
   }
 
+  Future<int?> registrarPlanTareasU(String token) async {
+    try {
+
+      Map<String, String> regBodyActivo = {
+        "pl_nombre": descTareaController.text,
+      };
+
+      print(regBodyActivo);
+
+      var response = await http.post(
+        Uri.parse(registrarPlandeMantenimientoUrl),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(regBodyActivo),
+      );
+
+      var jsonActivoResponse = jsonDecode(response.body);
+
+      print(
+          "este es el response $jsonActivoResponse y el codigo ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        print("Plan registrado");
+        return 200;
+      } else if (response.statusCode == 400) {
+        throw Exception("Falta llenar más campos.");
+      } else {
+        throw Exception("Error desconocido al registrar el plan.");
+      }
+    } catch (e) {
+      print("Error al realizar la peticion: $e");
+    }
+    return null;
+  }
+
+
+  Future<int?> asociarMantenimientosU(String token, int idplan, int idtarea) async {
+    try {
+
+      Map<String, int> regBodyActivo = {
+        "id_mantenimiento": idtarea,
+        "id_plan_mantenimiento": idplan,
+      };
+
+      print(regBodyActivo);
+
+      var response = await http.put(
+        Uri.parse(putAsociarMantenimientosUrl),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(regBodyActivo),
+      );
+
+      var jsonActivoResponse = jsonDecode(response.body);
+
+      print(
+          "este es el response $jsonActivoResponse y el codigo ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        print("Mantenimiento asociado con exito");
+        return 200;
+      } else if (response.statusCode == 400) {
+        throw Exception("Se requieren los IDs de mantenimiento y plan de mantenimiento.");
+      } else if (response.statusCode == 404) {
+        throw Exception("No se encontró el mantenimiento con el ID proporcionado.");
+      } else {
+        throw Exception("Error desconocido al asociar el mantenimiento.");
+      }
+    } catch (e) {
+      print("Error al realizar la peticion: $e");
+    }
+    return null;
+  }
+
+  Future<int?> asociarActivosU(String token, int idplan, String idvehiculo) async {
+    try {
+
+      Map<String, dynamic> regBodyActivo = {
+        "id_vehiculo": idvehiculo,
+        "id_plan_mantenimiento": idplan,
+      };
+
+      print(regBodyActivo);
+
+      var response = await http.put(
+        Uri.parse(putAsociarActivoUrl),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(regBodyActivo),
+      );
+
+      var jsonActivoResponse = jsonDecode(response.body);
+
+      print(
+          "este es el response $jsonActivoResponse y el codigo ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        print("Activo asociado con exito");
+        return 200;
+      } else if (response.statusCode == 400) {
+        throw Exception("Se requieren los IDs de vehiculo y plan de mantenimiento.");
+      } else if (response.statusCode == 404) {
+        throw Exception("No se encontró el activo con la placa proporcionada.");
+      } else {
+        throw Exception("Error desconocido al asociar el mantenimiento.");
+      }
+    } catch (e) {
+      print("Error al realizar la peticion: $e");
+    }
+    return null;
+  }
+
   Future<Map<String, dynamic>> obtenerPlanesMantenimientoU(String? token) async {
       try {
         var response = await http.get(Uri.parse(getAllPlanesMantenimientoUrl), headers: {
@@ -572,6 +703,56 @@ class AuthController {
           throw Exception("No hay planes de mantenimiento.");
         } else {
           throw Exception("Error desconocido al obtener los planes de mantenimiento.");
+        }
+      } catch (e) {
+        print("Error al realizar la peticion: $e");
+      }
+      return {};
+    }
+
+  Future<Map<String, dynamic>> obtenerMantenimientosU(String? token, int planid) async {
+      try {
+        var response = await http.get(Uri.parse("$getMantenimientoTareaUrl$planid"), headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        });
+
+        var jsonActivoResponse = jsonDecode(response.body);
+
+        print(
+            "este es el response $jsonActivoResponse y el codigo ${response.statusCode}");
+
+        if (response.statusCode == 200) {
+          print("Mantenimientos Encontrados");
+          return jsonActivoResponse;
+        } else {
+          throw Exception("Error desconocido al obtener los mantenimiento.");
+        }
+      } catch (e) {
+        print("Error al realizar la peticion: $e");
+      }
+      return {};
+    }
+    
+  Future<Map<String, dynamic>> obtenerActivosNoAsociadosU(String? token, int planid) async {
+      try {
+        var response = await http.get(Uri.parse("$getActivosNoAsociadosUrl$planid"), headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        });
+
+        print(response);
+
+        var jsonActivoResponse = jsonDecode(response.body);
+
+        print(
+            "este es el response $jsonActivoResponse y el codigo ${response.statusCode}");
+
+        if (response.statusCode == 200) {
+          print("Activos No Asociados Encontrados");
+          return jsonActivoResponse;
+        } else {
+          throw Exception("Error desconocido al obtener los activos no asociados.");
         }
       } catch (e) {
         print("Error al realizar la peticion: $e");
