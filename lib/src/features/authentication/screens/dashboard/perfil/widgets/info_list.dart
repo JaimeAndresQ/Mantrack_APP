@@ -17,9 +17,25 @@ class ProfileInfoList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildProfileInfoListItem(Icons.email, email),
-        _buildProfileInfoListItem(Icons.person, name),
-        _buildProfileInfoListItem(Icons.person, lastname),
+        Center(
+          child: Text(
+            '$name $lastname',
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+        ),
+        Center(
+          child: Column(
+            children: [
+              _buildProfileInfoListItem(Icons.email, email),
+              _buildProfileInfoListItem(Icons.person, name),
+              _buildProfileInfoListItem(Icons.person, lastname),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -29,11 +45,9 @@ class ProfileInfoList extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.grey.withOpacity(0.5), // Color del borde
-            width: 1.0, // Ancho del borde
-          ),
-          borderRadius: BorderRadius.circular(8.0), // Radio de borde
+          color:
+              Colors.transparent, // Color transparente para que no haya borde
+          borderRadius: BorderRadius.circular(0.0), // Radio de borde
         ),
         child: ProfileInfoListItem(
           icon: icon,
@@ -62,13 +76,14 @@ class ProfileInfoListItem extends StatelessWidget {
         children: [
           Icon(
             icon,
-            color: Colors.grey,
+            color: Colors.blue[200], // Iconos azules pastel
           ),
           const SizedBox(width: 8),
           Text(
             text,
             style: const TextStyle(
               fontSize: 16,
+              color: Colors.grey,
             ),
           ),
         ],

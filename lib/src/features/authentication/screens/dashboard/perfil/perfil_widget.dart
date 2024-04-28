@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
 import 'package:provider/provider.dart';
-
 import 'widgets/avatar.dart';
 import 'widgets/info_list.dart';
+import 'widgets/logout.dart';
 
 class PerfilScreen extends StatefulWidget {
   const PerfilScreen({super.key});
@@ -60,24 +60,39 @@ class _PerfilScreenState extends State<PerfilScreen> {
         child: CircularProgressIndicator(),
       );
     } else {
-      return Container(
-        margin: const EdgeInsets.all(10),
-        height: size.height * 0.88,
-        width: size.width * 0.95,
-        decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(15)),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Center(
-          child: Column(
-            children: [
-              const SizedBox(height: 10), 
-              const CircularAvatar(size: 100, imageUrl: 'https://cdn4.iconfinder.com/data/icons/avatars-xmas-giveaway/128/batman_hero_avatar_comics-512.png'),
-              const SizedBox(height: 10), // Espacio entre el avatar y la lista
-              ProfileInfoList(email: email, name: name, lastname: lastname),
-            ],
-          ),
+      return Scaffold( 
+        appBar: AppBar(
+          title: const Text('Perfil'),
+          actions: [
+            LogoutButton(onPressed: () {
+              //print('Cerrando sesión...');
+            }),
+          ],
         ),
+        body: Container(
+          margin: const EdgeInsets.all(10),
+          height: size.height * 0.88,
+          width: size.width * 0.95,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: Column(
+                children: [
+                  const SizedBox(height: 10),
+                  const CircularAvatar(
+                    size: 100,
+                    imageUrl: 'https://cdn4.iconfinder.com/data/icons/avatars-xmas-giveaway/128/batman_hero_avatar_comics-512.png',
+                  ),
+                  const SizedBox(height: 10),
+                  ProfileInfoList(email: email, name: name, lastname: lastname),
+                ],
+              ),
+            ),
+          ),
         ),
       );
     }
