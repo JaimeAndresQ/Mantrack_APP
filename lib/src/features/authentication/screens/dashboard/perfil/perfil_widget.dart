@@ -51,7 +51,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final tokenProvider = Provider.of<TokenProvider>(context);
+    Provider.of<TokenProvider>(context);
     final size = MediaQuery.of(context).size;
 
     if (_isLoading) {
@@ -68,6 +68,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
             color: Colors.white, borderRadius: BorderRadius.circular(15)),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
+          child: Center(
           child: Column(
             children: [
               const SizedBox(height: 10), 
@@ -76,6 +77,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
               ProfileInfoList(email: email, name: name, lastname: lastname),
             ],
           ),
+        ),
         ),
       );
     }
