@@ -65,7 +65,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
           title: const Text('Perfil'),
           actions: [
             LogoutButton(onPressed: () {
-              //print('Cerrando sesión...');
+              // ignore: avoid_print
+              print('Cerrando sesión...');
             }),
           ],
         ),
