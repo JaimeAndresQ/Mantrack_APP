@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
 import 'package:provider/provider.dart';
 import 'widgets/avatar.dart';
@@ -14,12 +17,15 @@ class PerfilScreen extends StatefulWidget {
 }
 
 class _PerfilScreenState extends State<PerfilScreen> {
+  AuthController authController = AuthController();
   late TokenProvider tokenProvider;
   late String? token;
   late Map<String, dynamic> tokenw;
   late String email;
   late String name;
   late String lastname;
+  late int telefono;
+  late Uint8List? imagen;
   bool _isLoading = true; // Estado de carga inicial
 
   @override
@@ -37,12 +43,31 @@ class _PerfilScreenState extends State<PerfilScreen> {
         email = tokenw['correo'];
         name = tokenw['nombres'];
         lastname = tokenw['apellidos'];
+        telefono = tokenw['telefono'];
+        fetchData();
       }
     } catch (e) {
       // Manejar excepciones
       print('Error al obtener el token: $e');
-    } finally {
-      // Actualizar el estado para indicar que la carga ha finalizado
+    }
+  }
+
+    void fetchData() async {
+    try {
+      var userImage = await authController.getImageU(email, token!);
+      if (userImage != null) {
+        setState(() {
+          imagen = userImage;
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          imagen = null;
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("Error fetching imagen usuario: $error");
       setState(() {
         _isLoading = false;
       });
@@ -60,17 +85,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
         child: CircularProgressIndicator(),
       );
     } else {
-      return Scaffold( 
-        appBar: AppBar(
-          title: const Text('Perfil'),
-          actions: [
-            LogoutButton(onPressed: () {
-              // ignore: avoid_print
-              print('Cerrando sesión...');
-            }),
-          ],
-        ),
-        body: Container(
+      return Container(
           margin: const EdgeInsets.all(10),
           height: size.height * 0.88,
           width: size.width * 0.95,
@@ -84,18 +99,21 @@ class _PerfilScreenState extends State<PerfilScreen> {
               child: Column(
                 children: [
                   const SizedBox(height: 10),
-                  const CircularAvatar(
+                  CircularAvatar(
                     size: 100,
-                    imageUrl: 'https://cdn4.iconfinder.com/data/icons/avatars-xmas-giveaway/128/batman_hero_avatar_comics-512.png',
+                    imageUrl: imagen, isLoading: _isLoading,
                   ),
                   const SizedBox(height: 10),
-                  ProfileInfoList(email: email, name: name, lastname: lastname),
+                  ProfileInfoList(email: email, name: name, lastname: lastname, telefono: telefono,),
+                  LogoutButton(onPressed: (){
+                    tokenProvider.eliminarTokenU();
+                  },)
                 ],
               ),
             ),
           ),
-        ),
-      );
+        );
+      
     }
   }
 }

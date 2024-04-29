@@ -1,19 +1,44 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:mantrack_app/src/constants/image_strings.dart';
 
 class CircularAvatar extends StatelessWidget {
   final double size;
-  final String? imageUrl;
+  final Uint8List? imageUrl;
+  final bool isLoading;
 
-  const CircularAvatar({super.key, required this.size, this.imageUrl});
+  const CircularAvatar(
+      {super.key, required this.size, required this.isLoading, this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: CircleAvatar(
-        radius: size / 2,
-        backgroundImage: imageUrl != null ? NetworkImage(imageUrl!) : null,
-        child: imageUrl == null ? Icon(Icons.person, size: size * 0.8) : null,
-      ),
+    return Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.center,
+      children: [
+        !isLoading
+            ? Container(
+                height: 100,
+                width: 100,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFbdbdbd),
+                  shape: BoxShape.circle,
+                ),
+                clipBehavior: Clip.hardEdge,
+                
+                child: imageUrl != null
+                    ? Image.memory(
+                        imageUrl!,
+                        fit: BoxFit.cover,
+                        
+                      )
+                    : const Image(
+                        image: NetworkImage(tNoImageFound),
+                        fit: BoxFit.cover,
+                      ))
+            : const CircularProgressIndicator(),
+      ],
     );
   }
 }

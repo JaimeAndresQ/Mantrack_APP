@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:mantrack_app/src/constants/colors.dart';
 
 class ProfileInfoList extends StatelessWidget {
   final String email;
   final String name;
   final String lastname;
+  final int telefono;
 
   const ProfileInfoList({
     super.key,
     required this.email,
     required this.name,
     required this.lastname,
+    required this.telefono,
   });
 
   @override
@@ -30,9 +33,9 @@ class ProfileInfoList extends StatelessWidget {
         Center(
           child: Column(
             children: [
-              _buildProfileInfoListItem(Icons.email, email),
-              _buildProfileInfoListItem(Icons.person, name),
-              _buildProfileInfoListItem(Icons.person, lastname),
+              _buildProfileInfoListItem(Icons.email, "Correo: $email"),
+              _buildProfileInfoListItem(Icons.person, "Telefono: $telefono"),
+              
             ],
           ),
         ),
@@ -45,8 +48,7 @@ class ProfileInfoList extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Container(
         decoration: BoxDecoration(
-          color:
-              Colors.transparent, // Color transparente para que no haya borde
+// Color transparente para que no haya borde
           borderRadius: BorderRadius.circular(0.0), // Radio de borde
         ),
         child: ProfileInfoListItem(
@@ -76,14 +78,14 @@ class ProfileInfoListItem extends StatelessWidget {
         children: [
           Icon(
             icon,
-            color: Colors.blue[200], // Iconos azules pastel
+            color: tPrimaryColor, // Iconos azules pastel
           ),
           const SizedBox(width: 8),
           Text(
             text,
             style: const TextStyle(
               fontSize: 16,
-              color: Colors.grey,
+              color: Colors.black87,
             ),
           ),
         ],
