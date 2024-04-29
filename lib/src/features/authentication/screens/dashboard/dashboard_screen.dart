@@ -259,21 +259,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               ListTile(
                 leading: Icon(
-                  Icons.person_4_sharp,
-                  color: tPrimaryColor,
-                ),
-                title: const Text('Recursos Humanos'),
-                selected: selectedIndexProvider.selectedIndex == 0,
-                selectedTileColor: tPrimaryOpacity,
-                onTap: () {
-                  // Update the state of the app
-                  selectedIndexProvider.updateSelectedIndex(0);
-                  // Then close the drawer
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: Icon(
                   Icons.edit_calendar,
                   color: tPrimaryColor,
                 ),
