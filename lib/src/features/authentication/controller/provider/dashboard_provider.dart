@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:mantrack_app/src/features/authentication/model/activos_modal.dart';
 import 'package:mantrack_app/src/features/authentication/model/activos_placa_modal.dart';
@@ -6,6 +8,8 @@ import 'package:mantrack_app/src/features/authentication/model/tareas_modal.dart
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_detalles.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_general.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_registrar.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/ordenes_registar.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/ordenes_widget.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/perfil/perfil_widget.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_general.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_registrar.dart';
@@ -100,6 +104,10 @@ class SelectedDashboardProvider extends ChangeNotifier {
         return TareaVinculados();
       case 13:
         return TareaGeneral();
+      case 14:
+        return OrdenesWidget();
+      case 15:
+        return OrdenesRegistrar();
       default:
         return Container(); // Puedes devolver un widget vacío o manejar el caso por defecto
     }
@@ -129,6 +137,12 @@ class SelectedDashboardProvider extends ChangeNotifier {
         return 'Tareas';
       case 12:
         return 'Vehiculos Asociados';
+      case 13:
+        return 'Tareas General';
+      case 14:
+        return 'OTs Kanban';
+      case 15:
+        return 'OTs Registrar';
       default:
         return '';
     }

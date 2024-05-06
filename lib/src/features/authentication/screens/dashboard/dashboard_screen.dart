@@ -10,6 +10,7 @@ import 'package:mantrack_app/src/constants/sizes.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
+import 'package:mantrack_app/src/features/authentication/model/widgets/dialog_widget.dart';
 import '../../model/widgets/ball_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -76,7 +77,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final selectedIndexProvider =
         Provider.of<SelectedDashboardProvider>(context);
-    // final selectedTokenProvider = Provider.of<TokenProvider>(context);
+    final selectedTokenProvider = Provider.of<TokenProvider>(context);
 
     return SafeArea(
       child: Scaffold(
@@ -249,12 +250,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     selectedIndexProvider.selectedIndex == 3 ||
                     selectedIndexProvider.selectedIndex == 4,
                 selectedTileColor: tPrimaryOpacity,
-                onTap: () {
-                  // Update the state of the app
-                  selectedIndexProvider.updateSelectedIndex(1);
-                  // Then close the drawer
+                onTap: () async {
+                  String? hayToken = await selectedTokenProvider.verificarTokenU();
 
-                  Navigator.pop(context);
+                  if (hayToken != null) {
+                    // Update the state of the app
+                    selectedIndexProvider.updateSelectedIndex(1);
+                    // Then close the drawer
+                    Navigator.pop(context);
+                  } else {
+                    showDialog(
+                        // ignore: use_build_context_synchronously
+                        context: context,
+                        builder: (BuildContext context) => CustomDialog(
+                              title: '¡Error!',
+                              error: true,
+                              message:
+                                  '¡El token se ha expirado, inicie de nuevo!',
+                              onPressed: () {
+                                // Cerrar el diálogo
+                                Navigator.pop(context);
+                                // Cerrar el modal
+                                Navigator.pop(context);
+                              },
+                            ));
+                  }
                 },
               ),
               ListTile(
@@ -269,11 +289,70 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     selectedIndexProvider.selectedIndex == 11 ||
                     selectedIndexProvider.selectedIndex == 12,
                 selectedTileColor: tPrimaryOpacity,
-                onTap: () {
-                  // Update the state of the app
-                  selectedIndexProvider.updateSelectedIndex(8);
-                  // Then close the drawer
-                  Navigator.pop(context);
+                onTap: () async {
+                  String? hayToken = await selectedTokenProvider.verificarTokenU();
+
+                  if (hayToken != null) {
+                    // Update the state of the app
+                    selectedIndexProvider.updateSelectedIndex(8);
+                    // Then close the drawer
+                    Navigator.pop(context);
+                  } else {
+                    showDialog(
+                        // ignore: use_build_context_synchronously
+                        context: context,
+                        builder: (BuildContext context) => CustomDialog(
+                              title: '¡Error!',
+                              error: true,
+                              message:
+                                  '¡El token se ha expirado, inicie de nuevo!',
+                              onPressed: () {
+                                // Cerrar el diálogo
+                                Navigator.pop(context);
+                                // Cerrar el modal
+                                Navigator.pop(context);
+                              },
+                            ));
+                  }
+                },
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.sticky_note_2_outlined,
+                  color: tPrimaryColor,
+                ),
+                title: const Text('Ordenes de Trabajo'),
+                selected: selectedIndexProvider.selectedIndex == 14 ||
+                    selectedIndexProvider.selectedIndex == 15 ||
+                    selectedIndexProvider.selectedIndex == 16 ||
+                    selectedIndexProvider.selectedIndex == 17 ||
+                    selectedIndexProvider.selectedIndex == 18,
+                selectedTileColor: tPrimaryOpacity,
+                onTap: () async {
+                  String? hayToken = await selectedTokenProvider.verificarTokenU();
+
+                  if (hayToken != null) {
+                    // Update the state of the app
+                    selectedIndexProvider.updateSelectedIndex(14);
+                    // Then close the drawer
+                    Navigator.pop(context);
+                  } else {
+                    showDialog(
+                        // ignore: use_build_context_synchronously
+                        context: context,
+                        builder: (BuildContext context) => CustomDialog(
+                              title: '¡Error!',
+                              error: true,
+                              message:
+                                  '¡El token se ha expirado, inicie de nuevo!',
+                              onPressed: () {
+                                // Cerrar el diálogo
+                                Navigator.pop(context);
+                                // Cerrar el modal
+                                Navigator.pop(context);
+                              },
+                            ));
+                  }
                 },
               ),
             ],

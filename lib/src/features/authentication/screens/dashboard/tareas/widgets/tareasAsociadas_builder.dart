@@ -149,17 +149,17 @@ class _TareasAsociadasState extends State<TareasAsociadas> {
                 const SizedBox(
                   height: 4,
                 ),
-                // RichText(
-                //   text: TextSpan(
-                //     text: 'Categoria: ',
-                //     style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: tPrimaryColor),
-                //     children: <TextSpan>[
-                //       TextSpan(
-                //           text: getCategoriaText(widget.tareasData.mantenimiento['man_tipo_mantenimiento']),
-                //           style: const TextStyle(color: Colors.black87)),
-                //     ],
-                //   ),
-                // ),
+                RichText(
+                  text: TextSpan(
+                    text: 'Categoria: ',
+                    style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: tPrimaryColor),
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: getCategoriaText(widget.tareasData.mantenimiento['fk_id_categoria']),
+                          style: const TextStyle(color: Colors.black87)),
+                    ],
+                  ),
+                ),
               ],
             )
           ],
