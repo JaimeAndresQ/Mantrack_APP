@@ -42,7 +42,7 @@ class _ActivosNoAsociadosBuilderState extends State<ActivosNoAsociadosBuilder> {
 
   List<ActivoPlaca> parseActivos(Map<String, dynamic> responseBody) {
     final List<dynamic> items = responseBody['vehiculosNoAsociados'];
-    print("Llega?");
+    
     return items
         .asMap()
         .map((index, json) => MapEntry(index, ActivoPlaca.fromJson(json)))

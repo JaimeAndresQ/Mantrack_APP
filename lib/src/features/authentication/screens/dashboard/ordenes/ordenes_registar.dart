@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mantrack_app/src/constants/colors.dart';
 import 'package:mantrack_app/src/constants/sizes.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
+import 'package:mantrack_app/src/features/authentication/controller/provider/activos_provider.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
+import 'package:mantrack_app/src/features/authentication/model/activos_modal.dart';
 import 'package:mantrack_app/src/features/authentication/model/widgets/dialog_widget.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/widgets/activos_formulario.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/widgets/header_saver.dart';
@@ -26,20 +29,46 @@ class OrdenesRegistrar extends StatefulWidget {
 class _OrdenesRegistrarState extends State<OrdenesRegistrar> {
   AuthController authController = AuthController();
 
-  String descripError = '';
+  String activoOTsError = '';
+  String tiempoEstimadoOTsError = '';
+  String descripOTsError = '';
+  String categoriaOTsError = '';
+  String tipoMantenimientoOTsError = '';
+  
 
   TextStyle errorStyle = const TextStyle(
       fontSize: 14, fontWeight: FontWeight.w500, fontStyle: FontStyle.italic);
 
-  void validateAndSetErrors() {
+  void validateAndSetErrorsActivos() {
     setState(() {
-      descripError = authController.descTareaController.text.isEmpty
-          ? 'Ingrese una descripcion del plan'
+      activoOTsError = authController.activoOTsController.text.isEmpty
+          ? 'Elija un activo'
           : '';
+      tiempoEstimadoOTsError =
+          authController.tiempoEstimadoOTsController.text.isEmpty
+              ? 'Ingrese un tiempo de duracion estimado'
+              : '';
     });
   }
 
-  final ScrollController _scrollController = ScrollController();
+  void validateAndSetErrorsTareas() {
+    setState(() {
+      descripOTsError =
+          authController.descOTsController.text.isEmpty
+              ? 'Ingrese una descripcion de la OTs'
+              : '';
+      categoriaOTsError =
+          authController.categoriaOTsController.text.isEmpty
+              ? 'Ingrese un categoria de mantenimiento'
+              : '';
+      tipoMantenimientoOTsError =
+          authController.tipoOTsController.text.isEmpty
+              ? 'Ingrese un tipo de mantenimiento'
+              : '';
+    });
+  }
+
+  ActivosProvider activosProvider = ActivosProvider();
 
   final controller = PageController();
 
@@ -47,10 +76,60 @@ class _OrdenesRegistrarState extends State<OrdenesRegistrar> {
 
   bool statePage = false;
 
+  bool validateBoton = true;
+
   stateChanged() {
     setState(() {
       statePage = !statePage;
     });
+  }
+
+  stateChecked() {
+    setState(() {
+      validateBoton = !validateBoton;
+    });
+  }
+
+  late TokenProvider tokenProvider;
+  late List<String> opciones;
+  late String? token;
+  late Map<String, dynamic> tokenw;
+  late String email;
+  late String name;
+  late String lastname;
+  late Uint8List? imagen;
+  late NetworkImage imagenCargada;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // Inicializar las opciones obtenidas de fetchActivos
+    _initWidget();
+
+  }
+
+  void _initWidget() async {
+    await activosProvider.fetchActivos().then((_) {
+      setState(() {
+        opciones = activosProvider.opcionesActivos;
+        _isLoading = false;
+      });
+    });
+    tokenProvider = TokenProvider();
+    try {
+      token = await tokenProvider.verificarTokenU();
+      if (token != null) {
+        tokenw = JwtDecoder.decode(token!);
+        email = tokenw['correo'];
+        name = tokenw['nombres'];
+        lastname = tokenw['apellidos'];
+      }
+    } catch (e) {
+      // Manejar excepciones
+      Exception('Error al obtener el token: $e');
+    }
   }
 
   @override
@@ -58,7 +137,6 @@ class _OrdenesRegistrarState extends State<OrdenesRegistrar> {
     controller.dispose();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -69,15 +147,21 @@ class _OrdenesRegistrarState extends State<OrdenesRegistrar> {
 
     final tokenProvider = Provider.of<TokenProvider>(context);
 
-    authController.asociadasTareasController.text = "0";
-    authController.activosVinculadosTareaController.text = "0";
 
+    if (_isLoading == true) {
+      // Muestra un indicador de carga mientras se obtiene el token
+      return const SafeArea(
+        child: Scaffold(
+          body: Center(child: CircularProgressIndicator(color: tPrimaryColor,)),
+        ),
+      );
+    } else {
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color(0xFFEEEEEE),
         resizeToAvoidBottomInset: true,
-        body: SingleChildScrollView(
-          
+        body: 
+        SingleChildScrollView(
           child: Column(
             children: [
               Container(
@@ -86,33 +170,55 @@ class _OrdenesRegistrarState extends State<OrdenesRegistrar> {
                 child: HeaderSave(
                     size: size,
                     titulo: "Tarea no Programada",
+                    disabled: validateBoton,
                     flechaAtras: () {
                       selectedIndexProvider.updateSelectedIndex(14);
                       Navigator.pop(context);
                     },
                     botonGuardar: () async {
+                      
+                      validateAndSetErrorsTareas();
                       try {
-                        validateAndSetErrors();
-          
-                        if (descripError.isEmpty) {
+                        if (activoOTsError.isEmpty && tiempoEstimadoOTsError.isEmpty && descripOTsError.isEmpty
+                        && categoriaOTsError.isEmpty && tipoMantenimientoOTsError.isEmpty) {
                           // Llamar a la funcion del provider
                           String? token = await tokenProvider.verificarTokenU();
+                          
+
                           if (token != null) {
-                            int? statusCode =
-                                await authController.registrarPlanTareasU(token);
-          
+                            int? statusCode = await authController.registrarOrdenTrabajoU(token, email);
+
                             if (statusCode == 200) {
                               showDialog(
                                   // ignore: use_build_context_synchronously
                                   context: context,
-                                  builder: (BuildContext context) => CustomDialog(
+                                  builder: (BuildContext context) =>
+                                      CustomDialog(
                                         title: '¡Perfecto!',
                                         message:
-                                            'Se registro exitosamente el plan',
+                                            'Se registro exitosamente la OTs',
                                         onPressed: () {
                                           selectedIndexProvider
-                                              .updateSelectedIndex(8);
-          
+                                              .updateSelectedIndex(14);
+                                          
+                                          // Salir del Modal
+                                          Navigator.pop(context);
+                                          // Salir de la creacion
+                                          Navigator.pop(context);
+                                        },
+                                      ));
+                            } else if (statusCode == 404){
+                              showDialog(
+                                  // ignore: use_build_context_synchronously
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      CustomDialog(
+                                        title: '¡Error!',
+                                        error: true,
+                                        message:
+                                            'Vehiculo/Usuario que se asocia la orden no existe',
+                                        onPressed: () {
+                                          
                                           Navigator.pop(context);
                                         },
                                       ));
@@ -159,7 +265,8 @@ class _OrdenesRegistrarState extends State<OrdenesRegistrar> {
                   children: [
                     PageActivo(
                       authController: authController,
-                      descripError: descripError,
+                      activoOTsError: activoOTsError,
+                      tiempoEstimadoOTsError: tiempoEstimadoOTsError,
                       errorStyle: errorStyle,
                       size: size,
                       pageController: controller,
@@ -167,7 +274,9 @@ class _OrdenesRegistrarState extends State<OrdenesRegistrar> {
                     ),
                     PageTarea(
                       authController: authController,
-                      descripError: descripError,
+                      descripError: descripOTsError,
+                      categoriaError: categoriaOTsError,
+                      tipoManError: tipoMantenimientoOTsError,
                       errorStyle: errorStyle,
                       size: size,
                       pageController: controller,
@@ -178,9 +287,10 @@ class _OrdenesRegistrarState extends State<OrdenesRegistrar> {
               ),
             ],
           ),
-        ),
+        )
       ),
     );
+    }
   }
 }
 
@@ -189,6 +299,8 @@ class PageTarea extends StatelessWidget {
     super.key,
     required this.authController,
     required this.descripError,
+    required this.categoriaError,
+    required this.tipoManError,
     required this.errorStyle,
     required this.size,
     required this.pageController,
@@ -197,6 +309,8 @@ class PageTarea extends StatelessWidget {
 
   final AuthController authController;
   final String descripError;
+  final String categoriaError;
+  final String tipoManError;
   final TextStyle errorStyle;
   final Size size;
   final PageController pageController;
@@ -220,7 +334,7 @@ class PageTarea extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Formulario(
-                      controller: authController.descTareaController,
+                      controller: authController.descOTsController,
                       nombreError:
                           descripError.isNotEmpty ? descripError : null,
                       errorStyle: errorStyle,
@@ -237,9 +351,9 @@ class PageTarea extends StatelessWidget {
                         "Reparación de motor"
                       ],
                       controller:
-                          authController.categoriaMantenimientoController,
+                          authController.categoriaOTsController,
                       nombreError:
-                          descripError.isNotEmpty ? descripError : null,
+                          categoriaError.isNotEmpty ? categoriaError : null,
                       errorStyle: errorStyle,
                       texto: "Categoria del Mantenimiento",
                       icono: const Icon(Icons.type_specimen_outlined),
@@ -249,21 +363,28 @@ class PageTarea extends StatelessWidget {
                     ),
                     FormularioSelect(
                       opciones: const ["Preventivo", "Correctivo"],
-                      controller: authController.tipoMantenimientoController,
+                      controller: authController.tipoOTsController,
                       nombreError:
-                          descripError.isNotEmpty ? descripError : null,
+                           tipoManError.isNotEmpty ? tipoManError : null,
                       errorStyle: errorStyle,
                       texto: "Tipo de Mantenimiento",
                       icono: const Icon(Icons.handyman_outlined),
                     ),
-                    SizedBox(
-                      height: size.height * 0.4,
-                    ),
+                    if (ordenesRegistrarState.descripOTsError.isEmpty && ordenesRegistrarState.categoriaOTsError.isEmpty 
+                    && ordenesRegistrarState.tipoMantenimientoOTsError.isEmpty)
+                      SizedBox(
+                        height: size.height * 0.39,
+                      )
+                    else 
+                      SizedBox(
+                        height: size.height * 0.305,
+                      ),
                     SizedBox(
                       width: size.width * 0.225,
                       child: OutlinedButton(
                           onPressed: () {
                             ordenesRegistrarState.stateChanged();
+                            ordenesRegistrarState.stateChecked();
                             pageController.animateToPage(0,
                                 duration: const Duration(seconds: 1),
                                 curve: Curves.easeInOut);
@@ -308,7 +429,8 @@ class PageActivo extends StatelessWidget {
   const PageActivo({
     super.key,
     required this.authController,
-    required this.descripError,
+    required this.activoOTsError,
+    required this.tiempoEstimadoOTsError,
     required this.errorStyle,
     required this.size,
     required this.pageController,
@@ -316,7 +438,8 @@ class PageActivo extends StatelessWidget {
   });
 
   final AuthController authController;
-  final String descripError;
+  final String activoOTsError;
+  final String tiempoEstimadoOTsError;
   final TextStyle errorStyle;
   final Size size;
   final PageController pageController;
@@ -324,6 +447,9 @@ class PageActivo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
+    authController.encargadoOTsController.text = "${ordenesRegistrarState.name} ${ordenesRegistrarState.lastname}";
+
     return Container(
         margin: const EdgeInsets.all(10),
         padding: const EdgeInsets.all(10),
@@ -338,23 +464,27 @@ class PageActivo extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: tFormHeight - 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  
                   children: [
-                    Formulario(
-                      controller: authController.descTareaController,
+                    FormularioSelect(
+                      opciones: ordenesRegistrarState.opciones,
+                      controller:
+                          authController.activoOTsController,
                       nombreError:
-                          descripError.isNotEmpty ? descripError : null,
+                          activoOTsError.isNotEmpty ? activoOTsError : null,
                       errorStyle: errorStyle,
                       texto: "Activo",
-                      icono: const Icon(Icons.token_outlined),
+                      icono: const Icon(Icons.type_specimen_outlined),
                     ),
                     const SizedBox(
                       height: tFormHeight,
                     ),
                     Formulario(
-                      controller: authController.asociadasTareasController,
-                      nombreError: null,
+                      controller: authController.tiempoEstimadoOTsController,
+                      nombreError: tiempoEstimadoOTsError.isNotEmpty ? tiempoEstimadoOTsError : null,
                       errorStyle: errorStyle,
                       texto: "Tiempo Estimado",
+                      permitirSoloNumeros: TextInputType.number,
                       icono: const Icon(Icons.access_time_outlined),
                     ),
                     const SizedBox(
@@ -362,7 +492,7 @@ class PageActivo extends StatelessWidget {
                     ),
                     Formulario(
                       controller:
-                          authController.activosVinculadosTareaController,
+                          authController.encargadoOTsController,
                       nombreError: null,
                       errorStyle: errorStyle,
                       texto: "Solicitado Por",
@@ -370,17 +500,29 @@ class PageActivo extends StatelessWidget {
                       permitirSoloNumeros: TextInputType.number,
                       enabled: false,
                     ),
-                    SizedBox(
-                      height: size.height * 0.4,
-                    ),
+                    if (ordenesRegistrarState.activoOTsError.isEmpty && ordenesRegistrarState.tiempoEstimadoOTsError.isEmpty)
+                      SizedBox(
+                        height: size.height * 0.39,
+                      )
+                    else 
+                      SizedBox(
+                        height: size.height * 0.335,
+                      ),
+                    
                     SizedBox(
                       width: size.width * 0.3,
                       child: ElevatedButton(
                           onPressed: () {
-                            ordenesRegistrarState.stateChanged();
-                            pageController.animateToPage(1,
-                                duration: const Duration(seconds: 1),
-                                curve: Curves.easeInOut);
+                            ordenesRegistrarState.validateAndSetErrorsActivos();
+                            if (ordenesRegistrarState.activoOTsError.isEmpty &&
+                                ordenesRegistrarState
+                                    .tiempoEstimadoOTsError.isEmpty) {
+                              ordenesRegistrarState.stateChanged();
+                              ordenesRegistrarState.stateChecked();
+                              pageController.animateToPage(1,
+                                  duration: const Duration(seconds: 1),
+                                  curve: Curves.easeInOut);
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                               elevation: 0,

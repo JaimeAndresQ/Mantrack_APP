@@ -761,6 +761,101 @@ class AuthController {
     }
 
 
+// Metodos de Ordenes de trabajo
+
+  // Controladores de Registro de Ordenes
+  final TextEditingController descOTsController = TextEditingController();
+  final TextEditingController tiempoEstimadoOTsController = TextEditingController();
+  final TextEditingController tipoOTsController = TextEditingController();
+  final TextEditingController encargadoOTsController = TextEditingController();
+  final TextEditingController activoOTsController = TextEditingController();
+  final TextEditingController categoriaOTsController = TextEditingController();
+
+
+  Future<int?> registrarOrdenTrabajoU(String token, String usuario) async {
+    try {
+
+      Map<String, int> categoriaMap = {
+        "Mantenimiento general": 1,
+        "Cambio de aceite": 2,
+        "Reparación de motor": 3,
+      };
+
+      var categoriaFk = categoriaMap[categoriaOTsController.text];
+
+      Map<String, dynamic> regBodyActivo = {
+        "descripcion": descOTsController.text,
+        "tiempo_estimado": tiempoEstimadoOTsController.text,
+        "tipo_mantenimiento": tipoOTsController.text,
+        "fk_id_usuario_correo": usuario,
+        "fk_id_vehiculo": activoOTsController.text,
+        "fk_id_categoria": categoriaFk,
+      };
+
+      print(regBodyActivo);
+
+      var response = await http.post(
+        Uri.parse(registrarOTsUrl),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(regBodyActivo),
+      );
+
+      var jsonActivoResponse = jsonDecode(response.body);
+
+      print(
+          "este es el response $jsonActivoResponse y el codigo ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        print("Plan registrado");
+        return 200;
+      } else if (response.statusCode == 400) {
+        throw Exception("Falta llenar más campos.");
+      } else if (response.statusCode == 404) {
+        print("El usuario al que se asocia la orden de trabajo no existe / El vehiculo al que se asocia la orden de trabajo no existe");
+        return 404;
+      } else {
+        throw Exception("Error desconocido al registrar el plan.");
+      }
+    } catch (e) {
+      print("Error al realizar la peticion: $e");
+    }
+    return null;
+  }
+
+
+  Future<Map<String, dynamic>> obtenerOrdenesTrabajoEstadoU(String? token, String estado) async {
+      try {
+        var response = await http.get(Uri.parse("$getAllOrdenesTrabajo$estado"), headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        });
+
+        print(response);
+
+        var jsonActivoResponse = jsonDecode(response.body);
+
+        print(
+            "este es el response $jsonActivoResponse y el codigo ${response.statusCode}");
+
+        if (response.statusCode == 200) {
+          print("Orden de trabajo de tipo $estado encontrados");
+          return jsonActivoResponse;
+        } else {
+          throw Exception("Error desconocido al obtener las ordenes de trabajo.");
+        }
+      } catch (e) {
+        print("Error al realizar la peticion: $e");
+      }
+      return {};
+    }
+
+
+
+
+
 
 }
 

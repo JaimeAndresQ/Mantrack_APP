@@ -31,9 +31,10 @@ const getAllPlanesMantenimientoUrl = "http://$iPv4:80/api/planesMantenimientos/g
 const getMantenimientoTareaUrl = "http://$iPv4:80/api/planesMantenimientos/mantenientosNoAsociados/";
 const getActivosNoAsociadosUrl = "http://$iPv4:80/api/planesMantenimientos/vehiculosNoAsociados/";
 
-
 // Urls de actualizar tareas
 const putAsociarMantenimientosUrl = "http://$iPv4:80/api/planesMantenimientos/mantenimiento/updatePlan";
 const putAsociarActivoUrl = "http://$iPv4:80/api/planesMantenimientos/vehiculo/updatePlan";
 
-
+// Urls de ordenes de trabajo
+const registrarOTsUrl = "http://$iPv4:80/api/ordenesTrabajo/newOrden";
+const getAllOrdenesTrabajo = "http://$iPv4:80/api/ordenesTrabajo/getAll/";

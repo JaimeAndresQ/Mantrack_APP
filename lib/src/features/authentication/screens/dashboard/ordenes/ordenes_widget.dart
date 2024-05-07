@@ -7,7 +7,9 @@ import 'package:get/get.dart';
 import 'package:mantrack_app/src/constants/colors.dart';
 import 'package:mantrack_app/src/constants/sizes.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
+import 'package:mantrack_app/src/features/authentication/controller/provider/ordenes_provider.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/ordenes_registar.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/widgets/ordenes_builder.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/widgets/planes_builder.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -28,6 +30,21 @@ class _OrdenesWidgetState extends State<OrdenesWidget> {
 
   bool isPressed = false;
 
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _initWidget();
+
+  }
+
+  void _initWidget() async {
+    await Provider.of<OrdenesProvider>(context, listen: false).fetchOrdenesPendientes();
+    _isLoading = false;
+  }
+
   @override
   void dispose() {
     controller.dispose();
@@ -37,10 +54,12 @@ class _OrdenesWidgetState extends State<OrdenesWidget> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
-    final selectedIndexProvider =
-        Provider.of<SelectedDashboardProvider>(context);
-
+    final ordenProvider = Provider.of<OrdenesProvider>(context);
+    if (_isLoading == true) {
+      // Muestra un indicador de carga mientras se obtiene el token
+      return const Center(child: CircularProgressIndicator(color: tPrimaryColor,)
+      );
+    } else {
     return Stack(
       children: [
         SizedBox(
@@ -61,12 +80,14 @@ class _OrdenesWidgetState extends State<OrdenesWidget> {
                   PageOTS(
                     size: size,
                     color: const Color(0xFFFE5F43),
-                    texto: 'Tareas Pendientes (0)',
+                    texto: 'Tareas Pendientes (${ordenProvider.ordenesPendientes})',
                     icono: Icons.av_timer_rounded,
                   ),
-                  Ordenes(),
-                  Ordenes(),
-                  Ordenes(),
+                  SizedBox(
+                    height: size.height * 0.80,
+                    width: size.width,
+                    child: const OrdenTrabajoBuilder(estado: "P",)),
+
                 ],
               ),
               Column(
@@ -95,7 +116,7 @@ class _OrdenesWidgetState extends State<OrdenesWidget> {
           ),
         ),
         Positioned(
-            bottom: 10,
+            bottom: 0,
             left: size.width / 2.25,
             child: AnimatedSmoothIndicator(
               activeIndex: currentPage,
@@ -120,6 +141,7 @@ class _OrdenesWidgetState extends State<OrdenesWidget> {
         ),
       ],
     );
+    }
   }
 
   void onPageChangedCallBack(int activePageIndex) {

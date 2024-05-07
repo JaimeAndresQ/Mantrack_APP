@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:mantrack_app/src/features/authentication/model/widgets/dialog_widget.dart';
 import 'package:mantrack_app/src/features/authentication/screens/welcome/welcome_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

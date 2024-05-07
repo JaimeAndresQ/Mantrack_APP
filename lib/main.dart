@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mantrack_app/src/features/authentication/controller/provider/activos_provider.dart';
+import 'package:mantrack_app/src/features/authentication/controller/provider/ordenes_provider.dart';
+import 'package:mantrack_app/src/features/authentication/controller/provider/planes_provider.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
 import 'package:mantrack_app/src/features/authentication/screens/welcome/welcome_screen.dart';
 import 'package:mantrack_app/src/utils/theme.dart';
@@ -39,6 +42,15 @@ class App extends StatelessWidget {
         ),
         ChangeNotifierProvider<TokenProvider>(
           create: (_) => TokenProvider(), // Crea tu proveedor aquí
+        ),
+        ChangeNotifierProvider<ActivosProvider>(
+          create: (_) => ActivosProvider(), // Crea tu proveedor aquí
+        ),
+        ChangeNotifierProvider<PlanesProvider>(
+          create: (_) => PlanesProvider(), // Crea tu proveedor aquí
+        ),
+        ChangeNotifierProvider<OrdenesProvider>(
+          create: (_) => OrdenesProvider(), // Crea tu proveedor aquí
         ),
       ],
       child: GetMaterialApp(
