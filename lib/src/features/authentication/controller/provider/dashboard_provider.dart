@@ -8,6 +8,7 @@ import 'package:mantrack_app/src/features/authentication/model/tareas_modal.dart
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_detalles.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_general.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_registrar.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/home/home_screen.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/ordenes_registar.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/ordenes_widget.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/perfil/perfil_widget.dart';
@@ -81,7 +82,7 @@ class SelectedDashboardProvider extends ChangeNotifier {
   Widget getSelectedWidget() {
     switch (_selectedIndex) {
       case 0:
-        return Text('Index 0: Home');
+        return MantrackHome();
       case 1:
         return ActivosHome();
       case 2:

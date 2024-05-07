@@ -65,6 +65,8 @@ class _OrdenesWidgetState extends State<OrdenesWidget> {
                     icono: Icons.av_timer_rounded,
                   ),
                   Ordenes(),
+                  Ordenes(),
+                  Ordenes(),
                 ],
               ),
               Column(
@@ -192,7 +194,7 @@ class Ordenes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(left: 10, right: 10),
+      margin: EdgeInsets.only(left: 10, right: 10, bottom: 10),
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(15)),
       child: Padding(

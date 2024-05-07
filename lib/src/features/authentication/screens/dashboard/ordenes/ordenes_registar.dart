@@ -9,6 +9,7 @@ import 'package:mantrack_app/src/features/authentication/controller/auth/auth_ap
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
 import 'package:mantrack_app/src/features/authentication/model/widgets/dialog_widget.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/widgets/activos_formulario.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/widgets/header_saver.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/dashboard_screen.dart';
 import 'package:provider/provider.dart';
@@ -38,15 +39,26 @@ class _OrdenesRegistrarState extends State<OrdenesRegistrar> {
     });
   }
 
+  final ScrollController _scrollController = ScrollController();
+
   final controller = PageController();
 
   int currentPage = 0;
+
+  bool statePage = false;
+
+  stateChanged() {
+    setState(() {
+      statePage = !statePage;
+    });
+  }
 
   @override
   void dispose() {
     controller.dispose();
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -64,156 +76,352 @@ class _OrdenesRegistrarState extends State<OrdenesRegistrar> {
       child: Scaffold(
         backgroundColor: const Color(0xFFEEEEEE),
         resizeToAvoidBottomInset: true,
-        body: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(color: Colors.white),
-              child: HeaderSave(
-                  size: size,
-                  titulo: "Tarea no Programada",
-                  flechaAtras: () {
-                    selectedIndexProvider.updateSelectedIndex(14);
-                    Navigator.pop(context);
-                  },
-                  botonGuardar: () async {
-                    try {
-                      validateAndSetErrors();
-
-                      if (descripError.isEmpty) {
-                        // Llamar a la funcion del provider
-                        String? token = await tokenProvider.verificarTokenU();
-                        if (token != null) {
-                          int? statusCode =
-                              await authController.registrarPlanTareasU(token);
-
-                          if (statusCode == 200) {
-                            showDialog(
-                                // ignore: use_build_context_synchronously
-                                context: context,
-                                builder: (BuildContext context) => CustomDialog(
-                                      title: '¡Perfecto!',
-                                      message:
-                                          'Se registro exitosamente el plan',
-                                      onPressed: () {
-                                        selectedIndexProvider
-                                            .updateSelectedIndex(8);
-
-                                        Navigator.pop(context);
-                                      },
-                                    ));
+        body: SingleChildScrollView(
+          
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(color: Colors.white),
+                child: HeaderSave(
+                    size: size,
+                    titulo: "Tarea no Programada",
+                    flechaAtras: () {
+                      selectedIndexProvider.updateSelectedIndex(14);
+                      Navigator.pop(context);
+                    },
+                    botonGuardar: () async {
+                      try {
+                        validateAndSetErrors();
+          
+                        if (descripError.isEmpty) {
+                          // Llamar a la funcion del provider
+                          String? token = await tokenProvider.verificarTokenU();
+                          if (token != null) {
+                            int? statusCode =
+                                await authController.registrarPlanTareasU(token);
+          
+                            if (statusCode == 200) {
+                              showDialog(
+                                  // ignore: use_build_context_synchronously
+                                  context: context,
+                                  builder: (BuildContext context) => CustomDialog(
+                                        title: '¡Perfecto!',
+                                        message:
+                                            'Se registro exitosamente el plan',
+                                        onPressed: () {
+                                          selectedIndexProvider
+                                              .updateSelectedIndex(8);
+          
+                                          Navigator.pop(context);
+                                        },
+                                      ));
+                            }
                           }
                         }
+                      } catch (e) {
+                        print("Error al registrar usuario: $e");
+                        // Manejar otros posibles errores aquí
                       }
-                    } catch (e) {
-                      print("Error al registrar usuario: $e");
-                      // Manejar otros posibles errores aquí
-                    }
-                  }),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(vertical: 8, horizontal: size.width * 0.26),
-              
-              child: const Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Tab(texto: 'Activo', number: '1', disabled: false,),
-                  Text("_______________"),
-                  Tab(texto: 'Tarea', number: '2', disabled: true,),
-                ],
+                    }),
               ),
-            ),
-            SizedBox(
-              height: size.height * 0.575,
-              width: size.width,
-              child: PageView(
-                controller: controller,
-                onPageChanged: (index) {
-                  setState(() {
-                    // Actualiza la página actual
-                    currentPage = index;
-                  });
-                },
-                children: [
-                  Container(
-                      margin: const EdgeInsets.all(10),
-                      
-                      
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15)),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: SingleChildScrollView(
-                                clipBehavior: Clip.hardEdge,
-                                child: Form(
-                                    child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: tFormHeight - 10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Formulario(
-                                        controller:
-                                            authController.descTareaController,
-                                        nombreError: descripError.isNotEmpty
-                                            ? descripError
-                                            : null,
-                                        errorStyle: errorStyle,
-                                        texto: "Activo",
-                                        icono: const Icon(
-                                            Icons.description_outlined),
-                                      ),
-                                      const SizedBox(
-                                        height: tFormHeight,
-                                      ),
-                                      Formulario(
-                                        controller: authController
-                                            .asociadasTareasController,
-                                        nombreError: null,
-                                        errorStyle: errorStyle,
-                                        texto: "Duracion Estimada",
-                                        icono: const Icon(Icons.list_alt_sharp),
-                                        enabled: false,
-                                      ),
-                                      const SizedBox(
-                                        height: tFormHeight,
-                                      ),
-                                      Formulario(
-                                        controller: authController
-                                            .activosVinculadosTareaController,
-                                        nombreError: null,
-                                        errorStyle: errorStyle,
-                                        texto: "Activos Vinculados",
-                                        icono: const Icon(
-                                            Icons.library_add_check_rounded),
-                                        permitirSoloNumeros:
-                                            TextInputType.number,
-                                        enabled: false,
-                                      ),
-                                    ],
-                                  ),
-                                )),
-                              ),
-                            )
-                          ])),
-                ],
+              Container(
+                margin: EdgeInsets.symmetric(
+                    vertical: 8, horizontal: size.width * 0.26),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Tab(
+                      texto: 'Activo',
+                      number: '1',
+                      disabled: statePage,
+                    ),
+                    const Text("_______________"),
+                    Tab(
+                      texto: 'Tarea',
+                      number: '2',
+                      disabled: !statePage,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              SizedBox(
+                height: size.height * 0.8,
+                width: size.width,
+                child: PageView(
+                  controller: controller,
+                  onPageChanged: (index) {
+                    setState(() {
+                      // Actualiza la página actual
+                      currentPage = index;
+                    });
+                  },
+                  children: [
+                    PageActivo(
+                      authController: authController,
+                      descripError: descripError,
+                      errorStyle: errorStyle,
+                      size: size,
+                      pageController: controller,
+                      ordenesRegistrarState: this,
+                    ),
+                    PageTarea(
+                      authController: authController,
+                      descripError: descripError,
+                      errorStyle: errorStyle,
+                      size: size,
+                      pageController: controller,
+                      ordenesRegistrarState: this,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
+class PageTarea extends StatelessWidget {
+  const PageTarea({
+    super.key,
+    required this.authController,
+    required this.descripError,
+    required this.errorStyle,
+    required this.size,
+    required this.pageController,
+    required this.ordenesRegistrarState,
+  });
+
+  final AuthController authController;
+  final String descripError;
+  final TextStyle errorStyle;
+  final Size size;
+  final PageController pageController;
+  final _OrdenesRegistrarState ordenesRegistrarState;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        margin: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            color: Colors.white, borderRadius: BorderRadius.circular(15)),
+        child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+          Expanded(
+            child: SingleChildScrollView(
+              clipBehavior: Clip.hardEdge,
+              child: Form(
+                  child: Container(
+                padding: const EdgeInsets.symmetric(vertical: tFormHeight - 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Formulario(
+                      controller: authController.descTareaController,
+                      nombreError:
+                          descripError.isNotEmpty ? descripError : null,
+                      errorStyle: errorStyle,
+                      texto: "Descripcion",
+                      icono: const Icon(Icons.token_outlined),
+                    ),
+                    const SizedBox(
+                      height: tFormHeight,
+                    ),
+                    FormularioSelect(
+                      opciones: const [
+                        "Mantenimiento general",
+                        "Cambio de aceite",
+                        "Reparación de motor"
+                      ],
+                      controller:
+                          authController.categoriaMantenimientoController,
+                      nombreError:
+                          descripError.isNotEmpty ? descripError : null,
+                      errorStyle: errorStyle,
+                      texto: "Categoria del Mantenimiento",
+                      icono: const Icon(Icons.type_specimen_outlined),
+                    ),
+                    const SizedBox(
+                      height: tFormHeight,
+                    ),
+                    FormularioSelect(
+                      opciones: const ["Preventivo", "Correctivo"],
+                      controller: authController.tipoMantenimientoController,
+                      nombreError:
+                          descripError.isNotEmpty ? descripError : null,
+                      errorStyle: errorStyle,
+                      texto: "Tipo de Mantenimiento",
+                      icono: const Icon(Icons.handyman_outlined),
+                    ),
+                    SizedBox(
+                      height: size.height * 0.4,
+                    ),
+                    SizedBox(
+                      width: size.width * 0.225,
+                      child: OutlinedButton(
+                          onPressed: () {
+                            ordenesRegistrarState.stateChanged();
+                            pageController.animateToPage(0,
+                                duration: const Duration(seconds: 1),
+                                curve: Curves.easeInOut);
+                          },
+                          style: OutlinedButton.styleFrom(
+                              elevation: 0,
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(7))),
+                              side: const BorderSide(
+                                color: tPrimaryColor,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: tButtonHeight)),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.arrow_back_ios_outlined,
+                                size: 13,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                "ATRAS",
+                                style: TextStyle(color: tPrimaryColor),
+                              ),
+                            ],
+                          )),
+                    ),
+                  ],
+                ),
+              )),
+            ),
+          )
+        ]));
+  }
+}
+
+class PageActivo extends StatelessWidget {
+  const PageActivo({
+    super.key,
+    required this.authController,
+    required this.descripError,
+    required this.errorStyle,
+    required this.size,
+    required this.pageController,
+    required this.ordenesRegistrarState,
+  });
+
+  final AuthController authController;
+  final String descripError;
+  final TextStyle errorStyle;
+  final Size size;
+  final PageController pageController;
+  final _OrdenesRegistrarState ordenesRegistrarState;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        margin: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            color: Colors.white, borderRadius: BorderRadius.circular(15)),
+        child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+          Expanded(
+            child: SingleChildScrollView(
+              clipBehavior: Clip.hardEdge,
+              child: Form(
+                  child: Container(
+                padding: const EdgeInsets.symmetric(vertical: tFormHeight - 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Formulario(
+                      controller: authController.descTareaController,
+                      nombreError:
+                          descripError.isNotEmpty ? descripError : null,
+                      errorStyle: errorStyle,
+                      texto: "Activo",
+                      icono: const Icon(Icons.token_outlined),
+                    ),
+                    const SizedBox(
+                      height: tFormHeight,
+                    ),
+                    Formulario(
+                      controller: authController.asociadasTareasController,
+                      nombreError: null,
+                      errorStyle: errorStyle,
+                      texto: "Tiempo Estimado",
+                      icono: const Icon(Icons.access_time_outlined),
+                    ),
+                    const SizedBox(
+                      height: tFormHeight,
+                    ),
+                    Formulario(
+                      controller:
+                          authController.activosVinculadosTareaController,
+                      nombreError: null,
+                      errorStyle: errorStyle,
+                      texto: "Solicitado Por",
+                      icono: const Icon(Icons.person_add_alt_1_outlined),
+                      permitirSoloNumeros: TextInputType.number,
+                      enabled: false,
+                    ),
+                    SizedBox(
+                      height: size.height * 0.4,
+                    ),
+                    SizedBox(
+                      width: size.width * 0.3,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            ordenesRegistrarState.stateChanged();
+                            pageController.animateToPage(1,
+                                duration: const Duration(seconds: 1),
+                                curve: Curves.easeInOut);
+                          },
+                          style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(7))),
+                              backgroundColor: tPrimaryColor,
+                              side: const BorderSide(
+                                color: tPrimaryColor,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: tButtonHeight)),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("SIGUIENTE"),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 13,
+                              )
+                            ],
+                          )),
+                    ),
+                  ],
+                ),
+              )),
+            ),
+          )
+        ]));
+  }
+}
+
 class Tab extends StatelessWidget {
   const Tab({
-    super.key, required this.texto, required this.number, required this.disabled,
+    super.key,
+    required this.texto,
+    required this.number,
+    required this.disabled,
   });
 
   final String texto;
@@ -227,17 +435,26 @@ class Tab extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            shape: BoxShape.circle, color: disabled ? Colors.grey : tPrimaryColor
+              shape: BoxShape.circle,
+              color: disabled ? Colors.grey : tPrimaryColor),
+          child: Text(
+            number,
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: disabled
+                    ? const Color.fromARGB(158, 255, 255, 255)
+                    : const Color.fromARGB(202, 255, 255, 255)),
           ),
-          child: Text(number, style: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        color: disabled ? const Color.fromARGB(158, 255, 255, 255)  : const Color.fromARGB(202, 255, 255, 255)),),
         ),
-        Text(texto, style:  TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        color: disabled ? const Color.fromARGB(76, 0, 0, 0) : const Color.fromARGB(164, 0, 0, 0)),
+        Text(
+          texto,
+          style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: disabled
+                  ? const Color.fromARGB(76, 0, 0, 0)
+                  : const Color.fromARGB(164, 0, 0, 0)),
         )
       ],
     );
