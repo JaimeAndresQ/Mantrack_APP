@@ -36,10 +36,13 @@ class MantrackHome extends StatelessWidget {
     
               child: Column(
                 children: [
-                  // WidgetMethod1(),
-                  // WidgetMethod2(ultimos_n_dias: 30,),
+                  WidgetMethod1(),
+                  WidgetMethod2(ultimos_n_dias: 30,),
+                  WidgetMethod3(),
+                  WidgetMethod4(),
+                  WidgetMethod5(),
+                  WidgetMethod6(),
 
-                  
                 ],
               )),
           ),

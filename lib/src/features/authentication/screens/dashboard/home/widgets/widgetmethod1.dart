@@ -19,7 +19,7 @@ class _WidgetMethod1State extends State<WidgetMethod1> {
     try {
       
       final response = await dio
-          .get('http://192.168.1.6:5000/api/obtenerFallaMasFrecuenteCorrectiva');
+          .get(fallasMasFrecuentes);
 
       if (response.statusCode == 200) {
         print(

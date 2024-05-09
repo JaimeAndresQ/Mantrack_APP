@@ -6,11 +6,13 @@ import 'package:mantrack_app/src/constants/colors.dart';
 import 'package:mantrack_app/src/constants/sizes.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
+import 'package:mantrack_app/src/features/authentication/controller/provider/planes_provider.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
 import 'package:mantrack_app/src/features/authentication/model/widgets/dialog_widget.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_registrar.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/widgets/activos_formulario.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/widgets/header_saver.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/dashboard_screen.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/widgets/mantenimiento_builder.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/widgets/tareasAsociadas_builder.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +29,8 @@ class TareaMantenimiento extends StatefulWidget {
 class _TareaMantenimientoState extends State<TareaMantenimiento> {
   bool isPressed = false;
 
-  
+  AuthController authController = AuthController();
+  PlanesProvider planesBuilder = PlanesProvider();
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +39,15 @@ class _TareaMantenimientoState extends State<TareaMantenimiento> {
     final selectedIndexProvider =
         Provider.of<SelectedDashboardProvider>(context);
 
+    final tokenProvider = Provider.of<TokenProvider>(context);
+
     print(selectedIndexProvider.selectedPlanMantenimiento.planTareas.length);
+
+    refreshMantenimientos(int idPlan) async {
+      var listaBuilder =
+          await planesBuilder.updateMantenimeintosAsociados(idPlan);
+      selectedIndexProvider.updateSelectedPlanMantenimiento(listaBuilder);
+    }
 
     return Stack(
       children: [
@@ -69,27 +80,103 @@ class _TareaMantenimientoState extends State<TareaMantenimiento> {
                         const SizedBox(
                           width: 15.5,
                         ),
-                        const Text(
-                          "Mantenimientos",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black54,
+                        const Expanded(
+                          child: Text(
+                            "Mantenimientos",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black54,
+                            ),
                           ),
-                        )
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    isPressed = !isPressed;
+                                  });
+                                },
+                                child: Icon(
+                                  Icons.edit,
+                                  color:
+                                      isPressed ? tPrimaryColor : Colors.black,
+                                )),
+                          ),
+                        ),
+                        selectedIndexProvider
+                                .selectedChecked // Mostrar el icono de guardar solo si el checkbox está marcado
+                            ? IconButton(
+                                icon: const Icon(Icons.save),
+                                onPressed: () async {
+                                  // Lógica para guardar los datos usando el provider
+                                  int idPlan = selectedIndexProvider
+                                      .selectedDeleteMantenimiento
+                                      .idPlanMantenimiento;
+                                  int idMantenimiento = selectedIndexProvider
+                                      .selectedDeleteMantenimiento.nombrePlan;
+                                  // Llama al método deleteMantenimientoAsociadoU
+                                  String? tokenActual =
+                                      await tokenProvider.verificarTokenU();
+                                  if (tokenActual != null) {
+                                    int? statusCode = await authController
+                                        .deleteMantenimientoAsociadoU(
+                                            tokenActual,
+                                            idPlan,
+                                            idMantenimiento);
+                                    if (statusCode == 200) {
+                                      showDialog(
+                                          // ignore: use_build_context_synchronously
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              CustomDialog(
+                                                title: '¡Perfecto!',
+                                                message:
+                                                    '¡Se creó elimino el mantenimiento asociado!',
+                                                onPressed: () async {
+                                                  selectedIndexProvider.updateChecked(false);
+                                                  refreshMantenimientos(
+                                                      idPlan);
+                                                  // Cerrar el diálogo
+                                                  Navigator.pop(context);
+                                                },
+                                              ));
+                                    } else {
+                                      showDialog(
+                                          // ignore: use_build_context_synchronously
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              CustomDialog(
+                                                title: '¡Error!',
+                                                error: true,
+                                                message:
+                                                    '¡No se pudo eliminar el mantenimiento asociado!',
+                                                onPressed: () {
+                                                  // Cerrar el diálogo
+                                                  Navigator.pop(context);
+                                                },
+                                              ));
+                                    }
+                                  }
+                                },
+                              )
+                            : const SizedBox(),
                       ],
                     ),
                   ),
                   SizedBox(
-                        height: size.height * 0.78,
-                        width: size.width * 0.95,
-                        
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TareasAsociadasBuilder(
-                            dashboardProvider: selectedIndexProvider,
-                          ),
-                        )),
+                      height: size.height * 0.78,
+                      width: size.width * 0.95,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TareasAsociadasBuilder(
+                          dashboardProvider: selectedIndexProvider,
+                          isPressed: isPressed,
+                        ),
+                      )),
                 ]),
           ),
         ),
@@ -127,9 +214,7 @@ class _TareaMantenimientoState extends State<TareaMantenimiento> {
                   top: Radius.circular(20),
                 )),
                 builder: (BuildContext context) {
-                  return const DrawerTareasNoAsociadas(
-
-                  );
+                  return const DrawerTareasNoAsociadas();
                 },
               );
             },
@@ -214,7 +299,6 @@ class _DrawerMantenimientoState extends State<DrawerMantenimiento> {
                         flechaAtras: () {
                           Navigator.pop(context);
                         },
-
                         botonGuardar: () async {
                           validateAndSetErrors();
 
@@ -233,7 +317,6 @@ class _DrawerMantenimientoState extends State<DrawerMantenimiento> {
                                 showDialog(
                                     // ignore: use_build_context_synchronously
                                     context: context,
-
                                     builder: (BuildContext context) =>
                                         CustomDialog(
                                           title: '¡Perfecto!',
@@ -330,14 +413,14 @@ class _DrawerMantenimientoState extends State<DrawerMantenimiento> {
   }
 }
 
-
 class DrawerTareasNoAsociadas extends StatefulWidget {
   const DrawerTareasNoAsociadas({
     super.key,
   });
 
   @override
-  State<DrawerTareasNoAsociadas> createState() => _DrawerTareasNoAsociadasState();
+  State<DrawerTareasNoAsociadas> createState() =>
+      _DrawerTareasNoAsociadasState();
 }
 
 class _DrawerTareasNoAsociadasState extends State<DrawerTareasNoAsociadas> {
@@ -347,7 +430,8 @@ class _DrawerTareasNoAsociadasState extends State<DrawerTareasNoAsociadas> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    final selectedDashboardProvider = Provider.of<SelectedDashboardProvider>(context);
+    final selectedDashboardProvider =
+        Provider.of<SelectedDashboardProvider>(context);
 
     return Padding(
       padding:
@@ -374,21 +458,20 @@ class _DrawerTareasNoAsociadasState extends State<DrawerTareasNoAsociadas> {
                         flechaAtras: () {
                           Navigator.pop(context);
                         },
-
-                      
                       ),
                       SingleChildScrollView(
                         child: SizedBox(
-                        height: size.height * 0.33,
-                        width: size.width * 0.95,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: MantenimientoBuilder(
-                            idplan: selectedDashboardProvider.selectedPlanMantenimiento.idPlanMantenimiento,
-                          ),
-                        )),
+                            height: size.height * 0.33,
+                            width: size.width * 0.95,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: MantenimientoBuilder(
+                                idplan: selectedDashboardProvider
+                                    .selectedPlanMantenimiento
+                                    .idPlanMantenimiento,
+                              ),
+                            )),
                       )
-                      
                     ]))),
       ),
     );

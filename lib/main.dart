@@ -11,6 +11,7 @@ import 'src/features/authentication/screens/dashboard/dashboard_screen.dart';
 import 'src/features/authentication/screens/on_boarding/on_boarding_screen.dart';
 import 'package:provider/provider.dart';
 
+
 void main() async {
   
   // Garantiza que los widgets estén inicializados antes de ejecutar la aplicación.

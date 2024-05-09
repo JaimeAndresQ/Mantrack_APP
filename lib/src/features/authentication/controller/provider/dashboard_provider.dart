@@ -3,12 +3,15 @@
 import 'package:flutter/material.dart';
 import 'package:mantrack_app/src/features/authentication/model/activos_modal.dart';
 import 'package:mantrack_app/src/features/authentication/model/activos_placa_modal.dart';
+import 'package:mantrack_app/src/features/authentication/model/ordenes_trabajo_modal.dart';
 import 'package:mantrack_app/src/features/authentication/model/planes_mantenimiento.dart';
 import 'package:mantrack_app/src/features/authentication/model/tareas_modal.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_detalles.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_general.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_registrar.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/home/home_screen.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/ordenes_detalles.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/ordenes_detalles_vehi.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/ordenes_registar.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/ordenes_widget.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/perfil/perfil_widget.dart';
@@ -68,6 +71,57 @@ class SelectedDashboardProvider extends ChangeNotifier {
   }
 
 
+
+
+  late DeleteVehiculo _selectedDeleteVehiculo;
+
+  DeleteVehiculo get selectedDeleteVehiculo => _selectedDeleteVehiculo;
+
+  void setVehiculoDelete(int idPlanMantenimiento, String idVehiculo) {
+    // Lógica para obtener el plan de mantenimiento según los parámetros
+    // Aquí asumimos que tienes una forma de obtener el plan de mantenimiento desde tu backend
+    DeleteVehiculo deleteVehiculo = DeleteVehiculo(idPlanMantenimiento: idPlanMantenimiento, idVehiculo: idVehiculo); // Suponiendo que PlanMantenimiento tiene un constructor con estos parámetros
+  
+    _selectedDeleteVehiculo = deleteVehiculo;
+    notifyListeners();
+  }
+
+  late DeleteMantenimiento _selectedDeleteMantenimiento;
+
+  DeleteMantenimiento get selectedDeleteMantenimiento => _selectedDeleteMantenimiento;
+
+  void setMantenimientoDelete(int idPlanMantenimiento, int idMantenimiento) {
+    // Lógica para obtener el plan de mantenimiento según los parámetros
+    // Aquí asumimos que tienes una forma de obtener el plan de mantenimiento desde tu backend
+    DeleteMantenimiento planMantenimiento = DeleteMantenimiento(idPlanMantenimiento: idPlanMantenimiento, nombrePlan: idMantenimiento); // Suponiendo que PlanMantenimiento tiene un constructor con estos parámetros
+    
+    _selectedDeleteMantenimiento = planMantenimiento;
+    notifyListeners();
+  }
+
+  // Modelo para checkear los mantenimientos
+
+  late bool _isChecked = false;
+
+  bool get selectedChecked => _isChecked;
+
+  void updateChecked(bool check){
+    _isChecked = check;
+    notifyListeners();
+  }
+
+  // Modelo para las Ordenes de Trabajo
+
+  late OrdenTrabajo _selectedOTs;
+
+  OrdenTrabajo get selectedOTs => _selectedOTs;
+
+  void updateSelectedOrdenTrabajo(OrdenTrabajo activo){
+    _selectedOTs = activo;
+    notifyListeners();
+  }
+
+
   // Index para manejo de vistas en el dashboard
 
   int _selectedIndex = 0;
@@ -109,6 +163,12 @@ class SelectedDashboardProvider extends ChangeNotifier {
         return OrdenesWidget();
       case 15:
         return OrdenesRegistrar();
+      case 16:
+        return OrdenesDetalles();
+      case 17:
+        return OrdenesTrabajoDetalles();
+      // case 18:
+      //   return OrdenesTrabajoDetallesVehiculo();
       default:
         return Container(); // Puedes devolver un widget vacío o manejar el caso por defecto
     }
@@ -144,9 +204,35 @@ class SelectedDashboardProvider extends ChangeNotifier {
         return 'OTs Kanban';
       case 15:
         return 'OTs Registrar';
+      case 16:
+        return 'OTs Detalles';
       default:
         return '';
     }
   }
 
+}
+
+
+  class DeleteMantenimiento {
+    final int idPlanMantenimiento;
+    final int nombrePlan;
+
+    DeleteMantenimiento({
+      required this.idPlanMantenimiento,
+      required this.nombrePlan,
+    });
+
+  // Otros métodos de la clase si es necesario
+}
+  class DeleteVehiculo {
+    final int idPlanMantenimiento;
+    final String idVehiculo;
+
+    DeleteVehiculo({
+      required this.idPlanMantenimiento,
+      required this.idVehiculo,
+    });
+
+  // Otros métodos de la clase si es necesario
 }

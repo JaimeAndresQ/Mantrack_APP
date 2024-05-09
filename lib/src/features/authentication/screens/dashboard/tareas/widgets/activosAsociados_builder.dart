@@ -12,51 +12,49 @@ import 'package:provider/provider.dart';
 class ActivosAsociadasBuilder extends StatefulWidget {
   final SelectedDashboardProvider dashboardProvider;
   final isPressed;
-  const ActivosAsociadasBuilder({super.key, required this.dashboardProvider, this.isPressed});
+  const ActivosAsociadasBuilder(
+      {super.key, required this.dashboardProvider, this.isPressed});
 
   @override
-  State<ActivosAsociadasBuilder> createState() => _ActivosAsociadasBuilderState();
+  State<ActivosAsociadasBuilder> createState() =>
+      _ActivosAsociadasBuilderState();
 }
 
 class _ActivosAsociadasBuilderState extends State<ActivosAsociadasBuilder> {
-
   PlanesProvider planesBuilder = PlanesProvider();
 
-   // Actualiza los datos de la api
+  // Actualiza los datos de la api
   Future<void> _refreshData(int idPlan) async {
     // Call a method from another widget (PlanesBuilder) to fetch new data
     // This assumes PlanesBuilder has a method named 'fetchNewPlanData'
-    var listaBuilder = await planesBuilder.updateMantenimeintosAsociados(idPlan);
+    var listaBuilder =
+        await planesBuilder.updateMantenimeintosAsociados(idPlan);
     widget.dashboardProvider.updateSelectedPlanMantenimiento(listaBuilder);
-
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Consumer<SelectedDashboardProvider>(
-      builder: (context, selectedIndexProvider, child) =>
-      RefreshIndicator(
-        onRefresh: (){
-          return _refreshData(widget.dashboardProvider.selectedPlanMantenimiento.idPlanMantenimiento);
-        },
-        child: ListView.separated(
-                  itemCount: widget.dashboardProvider.selectedPlanMantenimiento.planVehiculos.length,
-                  separatorBuilder: (context, index) => const SizedBox(),
-                  itemBuilder: (context, index) {
-                    return MyActivosAsociados(
-                      selectedIndexProvider: widget.dashboardProvider,
-                      activoData: widget.dashboardProvider.selectedPlanMantenimiento.planVehiculos[index],
-                      index: index,
-                      isPressed: widget.isPressed,
-                    );
-                  },
-                )
-          
-              
-      ),
+      builder: (context, selectedIndexProvider, child) => RefreshIndicator(
+          onRefresh: () {
+            return _refreshData(widget.dashboardProvider
+                .selectedPlanMantenimiento.idPlanMantenimiento);
+          },
+          child: ListView.separated(
+            itemCount: widget.dashboardProvider.selectedPlanMantenimiento
+                .planVehiculos.length,
+            separatorBuilder: (context, index) => const SizedBox(),
+            itemBuilder: (context, index) {
+              return MyActivosAsociados(
+                selectedIndexProvider: widget.dashboardProvider,
+                activoData: widget.dashboardProvider.selectedPlanMantenimiento
+                    .planVehiculos[index],
+                index: index,
+                isPressed: widget.isPressed,
+              );
+            },
+          )),
     );
-    
   }
 }
 
@@ -66,14 +64,12 @@ class MyActivosAsociados extends StatefulWidget {
   final int index;
   final bool isPressed;
 
-
   const MyActivosAsociados({
     super.key,
     required this.selectedIndexProvider,
     required this.activoData,
     required this.index,
     required this.isPressed,
-
   });
 
   @override
@@ -81,14 +77,14 @@ class MyActivosAsociados extends StatefulWidget {
 }
 
 class _MyActivosAsociadosState extends State<MyActivosAsociados> {
-  bool isChecked = false;
-
   @override
   Widget build(BuildContext context) {
+    final selectedIndexProvider =
+        Provider.of<SelectedDashboardProvider>(context);
+
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: () {
-      },
+      onTap: () {},
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
         decoration: const BoxDecoration(
@@ -104,14 +100,28 @@ class _MyActivosAsociadosState extends State<MyActivosAsociados> {
                 widget.isPressed
                     ? Column(
                         children: [
-                          
                           Checkbox(
-                              
                               activeColor: tPrimaryColor,
-                              value: isChecked,
+                              value: widget.activoData.isChecked,
                               onChanged: (bool? value) {
                                 setState(() {
-                                  isChecked = value!;
+                                  widget.activoData.isChecked = value!;
+                                  if (widget.activoData.isChecked == true) {
+                                    // Se guarda los datos del mantenimiento actual
+                                    selectedIndexProvider.setVehiculoDelete(
+                                        widget
+                                            .selectedIndexProvider
+                                            .selectedPlanMantenimiento
+                                            .idPlanMantenimiento,
+                                        widget.activoData.id_vehiculo);
+                                    // Se guarda el estado del check
+                                    selectedIndexProvider
+                                        .updateChecked(widget.activoData.isChecked);
+                                  } else {
+                                    // Se guarda el estado del check
+                                    selectedIndexProvider
+                                        .updateChecked(widget.activoData.isChecked);
+                                  }
                                 });
                               })
                         ],
@@ -119,7 +129,6 @@ class _MyActivosAsociadosState extends State<MyActivosAsociados> {
                     : const SizedBox(),
               ],
             ),
-            
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -145,5 +154,3 @@ class _MyActivosAsociadosState extends State<MyActivosAsociados> {
     );
   }
 }
-
-

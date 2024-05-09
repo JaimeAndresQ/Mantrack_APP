@@ -16,9 +16,8 @@ class _WidgetMethod4State extends State<WidgetMethod4> {
   void getData() async {
     final dio = Dio();
     try {
-      String ip = iPv4;
       final response =
-          await dio.get('http://$ip:5000/api/tiempoMedioPorVehiculo');
+          await dio.get(tiempoMedioPorVehiculo);
 
       if (response.statusCode == 200) {
         print("Carga correcta de: Widget Method Tiempo Medio Por Vehiculo");

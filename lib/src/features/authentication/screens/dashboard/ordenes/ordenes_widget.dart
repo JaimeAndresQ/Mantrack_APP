@@ -37,11 +37,11 @@ class _OrdenesWidgetState extends State<OrdenesWidget> {
     // TODO: implement initState
     super.initState();
     _initWidget();
-
   }
 
   void _initWidget() async {
-    await Provider.of<OrdenesProvider>(context, listen: false).fetchOrdenesPendientes();
+    await Provider.of<OrdenesProvider>(context, listen: false)
+        .fetchOrdenesPendientes();
     _isLoading = false;
   }
 
@@ -56,91 +56,118 @@ class _OrdenesWidgetState extends State<OrdenesWidget> {
     final size = MediaQuery.of(context).size;
     final ordenProvider = Provider.of<OrdenesProvider>(context);
     if (_isLoading == true) {
-      // Muestra un indicador de carga mientras se obtiene el token
-      return const Center(child: CircularProgressIndicator(color: tPrimaryColor,)
-      );
+      // Muestra un indicador de carga mientras se obtiene la informacion
+      return const Center(
+          child: CircularProgressIndicator(
+        color: tPrimaryColor,
+      ));
     } else {
-    return Stack(
-      children: [
-        SizedBox(
-          height: size.height * 0.90,
-          width: size.width,
-          child: PageView(
-            controller: controller,
-            onPageChanged: (index) {
-              setState(() {
-                // Actualiza la página actual
-                currentPage = index;
-              });
-            },
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  PageOTS(
-                    size: size,
-                    color: const Color(0xFFFE5F43),
-                    texto: 'Tareas Pendientes (${ordenProvider.ordenesPendientes})',
-                    icono: Icons.av_timer_rounded,
-                  ),
-                  SizedBox(
-                    height: size.height * 0.80,
-                    width: size.width,
-                    child: const OrdenTrabajoBuilder(estado: "P",)),
-
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  PageOTS(
-                    size: size,
-                    color: const Color(0xFFFEC343),
-                    texto: 'OTs en Proceso (0)',
-                    icono: Icons.timeline_rounded,
-                  ),
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  PageOTS(
-                    size: size,
-                    color: tPrimaryColor,
-                    texto: 'OTs en Revisión (0)',
-                    icono: Icons.assignment_outlined,
-                  ),
-                ],
-              ),
-            ],
+      return Stack(
+        children: [
+          SizedBox(
+            height: size.height * 0.90,
+            width: size.width,
+            child: PageView(
+              controller: controller,
+              onPageChanged: (index) {
+                setState(() {
+                  // Actualiza la página actual
+                  currentPage = index;
+                });
+              },
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    PageOTS(
+                      size: size,
+                      color: const Color(0xFFFE5F43),
+                      texto: 'Mantenimientos Pendientes (0)',
+                      icono: Icons.av_timer_rounded,
+                    ),
+                  ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    PageOTS(
+                      size: size,
+                      color: const Color(0xFFFEC343),
+                      texto:
+                          'OTs en Proceso (${ordenProvider.ordenesPendientes})',
+                      icono: Icons.timeline_rounded,
+                    ),
+                    SizedBox(
+                        height: size.height * 0.80,
+                        width: size.width,
+                        child: const OrdenTrabajoBuilder(
+                          estado: "P",
+                        )),
+                  ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    PageOTS(
+                      size: size,
+                      color: tPrimaryColor,
+                      texto: 'OTs en Revisión (0)',
+                      icono: Icons.assignment_outlined,
+                    ),
+                    SizedBox(
+                        height: size.height * 0.80,
+                        width: size.width,
+                        child: const OrdenTrabajoBuilder(
+                          estado: "R",
+                        )),
+                  ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    PageOTS(
+                      size: size,
+                      color: tPrimaryColor,
+                      texto: 'OTs Finalizadas (0)',
+                      icono: Icons.assignment_outlined,
+                    ),
+                    SizedBox(
+                        height: size.height * 0.80,
+                        width: size.width,
+                        child: const OrdenTrabajoBuilder(
+                          estado: "F",
+                        )),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-        Positioned(
-            bottom: 0,
-            left: size.width / 2.25,
-            child: AnimatedSmoothIndicator(
-              activeIndex: currentPage,
-              count: 3,
-              effect: const WormEffect(
-                activeDotColor: tPrimaryColor,
-                dotHeight: 9,
-                dotWidth: 9,
-              ),
-            )),
-        Positioned(
-          right: tDefaultSize - 5,
-          bottom: tDefaultSize - 5,
-          child: FloatingActionButton(
-            onPressed: () {
-              // selectedIndexProvider.updateSelectedIndex(15);
-              Get.to(() => const OrdenesRegistrar());
-            },
-            tooltip: 'Increment',
-            child: const Icon(Icons.add),
+          Positioned(
+              bottom: 0,
+              left: size.width / 2.25,
+              child: AnimatedSmoothIndicator(
+                activeIndex: currentPage,
+                count: 3,
+                effect: const WormEffect(
+                  activeDotColor: tPrimaryColor,
+                  dotHeight: 9,
+                  dotWidth: 9,
+                ),
+              )),
+          Positioned(
+            right: tDefaultSize - 5,
+            bottom: tDefaultSize - 5,
+            child: FloatingActionButton(
+              onPressed: () {
+                // selectedIndexProvider.updateSelectedIndex(15);
+                Get.to(() => const OrdenesRegistrar());
+              },
+              tooltip: 'Increment',
+              child: const Icon(Icons.add),
+            ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
     }
   }
 
@@ -223,9 +250,7 @@ class Ordenes extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            
             children: [
-              
               Row(children: [
                 SizedBox(
                     child: Avatar(
@@ -256,13 +281,14 @@ class Ordenes extends StatelessWidget {
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
-                          color: Color.fromARGB(164, 0, 0, 0)
-                              .withOpacity(0.5)),
+                          color: Color.fromARGB(164, 0, 0, 0).withOpacity(0.5)),
                     ),
                   ],
                 )
               ]),
-              SizedBox(height: tDefaultSize - 20,),
+              SizedBox(
+                height: tDefaultSize - 20,
+              ),
               Text(
                 "Creado por Alberto Ramirez",
                 style: TextStyle(
@@ -270,7 +296,9 @@ class Ordenes extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                     color: Color.fromARGB(164, 0, 0, 0).withOpacity(0.5)),
               ),
-              SizedBox(height: tDefaultSize - 20,),
+              SizedBox(
+                height: tDefaultSize - 20,
+              ),
               Text(
                 "TKX-428",
                 style: TextStyle(
@@ -278,40 +306,56 @@ class Ordenes extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                     color: Color.fromARGB(164, 0, 0, 0)),
               ),
-              SizedBox(height: tDefaultSize - 10,),
+              SizedBox(
+                height: tDefaultSize - 10,
+              ),
               Row(
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.layers_outlined, color: tPrimaryColor, size: 20,),
-                      SizedBox(width: 3,),
+                      Icon(
+                        Icons.layers_outlined,
+                        color: tPrimaryColor,
+                        size: 20,
+                      ),
+                      SizedBox(
+                        width: 3,
+                      ),
                       Text(
-                      "1",
-                      style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: Color.fromARGB(164, 0, 0, 0).withOpacity(0.5)),
-                    ),
+                        "1",
+                        style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color:
+                                Color.fromARGB(164, 0, 0, 0).withOpacity(0.5)),
+                      ),
                     ],
                   ),
-                  SizedBox(width: 5,),
+                  SizedBox(
+                    width: 5,
+                  ),
                   Row(
                     children: [
-                      Icon(Icons.playlist_add_check, color: tPrimaryColor, size: 20,),
-                      SizedBox(width: 3,),
+                      Icon(
+                        Icons.playlist_add_check,
+                        color: tPrimaryColor,
+                        size: 20,
+                      ),
+                      SizedBox(
+                        width: 3,
+                      ),
                       Text(
-                      "1",
-                      style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: Color.fromARGB(164, 0, 0, 0).withOpacity(0.5)),
-                    ),
+                        "1",
+                        style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color:
+                                Color.fromARGB(164, 0, 0, 0).withOpacity(0.5)),
+                      ),
                     ],
                   )
-    
                 ],
               ),
-              
             ],
           )),
     );

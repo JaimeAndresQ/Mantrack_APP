@@ -73,6 +73,19 @@ class _TareaGeneralState extends State<TareaGeneral> {
                     const SizedBox(
                       height: tFormHeight,
                     ),
+                                        Formulario(
+                      controller: authController.fechaTareaController,
+                      nombreError:
+                          null,
+                      errorStyle: errorStyle,
+                      texto: selectedIndexProvider.selectedPlanMantenimiento.fecha,
+                      icono: const Icon(Icons.date_range_rounded),
+                      maxCaracteres: 6,
+                      enabled: false,
+                    ),
+                    const SizedBox(
+                      height: tFormHeight,
+                    ),
                     Formulario(
                       controller: authController.asociadasTareasController,
                       nombreError:

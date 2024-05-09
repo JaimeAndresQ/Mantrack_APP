@@ -17,9 +17,8 @@ List<ChartData> chartData = [];
   void getData() async {
     final dio = Dio();
     try {
-      String ip = iPv4;
       final response =
-          await dio.get('http://$ip:5000/api/ordenesPorTipo');
+          await dio.get(ordenesPorTipo);
 
       if (response.statusCode == 200) {
         print("Carga correcta de: Widget Method Porcentajes de ordenes de trabajo por tipo");

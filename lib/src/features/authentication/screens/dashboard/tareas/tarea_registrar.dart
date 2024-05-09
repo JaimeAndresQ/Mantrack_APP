@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:mantrack_app/src/constants/sizes.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
@@ -21,6 +22,7 @@ class _TareaRegistrarState extends State<TareaRegistrar> {
   AuthController authController = AuthController();
 
   String descripError = '';
+  String fechaError = '';
 
 
   TextStyle errorStyle = const TextStyle(
@@ -30,6 +32,9 @@ class _TareaRegistrarState extends State<TareaRegistrar> {
     setState(() {
       descripError = authController.descTareaController.text.isEmpty
           ? 'Ingrese una descripcion del plan'
+          : '';
+      fechaError = authController.fechaTareaController.text.isEmpty
+          ? 'Ingrese una fecha de realizacion'
           : '';
     });
   }
@@ -110,6 +115,39 @@ class _TareaRegistrarState extends State<TareaRegistrar> {
                       texto: "Descripcion",
                       icono: const Icon(Icons.description_outlined),
                       
+                    ),
+                    const SizedBox(
+                      height: tFormHeight,
+                    ),
+                    TextFormField(
+                      style: Theme.of(context).textTheme.bodySmall,
+                      controller: authController.fechaTareaController,
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.calendar_today),
+                        labelText: "Fecha de Realizacion",
+                        hintText: "Fecha de Realizacion",
+                        hintStyle: Theme.of(context).textTheme.bodyMedium,
+                        labelStyle: Theme.of(context).textTheme.bodyMedium,
+                        errorText: fechaError.isNotEmpty
+                            ? fechaError
+                            : null,
+                        errorStyle: errorStyle,
+                        border: const OutlineInputBorder(),
+                      ),
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(2030),
+                        );
+                        if (pickedDate != null) {
+                          setState(() {
+                            authController.fechaTareaController.text =
+                                DateFormat('yyyy-MM-dd').format(pickedDate);
+                          });
+                        }
+                      },
                     ),
                     const SizedBox(
                       height: tFormHeight,

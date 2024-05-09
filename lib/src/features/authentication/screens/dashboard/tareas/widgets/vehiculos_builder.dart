@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mantrack_app/src/constants/colors.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
+import 'package:mantrack_app/src/features/authentication/controller/provider/planes_provider.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
 import 'package:mantrack_app/src/features/authentication/model/activos_placa_modal.dart';
 import 'package:mantrack_app/src/features/authentication/model/planes_mantenimiento.dart';
@@ -118,11 +119,21 @@ class MyActivosNoAsociados extends StatefulWidget {
 class _MyActivosNoAsociadosState extends State<MyActivosNoAsociados> {
   bool isChecked = false;
 
+    AuthController authController = AuthController();
+    PlanesProvider planesBuilder = PlanesProvider();
+
   @override
   Widget build(BuildContext context) {
     final tokenProvider = Provider.of<TokenProvider>(context);
+    final selectedIndexProvider = Provider.of<SelectedDashboardProvider>(context);
 
     AuthController authController = AuthController();
+
+    refreshMantenimientos(int idPlan) async {
+      var listaBuilder =
+          await planesBuilder.updateMantenimeintosAsociados(idPlan);
+      selectedIndexProvider.updateSelectedPlanMantenimiento(listaBuilder);
+    }
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -141,6 +152,7 @@ class _MyActivosNoAsociadosState extends State<MyActivosNoAsociados> {
                       title: '¡Perfecto!',
                       message: '¡Se asocio exitosamente el activo!',
                       onPressed: () {
+                        refreshMantenimientos(widget.selectedIndexProvider.selectedPlanMantenimiento.idPlanMantenimiento);
                         // Cerrar el diálogo
                         Navigator.pop(context);
                         // Cerrar el modal

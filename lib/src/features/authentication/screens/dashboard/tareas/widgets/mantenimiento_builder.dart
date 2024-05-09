@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mantrack_app/src/constants/colors.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
+import 'package:mantrack_app/src/features/authentication/controller/provider/planes_provider.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
 import 'package:mantrack_app/src/features/authentication/model/planes_mantenimiento.dart';
 import 'package:mantrack_app/src/features/authentication/model/tareas_modal.dart';
@@ -83,6 +84,7 @@ class _MantenimientoBuilderState extends State<MantenimientoBuilder> {
                   selectedIndexProvider: selectedIndexProvider,
                   tareasData: snapshot.data![index],
                   index: index,
+                  
                 );
               },
             );
@@ -105,7 +107,8 @@ class Tareas extends StatefulWidget {
       {super.key,
       required this.selectedIndexProvider,
       required this.tareasData,
-      required this.index});
+      required this.index, 
+      });
 
   @override
   State<Tareas> createState() => _TareasState();
@@ -125,11 +128,25 @@ class _TareasState extends State<Tareas> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     final tokenProvider = Provider.of<TokenProvider>(context);
 
+    final selectedIndexProvider = Provider.of<SelectedDashboardProvider>(context);
+
     AuthController authController = AuthController();
+    PlanesProvider planesBuilder = PlanesProvider();
+
+
+    bool isChecked = false;
+
+
+    refreshMantenimientos(int idPlan) async {
+      var listaBuilder =
+          await planesBuilder.updateMantenimeintosAsociados(idPlan);
+      selectedIndexProvider.updateSelectedPlanMantenimiento(listaBuilder);
+    }
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -149,6 +166,7 @@ class _TareasState extends State<Tareas> {
                       title: '¡Perfecto!',
                       message: '¡Se asocio exitosamente el mantenimiento!',
                       onPressed: () {
+                        refreshMantenimientos(widget.selectedIndexProvider.selectedPlanMantenimiento.idPlanMantenimiento);
                         // Cerrar el diálogo
                         Navigator.pop(context);
                         // Cerrar el modal
@@ -186,6 +204,8 @@ class _TareasState extends State<Tareas> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                            
+            
                 RichText(
                   text: TextSpan(
                     text:

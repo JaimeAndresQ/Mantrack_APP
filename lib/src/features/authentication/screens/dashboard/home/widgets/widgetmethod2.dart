@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:mantrack_app/src/features/authentication/controller/auth/auth_config.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'dart:math';
 
@@ -20,7 +21,7 @@ class _WidgetMethod2State extends State<WidgetMethod2> {
     final dio = Dio();
     try {
       final response =
-          await dio.get('http://192.168.1.6:5000/api/ordenesPorVehiculo', data: {"ultimos_n_dias": widget.ultimos_n_dias});
+          await dio.get(ordenesPorVehiculo, data: {"ultimos_n_dias": widget.ultimos_n_dias});
 
       if (response.statusCode == 200) {
         print("Carga correcta de: Widget Method Ordenes por Vehiculo");

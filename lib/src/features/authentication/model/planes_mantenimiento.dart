@@ -1,6 +1,7 @@
 class PlanMantenimiento {
   final int idPlanMantenimiento;
   final String nombre;
+  final String fecha;
   final List<PlanMantenimientoVehiculos> planVehiculos;
   final List<PlanMantenimientoTareas> planTareas;
 
@@ -9,6 +10,7 @@ class PlanMantenimiento {
     required this.nombre,
     required this.planVehiculos,
     required this.planTareas,
+    required this.fecha,
   });
 
   factory PlanMantenimiento.fromJson(Map<String, dynamic> json) {
@@ -27,6 +29,7 @@ class PlanMantenimiento {
     return PlanMantenimiento(
       idPlanMantenimiento: json['id_plan_mantenimiento'] ?? 0,
       nombre: json['pl_nombre'] ?? "Sin nombre",
+      fecha: json['pl_fecha_realizacion_estimada'] ?? "Sin fecha de realizacion estimada",
       planVehiculos: parsedPlanManteVehiculos,
       planTareas: parsedPlanManteTareas
     );
@@ -37,6 +40,7 @@ class PlanMantenimientoVehiculos {
   final String id_vehiculo;
   final int id_plan_mantenimiento;
   final Map<String, dynamic> vehiculo;
+  bool isChecked = false;
 
   PlanMantenimientoVehiculos({
     required this.id_vehiculo,
@@ -57,11 +61,13 @@ class PlanMantenimientoTareas {
   final int id_mantenimiento;
   final int id_plan_mantenimiento;
   final Map<String, dynamic> mantenimiento;
+  bool isChecked = false;
 
   PlanMantenimientoTareas({
     required this.id_mantenimiento,
     required this.id_plan_mantenimiento,
     required this.mantenimiento,
+    
   });
 
   factory PlanMantenimientoTareas.fromJson(Map<String, dynamic> json) {

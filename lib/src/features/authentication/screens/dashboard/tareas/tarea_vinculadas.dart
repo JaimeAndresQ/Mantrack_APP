@@ -5,7 +5,10 @@ import 'package:mantrack_app/src/constants/colors.dart';
 import 'package:mantrack_app/src/constants/sizes.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
 import 'package:mantrack_app/src/features/authentication/controller/provider/dashboard_provider.dart';
+import 'package:mantrack_app/src/features/authentication/controller/provider/planes_provider.dart';
+import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
 import 'package:mantrack_app/src/features/authentication/model/activos_placa_modal.dart';
+import 'package:mantrack_app/src/features/authentication/model/widgets/dialog_widget.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/widgets/header_saver.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/widgets/activosAsociados_builder.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/widgets/vehiculos_builder.dart';
@@ -20,12 +23,24 @@ class TareaVinculados extends StatefulWidget {
 
 class _TareaVinculadoState extends State<TareaVinculados> {
   bool isPressed = false;
+
+  PlanesProvider planesBuilder = PlanesProvider();
+  AuthController authController = AuthController();
+  
   @override
   Widget build(BuildContext context) {
     final selectedIndexProvider =
         Provider.of<SelectedDashboardProvider>(context);
+    final tokenProvider =
+        Provider.of<TokenProvider>(context);
 
     final size = MediaQuery.of(context).size;
+
+      refreshMantenimientos(int idPlan) async {
+      var listaBuilder =
+          await planesBuilder.updateMantenimeintosAsociados(idPlan);
+      selectedIndexProvider.updateSelectedPlanMantenimiento(listaBuilder);
+    }
 
     return Stack(
       children: [
@@ -77,9 +92,66 @@ class _TareaVinculadoState extends State<TareaVinculados> {
                                     isPressed = !isPressed;
                                   });
                                 },
-                                child: const Icon(Icons.edit)),
+                                child: Icon(Icons.edit, color: isPressed ? tPrimaryColor : Colors.black,)),
                           ),
                         ),
+                        selectedIndexProvider
+                                .selectedChecked // Mostrar el icono de guardar solo si el checkbox está marcado
+                            ? IconButton(
+                                icon: const Icon(Icons.save),
+                                onPressed: () async {
+                                  // Lógica para guardar los datos usando el provider
+                                  String idVehiculo = selectedIndexProvider
+                                      .selectedDeleteVehiculo
+                                      .idVehiculo;
+                                  int idPlan = selectedIndexProvider
+                                      .selectedDeleteVehiculo.idPlanMantenimiento;
+                                  // Llama al método deleteMantenimientoAsociadoU
+                                  String? tokenActual =
+                                      await tokenProvider.verificarTokenU();
+                                  if (tokenActual != null) {
+                                    int? statusCode = await authController
+                                        .deleteActivoAsociadoU(
+                                            tokenActual,
+                                            idPlan,
+                                            idVehiculo);
+                                    if (statusCode == 200) {
+                                      showDialog(
+                                          // ignore: use_build_context_synchronously
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              CustomDialog(
+                                                title: '¡Perfecto!',
+                                                message:
+                                                    '¡Se creó elimino el activo asociado!',
+                                                onPressed: () async {
+                                                  selectedIndexProvider.updateChecked(false);
+                                                  refreshMantenimientos(
+                                                      idPlan);
+                                                  // Cerrar el diálogo
+                                                  Navigator.pop(context);
+                                                },
+                                              ));
+                                    } else {
+                                      showDialog(
+                                          // ignore: use_build_context_synchronously
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              CustomDialog(
+                                                title: '¡Error!',
+                                                error: true,
+                                                message:
+                                                    '¡No se pudo eliminar el activo asociado!',
+                                                onPressed: () {
+                                                  // Cerrar el diálogo
+                                                  Navigator.pop(context);
+                                                },
+                                              ));
+                                    }
+                                  }
+                                },
+                              )
+                            : const SizedBox(),
                       ],
                     ),
                   ),

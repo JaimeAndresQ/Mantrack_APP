@@ -17,9 +17,8 @@ class _WidgetMethod6State extends State<WidgetMethod6> {
   void getData() async {
     final dio = Dio();
     try {
-      String ip = iPv4;
       final response = await dio
-          .get("http://$ip:5000/api/eficienciaOperarios");
+          .get(eficaciaOperarios);
 
       if (response.statusCode == 200) {
         print("Carga correcta de: Widget Method Eficiencia Operarios");

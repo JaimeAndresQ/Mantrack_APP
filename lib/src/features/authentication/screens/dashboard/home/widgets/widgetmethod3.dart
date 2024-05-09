@@ -17,9 +17,8 @@ List<ChartData> chartData = [];
   void getData() async {
     final dio = Dio();
     try {
-      String ip = iPv4;
       final response = await dio
-          .get('http://$ip:5000/api/ordenesPorEstado');
+          .get(ordenesPorEstado);
 
       if (response.statusCode == 200) {
         print("Carga correcta de: Widget Method Ordenes por Estado");
@@ -50,7 +49,7 @@ List<ChartData> chartData = [];
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 100,
+      height: 300,
       padding: const EdgeInsets.all(10.0),
       child: SfCartesianChart(
         title: const ChartTitle(text: 'Cantidad de ordenes de trabajo por estado', textStyle: TextStyle(fontWeight: FontWeight.bold)),

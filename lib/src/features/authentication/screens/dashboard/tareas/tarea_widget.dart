@@ -40,22 +40,8 @@ class _TareaWidgetState extends State<TareaWidget> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                   Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: (){
-                          setState(() {
-                            isPressed = !isPressed;
-                          });
-                          
-                        },
-                        child: const Icon(Icons.edit)
-                        ),
-                    ),
-                  ),
-                  const Divider(thickness: 1, color: Colors.black26),
+                  
+                  
                   
                   SizedBox(
                       height: size.height * 0.76,

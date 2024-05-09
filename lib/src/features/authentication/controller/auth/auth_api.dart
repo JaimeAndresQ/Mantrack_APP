@@ -230,6 +230,7 @@ class AuthController {
         var jsonResponseLog = jsonDecode(responseLogin.body);
 
         print("Token: ${jsonResponseLog['token']}");
+        print("Rol: ${jsonResponseLog['rol']}");
         print("Respuesta Login: ${responseLogin.statusCode}");
 
         if (responseLogin.statusCode == 200) {
@@ -511,6 +512,7 @@ class AuthController {
 
   // Controladores de Registro Plan
   final TextEditingController descTareaController = TextEditingController();
+  final TextEditingController fechaTareaController = TextEditingController();
   final TextEditingController asociadasTareasController =
       TextEditingController();
   final TextEditingController activosVinculadosTareaController =
@@ -571,6 +573,7 @@ class AuthController {
 
       Map<String, String> regBodyActivo = {
         "pl_nombre": descTareaController.text,
+        "fecha_realizacion": fechaTareaController.text,
       };
 
       print(regBodyActivo);
@@ -760,6 +763,86 @@ class AuthController {
       return {};
     }
 
+  Future<int?> deleteMantenimientoAsociadoU(String token, int idplan, int idmantenimiento) async {
+    try {
+
+      Map<String, dynamic> regBodyActivo = {
+        "id_mantenimiento": idmantenimiento,
+        "id_plan_mantenimiento": idplan,
+      };
+
+      print(regBodyActivo);
+
+      var response = await http.delete(
+        Uri.parse(deleteMantenimientoUrl),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(regBodyActivo),
+      );
+
+      var jsonActivoResponse = jsonDecode(response.body);
+
+      print(
+          "este es el response $jsonActivoResponse y el codigo ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        print("Matenimeinto asociado eliminado con exito");
+        return 200;
+      } else if (response.statusCode == 400) {
+        throw Exception("Se requieren los IDs de mantenimiento y plan de mantenimiento");
+      } else if (response.statusCode == 404) {
+        throw Exception("No se encontró la asociación entre el mantenimiento y el plan de mantenimiento");
+      } else {
+        throw Exception("Error desconocido al eliminar el mantenimiento asociado.");
+      }
+    } catch (e) {
+      print("Error al realizar la peticion: $e");
+    }
+    return null;
+  }
+
+  Future<int?> deleteActivoAsociadoU(String token, int idplan, String idvehiculo) async {
+    try {
+
+      Map<String, dynamic> regBodyActivo = {
+        "id_vehiculo": idvehiculo,
+        "id_plan_mantenimiento": idplan,
+      };
+
+      print(regBodyActivo);
+
+      var response = await http.delete(
+        Uri.parse(deleteVehiculoUrl),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(regBodyActivo),
+      );
+
+      var jsonActivoResponse = jsonDecode(response.body);
+
+      print(
+          "este es el response $jsonActivoResponse y el codigo ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        print("vehículo asociado eliminado con exito");
+        return 200;
+      } else if (response.statusCode == 400) {
+        throw Exception("Se requieren los IDs de vehículo y plan de mantenimiento");
+      } else if (response.statusCode == 404) {
+        throw Exception("No se encontró la asociación entre el vehículo y el plan de mantenimiento");
+      } else {
+        throw Exception("Error desconocido al eliminar el vehículo asociado.");
+      }
+    } catch (e) {
+      print("Error al realizar la peticion: $e");
+    }
+    return null;
+  }
+
 
 // Metodos de Ordenes de trabajo
 
@@ -849,7 +932,7 @@ class AuthController {
       } catch (e) {
         print("Error al realizar la peticion: $e");
       }
-      return {};
+      return {"ordenesTrabajo": []};
     }
 
 
