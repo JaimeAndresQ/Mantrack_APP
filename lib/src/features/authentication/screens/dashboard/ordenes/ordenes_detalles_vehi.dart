@@ -264,7 +264,7 @@ class _DetallesState extends State<Detalles> {
                 onTap: () {
                   // Update the state of the app
                   widget.selectedIndexProvider.updateSelectedActivoxPlaca(widget.activoplaca);
-                  widget.selectedIndexProvider.updateSelectedIndex(4);
+                  widget.selectedIndexProvider.updateSelectedIndex(18);
                 },
               ),
               ListTile(
@@ -286,7 +286,7 @@ class _DetallesState extends State<Detalles> {
                 selectedTileColor: tPrimaryOpacity,
                 onTap: () {
                   // Update the state of the app
-                  widget.selectedIndexProvider.updateSelectedIndex(1);
+                  widget.selectedIndexProvider.updateSelectedIndex(16);
                 },
               ),
               ListTile(
@@ -308,7 +308,7 @@ class _DetallesState extends State<Detalles> {
                 selectedTileColor: tPrimaryOpacity,
                 onTap: () {
                   // Update the state of the app
-                  widget.selectedIndexProvider.updateSelectedIndex(1);
+                  widget.selectedIndexProvider.updateSelectedIndex(16);
                 },
               ),
             ]));

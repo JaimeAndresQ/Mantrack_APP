@@ -1,5 +1,6 @@
 import 'package:avatars/avatars.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mantrack_app/src/constants/colors.dart';
 import 'package:mantrack_app/src/constants/sizes.dart';
 import 'package:mantrack_app/src/features/authentication/controller/auth/auth_api.dart';
@@ -65,7 +66,7 @@ class _OrdenTrabajoBuilderState extends State<OrdenTrabajoBuilder> {
       futureCardsData = fetchActivos();
     });
     await Provider.of<OrdenesProvider>(context, listen: false)
-        .fetchOrdenesPendientes();
+        .fetchOrdenesProceso();
   }
 
   @override
@@ -113,6 +114,14 @@ class Ordenes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Convertir la cadena de fecha a DateTime
+    DateTime fecha = DateTime.parse(ordenData.fechaRealizacion);
+
+    // Formatear la fecha y el tiempo por separado
+    String fechaFormateada = DateFormat('yyyy-MM-dd').format(fecha);
+    String tiempoFormateado = DateFormat('HH:mm:ss').format(fecha);
+
+
     return GestureDetector(
       onTap: (){
         selectedIndexProvider.updateSelectedIndex(16);
@@ -155,7 +164,7 @@ class Ordenes extends StatelessWidget {
                             color: Color.fromARGB(164, 0, 0, 0)),
                       ),
                       Text(
-                        ordenData.fechaRealizacion.toString(),
+                        "$fechaFormateada / $tiempoFormateado",
                         style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w500,

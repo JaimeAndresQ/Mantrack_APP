@@ -4,6 +4,8 @@ import 'package:avatars/avatars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:mantrack_app/src/constants/colors.dart';
 import 'package:mantrack_app/src/constants/image_strings.dart';
 import 'package:mantrack_app/src/constants/sizes.dart';
@@ -83,11 +85,27 @@ class _DetallesOTsState extends State<DetallesOTs> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     String tipoMantenimiento =
         widget.ordenActual.tipoMantenimiento.toLowerCase();
     String tipoMantenimientoCapitalizado =
         tipoMantenimiento.substring(0, 1).toUpperCase() +
             tipoMantenimiento.substring(1);
+
+    // Convertir la cadena de fecha a DateTime
+    DateTime fecha = DateTime.parse(widget.ordenActual.fechaRealizacion);
+
+    // Formatear la fecha y el tiempo por separado
+    String fechaFormateada = DateFormat('yyyy-MM-dd').format(fecha);
+    String tiempoFormateado = DateFormat('HH:mm:ss').format(fecha);
+
+    // Dividir los minutos en horas y minutos
+    int horas = widget.ordenActual.tiempoEstimado ~/ 60;
+    int minutosRestantes = widget.ordenActual.tiempoEstimado % 60;
+
+    // Formatear la cadena de tiempo
+    String tiempoEstimadoFormateado = horas >= 1 ? '$horas:${minutosRestantes.toString().padLeft(2, '0')}:00' : '${minutosRestantes.toString().padLeft(2, '0')}:00';
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -159,7 +177,7 @@ class _DetallesOTsState extends State<DetallesOTs> {
                               color: Color.fromARGB(164, 0, 0, 0)),
                         ),
                         Text(
-                          widget.ordenActual.fechaRealizacion.toString(),
+                          "$fechaFormateada / $tiempoFormateado",
                           style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
@@ -252,56 +270,55 @@ class _DetallesOTsState extends State<DetallesOTs> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     "Tareas",
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                         color: Color.fromARGB(164, 0, 0, 0)),
                   ),
-                  Divider(
+                  const Divider(
                     height: 15,
                     thickness: 2,
                   ),
                   const SizedBox(
                     height: tDefaultSize - 20,
                   ),
-                   Padding(
-                     padding: const EdgeInsets.all(8.0),
-                     child: Row(
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
-                      
-                       children: [
-                         Text(
+                      children: [
+                        Text(
                           widget.ordenActual.id_vehiculo,
                           style: const TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.w500,
                               color: Color.fromARGB(164, 0, 0, 0)),
-                                           ),
-
-                                           SizedBox(width: 10,),
-                                           GestureDetector(
-                                            onTap: (){
-                                              widget.selectedIndexProvider.updateSelectedIndex(17);
-                                            },
-                                             child: Container(
-                                              padding: EdgeInsets.all(5),
-                                              decoration: BoxDecoration(
-                                                color: tPrimaryOpacity,
-                                                shape: BoxShape.circle
-                                              ),
-                                              child: Icon(Icons.visibility_outlined, size: 20,color:  tPrimaryColor)),
-                                           )
-                       ],
-                     ),
-                   ),
-
-                                     Divider(
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            widget.selectedIndexProvider
+                                .updateSelectedIndex(17);
+                          },
+                          child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: const BoxDecoration(
+                                  color: tPrimaryOpacity,
+                                  shape: BoxShape.circle),
+                              child: const Icon(Icons.visibility_outlined,
+                                  size: 20, color: tPrimaryColor)),
+                        )
+                      ],
+                    ),
+                  ),
+                  const Divider(
                     height: 15,
                     thickness: 2,
                   ),
-
                   RichText(
                     text: TextSpan(
                       text: 'Descripcion: ',
@@ -328,7 +345,7 @@ class _DetallesOTsState extends State<DetallesOTs> {
                           color: tPrimaryColor),
                       children: <TextSpan>[
                         TextSpan(
-                            text: widget.ordenActual.tiempoEstimado.toString(),
+                            text: horas >= 1 ? "$tiempoEstimadoFormateado horas" : "$tiempoEstimadoFormateado minutos",
                             style: const TextStyle(color: Colors.black54)),
                       ],
                     ),
@@ -368,6 +385,27 @@ class _DetallesOTsState extends State<DetallesOTs> {
                       ],
                     ),
                   ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  IntrinsicWidth(
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      
+                      decoration: BoxDecoration(
+                        color: tDashboardBackground,
+                        borderRadius: BorderRadius.circular(20)
+                      ),
+                      child: Row(
+                        
+                        children: [
+                          Icon(Icons.check_circle, color: Color.fromARGB(255, 18, 184, 18)),
+                           SizedBox(width: 5),
+                          Text("Completado", style: TextStyle(color: Colors.black87, fontSize: 16, fontWeight: FontWeight.w500,),)
+                        ],
+                      ),
+                    ),
+                  )
                 ],
               )),
         ),

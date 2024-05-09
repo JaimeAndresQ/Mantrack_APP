@@ -483,7 +483,7 @@ class PageActivo extends StatelessWidget {
                       controller: authController.tiempoEstimadoOTsController,
                       nombreError: tiempoEstimadoOTsError.isNotEmpty ? tiempoEstimadoOTsError : null,
                       errorStyle: errorStyle,
-                      texto: "Tiempo Estimado",
+                      texto: "Tiempo Estimado (Minutos)",
                       permitirSoloNumeros: TextInputType.number,
                       icono: const Icon(Icons.access_time_outlined),
                     ),

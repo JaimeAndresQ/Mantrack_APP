@@ -13,6 +13,7 @@ import 'package:mantrack_app/src/features/authentication/screens/dashboard/home/
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/ordenes_detalles.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/ordenes_detalles_vehi.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/ordenes_registar.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/ordenes_vehi_general.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/ordenes_widget.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/perfil/perfil_widget.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/tareas/tarea_general.dart';
@@ -121,7 +122,6 @@ class SelectedDashboardProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
   // Index para manejo de vistas en el dashboard
 
   int _selectedIndex = 0;
@@ -167,6 +167,8 @@ class SelectedDashboardProvider extends ChangeNotifier {
         return OrdenesDetalles();
       case 17:
         return OrdenesTrabajoDetalles();
+      case 18:
+        return OrdenesVehiGeneral();
       // case 18:
       //   return OrdenesTrabajoDetallesVehiculo();
       default:
@@ -206,6 +208,10 @@ class SelectedDashboardProvider extends ChangeNotifier {
         return 'OTs Registrar';
       case 16:
         return 'OTs Detalles';
+      case 17:
+        return 'OTs Activo';
+      case 18:
+        return 'OTs Activo General';
       default:
         return '';
     }

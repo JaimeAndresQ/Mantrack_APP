@@ -214,7 +214,7 @@ class AuthController {
     return null;
   }
 
-  Future<String> loginU() async {
+  Future<Map<String, dynamic>> loginU() async {
     try {
       if (emailController.text.isNotEmpty &&
           passwordController.text.isNotEmpty) {
@@ -234,8 +234,7 @@ class AuthController {
         print("Respuesta Login: ${responseLogin.statusCode}");
 
         if (responseLogin.statusCode == 200) {
-          String myToken = jsonResponseLog['token'];
-          return myToken;
+          return jsonResponseLog;
         } else if (responseLogin.statusCode == 404) {
           handleRegistrationError(
               responseLogin.statusCode, jsonResponseLog['msg']);
@@ -252,7 +251,7 @@ class AuthController {
       }
     } catch (e) {
       print("Error en la solicitud: $e");
-      return "error";
+      return {};
     }
   }
 

@@ -33,25 +33,27 @@ class TokenProvider extends ChangeNotifier {
     }
   }
 
-  Future<String?> verificarTokenU() async {
+  Future<String?> verificarTokenU({String? rol}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? tokenActual = prefs.getString('token');
     // Verificar si el token está presente y está expirado
     if (tokenActual != null && JwtDecoder.isExpired(tokenActual)) {
       // Borrar el token si está expirado
       await prefs.remove('token');
+      await prefs.remove('rol');
       Get.to(() => const WelcomeScreen());
       throw Exception("El token ha expirado!");
     } else if (tokenActual != null) {
       // ignore: avoid_print
       print(tokenActual);
-      return tokenActual;
+      return rol ?? tokenActual;
     } else {
       Get.to(() => const WelcomeScreen());
       throw Exception("No hay token");
     }
   }
 
+  // Para cuando se inicializa la app y verificar el estado
   Future<String?> getTokenU() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? tokenActual = prefs.getString('token');
@@ -59,6 +61,7 @@ class TokenProvider extends ChangeNotifier {
     if (tokenActual != null && JwtDecoder.isExpired(tokenActual)) {
       // Borrar el token si está expirado
       await prefs.remove('token');
+      await prefs.remove('rol');
       return tokenActual;
     } else {
       // ignore: avoid_print
@@ -67,9 +70,10 @@ class TokenProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> setTokenU(String result) async {
+  Future<void> setTokenU(String result, String rol) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('token', result);
+    prefs.setString('rol', rol);
   }
 
 
@@ -82,6 +86,7 @@ class TokenProvider extends ChangeNotifier {
     if (tokenActual != null) {
       // Borrar el token
       await prefs.remove('token');
+      await prefs.remove('rol');
       Get.to(() => const WelcomeScreen());
       throw Exception("Token eliminado");
     }

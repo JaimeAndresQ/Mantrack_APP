@@ -148,11 +148,11 @@ class _LoginFormState extends State<LoginForm> {
                     // Verificar si hay errores antes de llamar a la función de registro
                     if (emailError.isEmpty && contraseniaError.isEmpty) {
                       // Llamar a la función de registro en el AuthController
-                      String result = await authController.loginU();
-                      if (result != "error") {
-                        selectedTokenProvider.setTokenU(result);
+                      dynamic result = await authController.loginU();
+                      if (result != {}) {
+                        selectedTokenProvider.setTokenU(result['token'], result['rol']);
                         Get.to(() => DashboardScreen(
-                              token: result,
+                              token: result['token'],
                             ));
                       }
                     }
