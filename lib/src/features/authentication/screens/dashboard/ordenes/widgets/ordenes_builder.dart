@@ -121,7 +121,6 @@ class Ordenes extends StatelessWidget {
     String fechaFormateada = DateFormat('yyyy-MM-dd').format(fecha);
     String tiempoFormateado = DateFormat('HH:mm:ss').format(fecha);
 
-
     return GestureDetector(
       onTap: (){
         selectedIndexProvider.updateSelectedIndex(16);

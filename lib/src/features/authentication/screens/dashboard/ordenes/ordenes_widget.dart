@@ -77,17 +77,17 @@ class _OrdenesWidgetState extends State<OrdenesWidget> {
                 });
               },
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    PageOTS(
-                      size: size,
-                      color: const Color(0xFFFE5F43),
-                      texto: 'Mantenimientos Pendientes (0)',
-                      icono: Icons.av_timer_rounded,
-                    ),
-                  ],
-                ),
+                // Column(
+                //   mainAxisAlignment: MainAxisAlignment.start,
+                //   children: [
+                //     PageOTS(
+                //       size: size,
+                //       color: const Color(0xFFFE5F43),
+                //       texto: 'Mantenimientos Pendientes (0)',
+                //       icono: Icons.av_timer_rounded,
+                //     ),
+                //   ],
+                // ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -98,6 +98,22 @@ class _OrdenesWidgetState extends State<OrdenesWidget> {
                           'OTs en Proceso (${ordenProvider.ordenesProceso})',
                       icono: Icons.timeline_rounded,
                     ),
+                    ordenProvider.ordenesProceso == 0
+                    ?
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(height: size.height * 0.3,),
+                        const Opacity(
+                          opacity: 0.7,
+                          child: Text('(;-;)', style: TextStyle(fontSize: 30),)),
+                          const SizedBox(height: 10,),
+                        const Opacity(
+                          opacity: 0.7,
+                          child: Text('No hay ordenes en proceso', style: TextStyle(fontSize: 24,))),
+                      ],
+                    )
+                    :
                     SizedBox(
                         height: size.height * 0.80,
                         width: size.width,
@@ -115,12 +131,28 @@ class _OrdenesWidgetState extends State<OrdenesWidget> {
                       texto: 'OTs en Revisión (${ordenProvider.ordenesRevision})',
                       icono: Icons.assignment_outlined,
                     ),
+                    ordenProvider.ordenesRevision == 0
+                    ?
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(height: size.height * 0.3,),
+                        const Opacity(
+                          opacity: 0.7,
+                          child: Text('(;-;)', style: TextStyle(fontSize: 30),)),
+                          const SizedBox(height: 10,),
+                        const Opacity(
+                          opacity: 0.7,
+                          child: Text('No hay ordenes en revisión', style: TextStyle(fontSize: 24,))),
+                      ],
+                    )
+                    :
                     SizedBox(
                         height: size.height * 0.80,
                         width: size.width,
                         child: const OrdenTrabajoBuilder(
                           estado: "R",
-                        )),
+                        ))
                   ],
                 ),
                 Column(
@@ -132,6 +164,22 @@ class _OrdenesWidgetState extends State<OrdenesWidget> {
                       texto: 'OTs Finalizadas (${ordenProvider.ordenesFinalizadas})',
                       icono: Icons.check_circle_outlined,
                     ),
+                    ordenProvider.ordenesFinalizadas == 0
+                    ?
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(height: size.height * 0.3,),
+                        const Opacity(
+                          opacity: 0.7,
+                          child: Text('(;-;)', style: TextStyle(fontSize: 30),)),
+                          const SizedBox(height: 10,),
+                        const Opacity(
+                          opacity: 0.7,
+                          child: Text('No hay ordenes finalizadas', style: TextStyle(fontSize: 24,))),
+                      ],
+                    )
+                    :
                     SizedBox(
                         height: size.height * 0.80,
                         width: size.width,
@@ -148,7 +196,7 @@ class _OrdenesWidgetState extends State<OrdenesWidget> {
               left: size.width / 2.325,
               child: AnimatedSmoothIndicator(
                 activeIndex: currentPage,
-                count: 4,
+                count: 3,
                 effect: const WormEffect(
                   activeDotColor: tPrimaryColor,
                   dotHeight: 9,

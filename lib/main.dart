@@ -39,19 +39,19 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<SelectedDashboardProvider>(
-          create: (_) => SelectedDashboardProvider(), // Crea tu proveedor aquí
+          create: (_) => SelectedDashboardProvider(),
         ),
         ChangeNotifierProvider<TokenProvider>(
-          create: (_) => TokenProvider(), // Crea tu proveedor aquí
+          create: (_) => TokenProvider(), 
         ),
         ChangeNotifierProvider<ActivosProvider>(
-          create: (_) => ActivosProvider(), // Crea tu proveedor aquí
+          create: (_) => ActivosProvider(),
         ),
         ChangeNotifierProvider<PlanesProvider>(
-          create: (_) => PlanesProvider(), // Crea tu proveedor aquí
+          create: (_) => PlanesProvider(), 
         ),
         ChangeNotifierProvider<OrdenesProvider>(
-          create: (_) => OrdenesProvider(), // Crea tu proveedor aquí
+          create: (_) => OrdenesProvider(), 
         ),
       ],
       child: GetMaterialApp(

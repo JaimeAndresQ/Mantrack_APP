@@ -95,11 +95,12 @@ class _DetallesOTsState extends State<DetallesOTs> {
   TextStyle errorStyle = const TextStyle(
       fontSize: 14, fontWeight: FontWeight.w500, fontStyle: FontStyle.italic);
 
-    void validateAndSetErrors() {
+  void validateAndSetErrors() {
     setState(() {
-      detalleDescOTsError = authController.detallesDescOTsController.text.isEmpty
-          ? 'Escriba una observacion'
-          : '';
+      detalleDescOTsError =
+          authController.detallesDescOTsController.text.isEmpty
+              ? 'Escriba una observacion'
+              : '';
       detallesTiempoEjecuOTsError =
           authController.detallesTiempoEstimadoOTsController.text.isEmpty
               ? 'Ingrese un tiempo de duracion estimada'
@@ -107,16 +108,22 @@ class _DetallesOTsState extends State<DetallesOTs> {
     });
   }
 
+  late int horasEje;
+  late int minutosRestantesEje;
+  late String tiempoEstimadoFormateadoEje;
+
   @override
   void initState() {
     super.initState();
     _initRol();
+
   }
 
   void _initRol() async {
     tokenProvider = TokenProvider();
     try {
       rol = await tokenProvider.verificarTokenU(rol: true);
+
       setState(() {
         isLoading = false;
       });
@@ -128,6 +135,18 @@ class _DetallesOTsState extends State<DetallesOTs> {
       });
     }
   }
+
+  String formatTiempoEjecucion(int? tiempoEjecucion) {
+  if (tiempoEjecucion != null) {
+    int horas = tiempoEjecucion ~/ 60;
+    int minutosRestantes = tiempoEjecucion % 60;
+    return horas >= 1
+        ? '$horas:${minutosRestantes.toString().padLeft(2, '0')}:00 horas'
+        : '${minutosRestantes.toString().padLeft(2, '0')}:00 minutos';
+  } else {
+    return 'No disponible';
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -258,48 +277,72 @@ class _DetallesOTsState extends State<DetallesOTs> {
                         fontWeight: FontWeight.w500,
                         color: Color.fromARGB(164, 0, 0, 0)),
                   ),
-                  
-                                    isLoading
-                ? const CircularProgressIndicator() // Indicador de carga
-                : rol == "A" && selectedOTsProvider.selectedOTs.estado == "P"
-                ? Form(
-                  child: Container(
-                padding: const EdgeInsets.symmetric(vertical: tFormHeight - 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    FormularioRich(
-                      controller: authController.detallesDescOTsController,
-                      nombreError: detalleDescOTsError.isNotEmpty ? detalleDescOTsError : null,
-                      errorStyle: errorStyle,
-                      texto: "Observaciones",
-                      icono: const Icon(Icons.note_add_outlined),
-
-                    ),
-                    const SizedBox(
-                      height: tFormHeight,
-                    ),
-                    Formulario(
-                      controller:
-                          authController.detallesTiempoEstimadoOTsController,
-                      nombreError: detallesTiempoEjecuOTsError.isNotEmpty ? detallesTiempoEjecuOTsError : null,
-                      errorStyle: errorStyle,
-                      texto: "Tiempo de Ejecucion",
-                      icono: const Icon(Icons.av_timer),
-                      permitirSoloNumeros: TextInputType.number,
-                      
-                    ),
-                  ],
-                ),
-                  ),
-                )
-
-                : const SizedBox(
-                  height: tDefaultSize - 20,
-                ),
-
-
-         
+                  selectedOTsProvider.selectedOTs.estado == "R" ||
+                          selectedOTsProvider.selectedOTs.estado == "F"
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: RichText(
+                            text: TextSpan(
+                              text: 'Notas: ',
+                              style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: tPrimaryColor),
+                              children: <TextSpan>[
+                                TextSpan(
+                                    text: widget.ordenActual.observaciones,
+                                    style: const TextStyle(
+                                        color: Color.fromARGB(155, 0, 0, 0))),
+                              ],
+                            ),
+                          ),
+                        )
+                      : const SizedBox(),
+                  isLoading
+                      ? const CircularProgressIndicator() // Indicador de carga
+                      : rol == "A" &&
+                              selectedOTsProvider.selectedOTs.estado == "P"
+                          ? Form(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: tFormHeight - 10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    FormularioRich(
+                                      controller: authController
+                                          .detallesDescOTsController,
+                                      nombreError:
+                                          detalleDescOTsError.isNotEmpty
+                                              ? detalleDescOTsError
+                                              : null,
+                                      errorStyle: errorStyle,
+                                      texto: "Observaciones",
+                                      icono:
+                                          const Icon(Icons.note_add_outlined),
+                                    ),
+                                    const SizedBox(
+                                      height: tFormHeight,
+                                    ),
+                                    Formulario(
+                                      controller: authController
+                                          .detallesTiempoEstimadoOTsController,
+                                      nombreError:
+                                          detallesTiempoEjecuOTsError.isNotEmpty
+                                              ? detallesTiempoEjecuOTsError
+                                              : null,
+                                      errorStyle: errorStyle,
+                                      texto: "Tiempo de Ejecucion",
+                                      icono: const Icon(Icons.av_timer),
+                                      permitirSoloNumeros: TextInputType.number,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : const SizedBox(
+                              height: tDefaultSize - 20,
+                            ),
                   Row(
                     children: [
                       Row(
@@ -477,163 +520,199 @@ class _DetallesOTsState extends State<DetallesOTs> {
                     ),
                   ),
                   const SizedBox(
-                    height: 8,
+                    height: 4,
                   ),
                   isLoading
-                ? const CircularProgressIndicator() // Indicador de carga
-                : rol == "A" && selectedOTsProvider.selectedOTs.estado == "P"
-                ? GestureDetector(
-                    onTap: () async {
-                      validateAndSetErrors();
-                      try {
-                        if (detalleDescOTsError.isEmpty && detallesTiempoEjecuOTsError.isEmpty) {
-                          // Llamar a la funcion del provider
-                          String? token = await tokenProvider.verificarTokenU();
-                        
-                          if (token != null) {
-                            int? statusCode = await authController.finalizarOrdenTrabajoU(token, selectedOTsProvider.selectedOTs.id_ordenTrabajo);
-
-                            if (statusCode == 200) {
-                              showDialog(
-                                  // ignore: use_build_context_synchronously
-                                  context: context,
-                                  builder: (BuildContext context) =>
-                                      CustomDialog(
-                                        title: '¡Perfecto!',
-                                        message:
-                                            'Se paso a revision el OTs',
-                                        onPressed: () {
-                                          selectedOTsProvider
-                                              .updateSelectedIndex(14);
-                                          
-                                          // Salir del Modal
-                                          Navigator.pop(context);
-                                        },
-                                      ));
-                            } else if (statusCode == 404){
-                              showDialog(
-                                  // ignore: use_build_context_synchronously
-                                  context: context,
-                                  builder: (BuildContext context) =>
-                                      CustomDialog(
-                                        title: '¡Error!',
-                                        error: true,
-                                        message:
-                                            'No se pudo pasar a revision el OTs',
-                                        onPressed: () {
-                                          
-                                          Navigator.pop(context);
-                                        },
-                                      ));
-                            }
-                          }
-                        }
-                      } catch (e) {
-                        print("Error al registrar usuario: $e");
-                        // Manejar otros posibles errores aquí
-                      }
-
-                    },
-                    child: IntrinsicWidth(
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                            color: tDashboardBackground,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: const Row(
-                          children: [
-                            Icon(Icons.check_circle,
-                                color: Color.fromARGB(255, 18, 184, 18)),
-                            SizedBox(width: 5),
-                            Text(
-                              "Completado",
-                              style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
+                      ? const CircularProgressIndicator()
+                      : selectedOTsProvider.selectedOTs.estado == "R" ||
+                              selectedOTsProvider.selectedOTs.estado == "F"
+                                  // Dividir los minutos en horas y minutos
+                          ? RichText(
+                              text: TextSpan(
+                                text: 'Tiempo Ejecucion: ',
+                                style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: tPrimaryColor),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                      text: formatTiempoEjecucion(widget.selectedIndexProvider.selectedOTs.tiempoEjecucion),
+                                      style: const TextStyle(
+                                          color: Colors.black54)),
+                                ],
                               ),
                             )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ) 
-                  : rol == "A" && selectedOTsProvider.selectedOTs.estado == "R"
-                  ? GestureDetector(
-                    onTap: () async {
-                      try {
-                          // Llamar a la funcion del TokenProvider
-                          String? token = await tokenProvider.verificarTokenU();
-                        
-                          if (token != null) {
-                            int? statusCode = await authController.aprobarOrdenTrabajoU(token, selectedOTsProvider.selectedOTs.id_ordenTrabajo);
+                          : SizedBox(),
+                  isLoading
+                      ? const CircularProgressIndicator() // Indicador de carga
+                      : rol == "A" &&
+                              selectedOTsProvider.selectedOTs.estado == "P"
+                          ? GestureDetector(
+                              onTap: () async {
+                                validateAndSetErrors();
+                                try {
+                                  if (detalleDescOTsError.isEmpty &&
+                                      detallesTiempoEjecuOTsError.isEmpty) {
+                                    // Llamar a la funcion del provider
+                                    String? token =
+                                        await tokenProvider.verificarTokenU();
 
-                            if (statusCode == 200) {
-                              showDialog(
-                                  // ignore: use_build_context_synchronously
-                                  context: context,
-                                  builder: (BuildContext context) =>
-                                      CustomDialog(
-                                        title: '¡Excelente!',
-                                        message:
-                                            '¡Se finalizo el OTs!',
-                                        onPressed: () {
-                                          selectedOTsProvider
-                                              .updateSelectedIndex(14);
-                                          
-                                          // Salir del Modal
-                                          Navigator.pop(context);
-                                        },
-                                      ));
-                            } else {
-                              showDialog(
-                                  // ignore: use_build_context_synchronously
-                                  context: context,
-                                  builder: (BuildContext context) =>
-                                      CustomDialog(
-                                        title: '¡Error!',
-                                        error: true,
-                                        message:
-                                            'No se pudo finalizar el OTs',
-                                        onPressed: () {
-                                          
-                                          Navigator.pop(context);
-                                        },
-                                      ));
-                            }
-                          }
-                        
-                      } catch (e) {
-                        print("Error al registrar usuario: $e");
-                        // Manejar otros posibles errores aquí
-                      }
+                                    if (token != null) {
+                                      int? statusCode = await authController
+                                          .finalizarOrdenTrabajoU(
+                                              token,
+                                              selectedOTsProvider
+                                                  .selectedOTs.id_ordenTrabajo);
 
-                    },
-                    child: IntrinsicWidth(
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                            color: tDashboardBackground,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: const Row(
-                          children: [
-                            Icon(Icons.playlist_add_check_circle_outlined,
-                                color: Color.fromARGB(255, 18, 184, 162)),
-                            SizedBox(width: 5),
-                            Text(
-                              "Terminar",
-                              style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
+                                      if (statusCode == 200) {
+                                        showDialog(
+                                            // ignore: use_build_context_synchronously
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                CustomDialog(
+                                                  title: '¡Perfecto!',
+                                                  message:
+                                                      'Se paso a revision el OTs',
+                                                  onPressed: () {
+                                                    selectedOTsProvider
+                                                        .updateSelectedIndex(
+                                                            14);
+
+                                                    // Salir del Modal
+                                                    Navigator.pop(context);
+                                                  },
+                                                ));
+                                      } else if (statusCode == 404) {
+                                        showDialog(
+                                            // ignore: use_build_context_synchronously
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                CustomDialog(
+                                                  title: '¡Error!',
+                                                  error: true,
+                                                  message:
+                                                      'No se pudo pasar a revision el OTs',
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                ));
+                                      }
+                                    }
+                                  }
+                                } catch (e) {
+                                  print("Error al registrar usuario: $e");
+                                  // Manejar otros posibles errores aquí
+                                }
+                              },
+                              child: IntrinsicWidth(
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      color: tDashboardBackground,
+                                      borderRadius: BorderRadius.circular(20)),
+                                  child: const Row(
+                                    children: [
+                                      Icon(Icons.check_circle,
+                                          color:
+                                              Color.fromARGB(255, 18, 184, 18)),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        "Completado",
+                                        style: TextStyle(
+                                          color: Colors.black87,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
                               ),
                             )
-                          ],
-                        ),
-                      ),
-                    ),
-                  )
-                  : const SizedBox()
+                          : rol == "A" &&
+                                  selectedOTsProvider.selectedOTs.estado == "R"
+                              ? GestureDetector(
+                                  onTap: () async {
+                                    try {
+                                      // Llamar a la funcion del TokenProvider
+                                      String? token =
+                                          await tokenProvider.verificarTokenU();
+
+                                      if (token != null) {
+                                        int? statusCode = await authController
+                                            .aprobarOrdenTrabajoU(
+                                                token,
+                                                selectedOTsProvider.selectedOTs
+                                                    .id_ordenTrabajo);
+
+                                        if (statusCode == 200) {
+                                          showDialog(
+                                              // ignore: use_build_context_synchronously
+                                              context: context,
+                                              builder: (BuildContext context) =>
+                                                  CustomDialog(
+                                                    title: '¡Excelente!',
+                                                    message:
+                                                        '¡Se finalizo el OTs!',
+                                                    onPressed: () {
+                                                      selectedOTsProvider
+                                                          .updateSelectedIndex(
+                                                              14);
+
+                                                      // Salir del Modal
+                                                      Navigator.pop(context);
+                                                    },
+                                                  ));
+                                        } else {
+                                          showDialog(
+                                              // ignore: use_build_context_synchronously
+                                              context: context,
+                                              builder: (BuildContext context) =>
+                                                  CustomDialog(
+                                                    title: '¡Error!',
+                                                    error: true,
+                                                    message:
+                                                        'No se pudo finalizar el OTs',
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                  ));
+                                        }
+                                      }
+                                    } catch (e) {
+                                      print("Error al registrar usuario: $e");
+                                      // Manejar otros posibles errores aquí
+                                    }
+                                  },
+                                  child: IntrinsicWidth(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                          color: tDashboardBackground,
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      child: const Row(
+                                        children: [
+                                          Icon(
+                                              Icons
+                                                  .playlist_add_check_circle_outlined,
+                                              color: Color.fromARGB(
+                                                  255, 18, 184, 162)),
+                                          SizedBox(width: 5),
+                                          Text(
+                                            "Terminar",
+                                            style: TextStyle(
+                                              color: Colors.black87,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox()
                 ],
               )),
         ),

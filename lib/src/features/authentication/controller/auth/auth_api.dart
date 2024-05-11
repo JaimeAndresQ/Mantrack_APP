@@ -927,6 +927,8 @@ class AuthController {
         if (response.statusCode == 200) {
           print("Orden de trabajo de tipo $estado encontrados");
           return jsonActivoResponse;
+        } else if (response.statusCode == 404) {
+          return {"ordenesTrabajo": []};
         } else {
           throw Exception("Error desconocido al obtener las ordenes de trabajo.");
         }
