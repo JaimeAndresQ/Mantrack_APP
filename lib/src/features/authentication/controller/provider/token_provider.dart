@@ -33,9 +33,10 @@ class TokenProvider extends ChangeNotifier {
     }
   }
 
-  Future<String?> verificarTokenU({String? rol}) async {
+  Future<String?> verificarTokenU({bool? rol}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? tokenActual = prefs.getString('token');
+    String? rolActual = prefs.getString('rol');
     // Verificar si el token está presente y está expirado
     if (tokenActual != null && JwtDecoder.isExpired(tokenActual)) {
       // Borrar el token si está expirado
@@ -46,7 +47,7 @@ class TokenProvider extends ChangeNotifier {
     } else if (tokenActual != null) {
       // ignore: avoid_print
       print(tokenActual);
-      return rol ?? tokenActual;
+      return rol == true ? rolActual : tokenActual;
     } else {
       Get.to(() => const WelcomeScreen());
       throw Exception("No hay token");

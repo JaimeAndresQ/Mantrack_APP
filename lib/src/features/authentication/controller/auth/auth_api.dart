@@ -852,6 +852,8 @@ class AuthController {
   final TextEditingController encargadoOTsController = TextEditingController();
   final TextEditingController activoOTsController = TextEditingController();
   final TextEditingController categoriaOTsController = TextEditingController();
+  final TextEditingController detallesDescOTsController = TextEditingController();
+  final TextEditingController detallesTiempoEstimadoOTsController = TextEditingController();
 
 
   Future<int?> registrarOrdenTrabajoU(String token, String usuario) async {
@@ -933,6 +935,77 @@ class AuthController {
       }
       return {"ordenesTrabajo": []};
     }
+
+
+    Future<int?> aprobarOrdenTrabajoU(String token, int idOTs) async {
+    try {
+
+      var response = await http.put(
+        Uri.parse("$aprobarOTsUrl$idOTs"),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+
+      );
+
+      var jsonActivoResponse = jsonDecode(response.body);
+
+      print(
+          "este es el response $jsonActivoResponse y el codigo ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        print("Orden de trabajo aprobada exitosamente");
+        return 200;
+      } else if (response.statusCode == 404) {
+        throw Exception("La orden de trabajo no existe");
+      } else {
+        throw Exception("Ups ocurrió un error al actualizar la orden de trabajo.");
+      }
+    } catch (e) {
+      print("Error al realizar la peticion: $e");
+    }
+    return null;
+  }
+    
+
+    Future<int?> finalizarOrdenTrabajoU(String token, int idOTs) async {
+    try {
+
+      Map<String, dynamic> regBodyOTs = {
+        "observaciones": detallesDescOTsController.text,
+        "tiempo_ejecucion": detallesTiempoEstimadoOTsController.text,
+      };
+
+      print("$finalizarOTsUrl$idOTs");
+      var response = await http.put(
+        Uri.parse("$finalizarOTsUrl$idOTs"),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(regBodyOTs)
+
+      );
+
+      var jsonActivoResponse = jsonDecode(response.body);
+
+      print(
+          "este es el response $jsonActivoResponse y el codigo ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        print("Orden de trabajo finalizada exitosamente");
+        return 200;
+      } else if (response.statusCode == 404) {
+        throw Exception("La orden de trabajo no existe");
+      } else {
+        throw Exception("Ups ocurrió un error al actualizar la orden de trabajo.");
+      }
+    } catch (e) {
+      print("Error al realizar la peticion: $e");
+    }
+    return null;
+  }
 
 
 

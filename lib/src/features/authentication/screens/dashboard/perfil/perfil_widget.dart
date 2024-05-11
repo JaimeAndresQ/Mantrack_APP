@@ -26,6 +26,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   late String lastname;
   late int telefono;
   late Uint8List? imagen;
+  late String? rol;
   bool _isLoading = true; // Estado de carga inicial
 
   @override
@@ -39,6 +40,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
     try {
       token = await tokenProvider.verificarTokenU();
       if (token != null) {
+        rol = await tokenProvider.verificarTokenU(rol: true);
         tokenw = JwtDecoder.decode(token!);
         email = tokenw['correo'];
         name = tokenw['nombres'];
@@ -74,6 +76,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     Provider.of<TokenProvider>(context);
@@ -104,7 +108,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                     imageUrl: imagen, isLoading: _isLoading,
                   ),
                   const SizedBox(height: 10),
-                  ProfileInfoList(email: email, name: name, lastname: lastname, telefono: telefono,),
+                  ProfileInfoList(email: email, name: name, lastname: lastname, telefono: telefono, rol: rol,),
                   LogoutButton(onPressed: (){
                     tokenProvider.eliminarTokenU();
                   },)

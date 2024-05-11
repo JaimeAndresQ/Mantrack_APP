@@ -46,7 +46,7 @@ class _OrdenesRegistrarState extends State<OrdenesRegistrar> {
           : '';
       tiempoEstimadoOTsError =
           authController.tiempoEstimadoOTsController.text.isEmpty
-              ? 'Ingrese un tiempo de duracion estimado'
+              ? 'Ingrese un tiempo de duracion estimada'
               : '';
     });
   }

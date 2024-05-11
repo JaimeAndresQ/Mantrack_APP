@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:typed_data';
 
 import 'package:avatars/avatars.dart';
@@ -14,6 +16,8 @@ import 'package:mantrack_app/src/features/authentication/controller/provider/das
 import 'package:mantrack_app/src/features/authentication/controller/provider/token_provider.dart';
 import 'package:mantrack_app/src/features/authentication/model/activos_placa_modal.dart';
 import 'package:mantrack_app/src/features/authentication/model/ordenes_trabajo_modal.dart';
+import 'package:mantrack_app/src/features/authentication/model/widgets/dialog_widget.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/widgets/activos_formulario.dart';
 import 'package:provider/provider.dart';
 
 class OrdenesDetalles extends StatefulWidget {
@@ -68,7 +72,9 @@ class DetallesOTs extends StatefulWidget {
 class _DetallesOTsState extends State<DetallesOTs> {
   AuthController authController = AuthController();
 
-  TokenProvider tokenProvider = TokenProvider();
+  late TokenProvider tokenProvider;
+  late String? rol;
+  bool isLoading = true;
 
   String getCategoriaText(int categoriaValue) {
     switch (categoriaValue) {
@@ -83,9 +89,51 @@ class _DetallesOTsState extends State<DetallesOTs> {
     }
   }
 
+  String detalleDescOTsError = '';
+  String detallesTiempoEjecuOTsError = '';
+
+  TextStyle errorStyle = const TextStyle(
+      fontSize: 14, fontWeight: FontWeight.w500, fontStyle: FontStyle.italic);
+
+    void validateAndSetErrors() {
+    setState(() {
+      detalleDescOTsError = authController.detallesDescOTsController.text.isEmpty
+          ? 'Escriba una observacion'
+          : '';
+      detallesTiempoEjecuOTsError =
+          authController.detallesTiempoEstimadoOTsController.text.isEmpty
+              ? 'Ingrese un tiempo de duracion estimada'
+              : '';
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initRol();
+  }
+
+  void _initRol() async {
+    tokenProvider = TokenProvider();
+    try {
+      rol = await tokenProvider.verificarTokenU(rol: true);
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      // Manejar excepciones
+      print('Error al obtener el rol: $e');
+      setState(() {
+        isLoading = false; // También puedes manejar el estado de error aquí
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
+    final selectedOTsProvider = Provider.of<SelectedDashboardProvider>(context);
 
     String tipoMantenimiento =
         widget.ordenActual.tipoMantenimiento.toLowerCase();
@@ -105,7 +153,9 @@ class _DetallesOTsState extends State<DetallesOTs> {
     int minutosRestantes = widget.ordenActual.tiempoEstimado % 60;
 
     // Formatear la cadena de tiempo
-    String tiempoEstimadoFormateado = horas >= 1 ? '$horas:${minutosRestantes.toString().padLeft(2, '0')}:00' : '${minutosRestantes.toString().padLeft(2, '0')}:00';
+    String tiempoEstimadoFormateado = horas >= 1
+        ? '$horas:${minutosRestantes.toString().padLeft(2, '0')}:00'
+        : '${minutosRestantes.toString().padLeft(2, '0')}:00';
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -208,9 +258,48 @@ class _DetallesOTsState extends State<DetallesOTs> {
                         fontWeight: FontWeight.w500,
                         color: Color.fromARGB(164, 0, 0, 0)),
                   ),
-                  const SizedBox(
-                    height: tDefaultSize - 10,
+                  
+                                    isLoading
+                ? const CircularProgressIndicator() // Indicador de carga
+                : rol == "A" && selectedOTsProvider.selectedOTs.estado == "P"
+                ? Form(
+                  child: Container(
+                padding: const EdgeInsets.symmetric(vertical: tFormHeight - 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FormularioRich(
+                      controller: authController.detallesDescOTsController,
+                      nombreError: detalleDescOTsError.isNotEmpty ? detalleDescOTsError : null,
+                      errorStyle: errorStyle,
+                      texto: "Observaciones",
+                      icono: const Icon(Icons.note_add_outlined),
+
+                    ),
+                    const SizedBox(
+                      height: tFormHeight,
+                    ),
+                    Formulario(
+                      controller:
+                          authController.detallesTiempoEstimadoOTsController,
+                      nombreError: detallesTiempoEjecuOTsError.isNotEmpty ? detallesTiempoEjecuOTsError : null,
+                      errorStyle: errorStyle,
+                      texto: "Tiempo de Ejecucion",
+                      icono: const Icon(Icons.av_timer),
+                      permitirSoloNumeros: TextInputType.number,
+                      
+                    ),
+                  ],
+                ),
                   ),
+                )
+
+                : const SizedBox(
+                  height: tDefaultSize - 20,
+                ),
+
+
+         
                   Row(
                     children: [
                       Row(
@@ -345,7 +434,9 @@ class _DetallesOTsState extends State<DetallesOTs> {
                           color: tPrimaryColor),
                       children: <TextSpan>[
                         TextSpan(
-                            text: horas >= 1 ? "$tiempoEstimadoFormateado horas" : "$tiempoEstimadoFormateado minutos",
+                            text: horas >= 1
+                                ? "$tiempoEstimadoFormateado horas"
+                                : "$tiempoEstimadoFormateado minutos",
                             style: const TextStyle(color: Colors.black54)),
                       ],
                     ),
@@ -388,24 +479,161 @@ class _DetallesOTsState extends State<DetallesOTs> {
                   const SizedBox(
                     height: 8,
                   ),
-                  IntrinsicWidth(
-                    child: Container(
-                      padding: EdgeInsets.all(10),
-                      
-                      decoration: BoxDecoration(
-                        color: tDashboardBackground,
-                        borderRadius: BorderRadius.circular(20)
-                      ),
-                      child: Row(
+                  isLoading
+                ? const CircularProgressIndicator() // Indicador de carga
+                : rol == "A" && selectedOTsProvider.selectedOTs.estado == "P"
+                ? GestureDetector(
+                    onTap: () async {
+                      validateAndSetErrors();
+                      try {
+                        if (detalleDescOTsError.isEmpty && detallesTiempoEjecuOTsError.isEmpty) {
+                          // Llamar a la funcion del provider
+                          String? token = await tokenProvider.verificarTokenU();
                         
-                        children: [
-                          Icon(Icons.check_circle, color: Color.fromARGB(255, 18, 184, 18)),
-                           SizedBox(width: 5),
-                          Text("Completado", style: TextStyle(color: Colors.black87, fontSize: 16, fontWeight: FontWeight.w500,),)
-                        ],
+                          if (token != null) {
+                            int? statusCode = await authController.finalizarOrdenTrabajoU(token, selectedOTsProvider.selectedOTs.id_ordenTrabajo);
+
+                            if (statusCode == 200) {
+                              showDialog(
+                                  // ignore: use_build_context_synchronously
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      CustomDialog(
+                                        title: '¡Perfecto!',
+                                        message:
+                                            'Se paso a revision el OTs',
+                                        onPressed: () {
+                                          selectedOTsProvider
+                                              .updateSelectedIndex(14);
+                                          
+                                          // Salir del Modal
+                                          Navigator.pop(context);
+                                        },
+                                      ));
+                            } else if (statusCode == 404){
+                              showDialog(
+                                  // ignore: use_build_context_synchronously
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      CustomDialog(
+                                        title: '¡Error!',
+                                        error: true,
+                                        message:
+                                            'No se pudo pasar a revision el OTs',
+                                        onPressed: () {
+                                          
+                                          Navigator.pop(context);
+                                        },
+                                      ));
+                            }
+                          }
+                        }
+                      } catch (e) {
+                        print("Error al registrar usuario: $e");
+                        // Manejar otros posibles errores aquí
+                      }
+
+                    },
+                    child: IntrinsicWidth(
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                            color: tDashboardBackground,
+                            borderRadius: BorderRadius.circular(20)),
+                        child: const Row(
+                          children: [
+                            Icon(Icons.check_circle,
+                                color: Color.fromARGB(255, 18, 184, 18)),
+                            SizedBox(width: 5),
+                            Text(
+                              "Completado",
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ) 
+                  : rol == "A" && selectedOTsProvider.selectedOTs.estado == "R"
+                  ? GestureDetector(
+                    onTap: () async {
+                      try {
+                          // Llamar a la funcion del TokenProvider
+                          String? token = await tokenProvider.verificarTokenU();
+                        
+                          if (token != null) {
+                            int? statusCode = await authController.aprobarOrdenTrabajoU(token, selectedOTsProvider.selectedOTs.id_ordenTrabajo);
+
+                            if (statusCode == 200) {
+                              showDialog(
+                                  // ignore: use_build_context_synchronously
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      CustomDialog(
+                                        title: '¡Excelente!',
+                                        message:
+                                            '¡Se finalizo el OTs!',
+                                        onPressed: () {
+                                          selectedOTsProvider
+                                              .updateSelectedIndex(14);
+                                          
+                                          // Salir del Modal
+                                          Navigator.pop(context);
+                                        },
+                                      ));
+                            } else {
+                              showDialog(
+                                  // ignore: use_build_context_synchronously
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      CustomDialog(
+                                        title: '¡Error!',
+                                        error: true,
+                                        message:
+                                            'No se pudo finalizar el OTs',
+                                        onPressed: () {
+                                          
+                                          Navigator.pop(context);
+                                        },
+                                      ));
+                            }
+                          }
+                        
+                      } catch (e) {
+                        print("Error al registrar usuario: $e");
+                        // Manejar otros posibles errores aquí
+                      }
+
+                    },
+                    child: IntrinsicWidth(
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                            color: tDashboardBackground,
+                            borderRadius: BorderRadius.circular(20)),
+                        child: const Row(
+                          children: [
+                            Icon(Icons.playlist_add_check_circle_outlined,
+                                color: Color.fromARGB(255, 18, 184, 162)),
+                            SizedBox(width: 5),
+                            Text(
+                              "Terminar",
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   )
+                  : const SizedBox()
                 ],
               )),
         ),

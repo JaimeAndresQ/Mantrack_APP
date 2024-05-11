@@ -117,3 +117,86 @@ class _FormularioSelectState extends State<FormularioSelect> {
     );
   }
 }
+
+
+class FormularioRich extends StatefulWidget {
+  const FormularioRich({
+    Key? key,
+    required this.controller,
+    required this.nombreError,
+    required this.errorStyle,
+    required this.texto,
+    required this.icono,
+    this.permitirSoloNumeros,
+    this.maxCaracteres,
+    this.enabled,
+  });
+
+  final String texto;
+  final TextEditingController controller;
+  final String? nombreError;
+  final TextStyle errorStyle;
+  final Icon icono;
+  final TextInputType? permitirSoloNumeros;
+  final int? maxCaracteres;
+  final bool? enabled;
+
+  @override
+  State<FormularioRich> createState() => _FormularioRichState();
+}
+
+class _FormularioRichState extends State<FormularioRich> {
+  late TextEditingController _richTextController;
+  late TextEditingValue _richTextValue;
+
+  @override
+  void initState() {
+    super.initState();
+    _richTextController = TextEditingController();
+    _richTextValue = TextEditingValue(text: widget.controller.text);
+    _richTextController.value = _richTextValue;
+    _richTextController.addListener(_handleRichTextChange);
+  }
+
+  @override
+  void dispose() {
+    _richTextController.dispose();
+    super.dispose();
+  }
+
+  void _handleRichTextChange() {
+    setState(() {
+      _richTextValue = _richTextController.value;
+      widget.controller.text = _richTextValue.text;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      style: Theme.of(context).textTheme.bodySmall,
+      controller: _richTextController,
+      
+      decoration: InputDecoration(
+          suffix: widget.icono,
+          labelText: widget.texto,
+          hintText: widget.texto,
+          hintStyle: Theme.of(context).textTheme.bodyMedium,
+          labelStyle: Theme.of(context).textTheme.bodyMedium,
+          errorText: widget.nombreError,
+          errorStyle: widget.errorStyle,
+          alignLabelWithHint: true,
+          
+          
+          border: const OutlineInputBorder()),
+          
+      inputFormatters: [
+        LengthLimitingTextInputFormatter(widget.maxCaracteres),
+      ],
+      keyboardType: widget.permitirSoloNumeros,
+      enabled: widget.enabled,
+      maxLines: 4, // Permite múltiples líneas
+    );
+  }
+}
+

@@ -6,13 +6,15 @@ class ProfileInfoList extends StatelessWidget {
   final String name;
   final String lastname;
   final int telefono;
+  final String? rol;
 
   const ProfileInfoList({
     super.key,
     required this.email,
     required this.name,
     required this.lastname,
-    required this.telefono,
+    required this.telefono, 
+    required this.rol,
   });
 
   @override
@@ -20,6 +22,29 @@ class ProfileInfoList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        rol != null && rol == "A"
+        ? Center(
+          child: Column(
+            children: [
+              Text(
+                '$name $lastname',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              const Text(
+                'administrador',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: tPrimaryColor,
+                ),
+              ),
+            ],
+          ),
+        ) :
         Center(
           child: Text(
             '$name $lastname',
