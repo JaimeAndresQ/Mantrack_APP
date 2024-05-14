@@ -8,6 +8,8 @@ import 'package:mantrack_app/src/features/authentication/model/planes_mantenimie
 import 'package:mantrack_app/src/features/authentication/model/tareas_modal.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_detalles.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_general.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_hist_detalles.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_historiales.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_registrar.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/home/home_screen.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/ordenes_detalles.dart';
@@ -169,6 +171,10 @@ class SelectedDashboardProvider extends ChangeNotifier {
         return OrdenesTrabajoDetalles();
       case 18:
         return OrdenesVehiGeneral();
+      case 19:
+        return ActivosHistorial();
+      case 20:
+        return HistorialesDetalles();
       // case 18:
       //   return OrdenesTrabajoDetallesVehiculo();
       default:
@@ -212,6 +218,8 @@ class SelectedDashboardProvider extends ChangeNotifier {
         return 'OTs Activo';
       case 18:
         return 'OTs Activo General';
+      case 19:
+        return 'Historial del Activo';
       default:
         return '';
     }

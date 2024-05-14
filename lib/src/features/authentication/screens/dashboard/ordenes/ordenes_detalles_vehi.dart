@@ -267,50 +267,9 @@ class _DetallesState extends State<Detalles> {
                   widget.selectedIndexProvider.updateSelectedIndex(18);
                 },
               ),
-              ListTile(
-                leading: const Icon(
-                  Icons.history,
-                  color: tPrimaryColor,
-                  size: 30,
-                ),
-                trailing: const Icon(
-                  Icons.arrow_forward_ios_outlined,
-                  color: Color.fromARGB(162, 0, 0, 0),
-                  size: 20,
-                ),
-                title: Text(
-                  'Historiales',
-                  style: widget.textoListitle,
-                ),
-                selected: widget.selectedIndexProvider.selectedIndex == 1,
-                selectedTileColor: tPrimaryOpacity,
-                onTap: () {
-                  // Update the state of the app
-                  widget.selectedIndexProvider.updateSelectedIndex(16);
-                },
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.description_outlined,
-                  color: tPrimaryColor,
-                  size: 30,
-                ),
-                trailing: const Icon(
-                  Icons.arrow_forward_ios_outlined,
-                  color: Color.fromARGB(162, 0, 0, 0),
-                  size: 20,
-                ),
-                title: Text(
-                  'Gestión Documental',
-                  style: widget.textoListitle,
-                ),
-                selected: widget.selectedIndexProvider.selectedIndex == 1,
-                selectedTileColor: tPrimaryOpacity,
-                onTap: () {
-                  // Update the state of the app
-                  widget.selectedIndexProvider.updateSelectedIndex(16);
-                },
-              ),
+
+
+
             ]));
   }
 }

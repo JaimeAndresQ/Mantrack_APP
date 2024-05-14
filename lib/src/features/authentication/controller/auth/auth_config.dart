@@ -1,6 +1,6 @@
 // const url = 'http://{IPv4}:3000/';
 
-const iPv4 = "192.168.1.7"; //IP de la máquina donde está corriendo la APP
+const iPv4 = "192.168.1.9"; //IP de la máquina donde está corriendo la APP
 
 // Urls de login y registro
 const loginUrl = "http://$iPv4:80/api/users/user";
@@ -43,6 +43,7 @@ const putAsociarActivoUrl = "http://$iPv4:80/api/planesMantenimientos/vehiculo/u
 // Urls de ordenes de trabajo
 const registrarOTsUrl = "http://$iPv4:80/api/ordenesTrabajo/newOrden";
 const getAllOrdenesTrabajo = "http://$iPv4:80/api/ordenesTrabajo/getAll/";
+const getAllOrdenesTrabajoByID = "http://$iPv4:80/api/ordenesTrabajo/orden/vehiculo/";
 
 // Urls de aprobar estados de OTs
 const finalizarOTsUrl = "http://$iPv4:80/api/ordenesTrabajo/finalizarOrden/";

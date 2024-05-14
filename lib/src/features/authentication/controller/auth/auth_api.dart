@@ -849,6 +849,8 @@ class AuthController {
   final TextEditingController descOTsController = TextEditingController();
   final TextEditingController tiempoEstimadoOTsController = TextEditingController();
   final TextEditingController tipoOTsController = TextEditingController();
+  final TextEditingController fechaRealizacionOTsController = TextEditingController();
+  final TextEditingController idOTsController = TextEditingController();
   final TextEditingController encargadoOTsController = TextEditingController();
   final TextEditingController activoOTsController = TextEditingController();
   final TextEditingController categoriaOTsController = TextEditingController();
@@ -1008,6 +1010,34 @@ class AuthController {
     }
     return null;
   }
+
+    Future<Map<String, dynamic>> obtenerOrdenesTrabajoVehiculoU(String? token, String vehiculo) async {
+      try {
+        var response = await http.get(Uri.parse("$getAllOrdenesTrabajoByID$vehiculo"), headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        });
+
+        print(response);
+
+        var jsonActivoResponse = jsonDecode(response.body);
+
+        print(
+            "este es el response $jsonActivoResponse y el codigo ${response.statusCode}");
+
+        if (response.statusCode == 200) {
+          print("Orden de trabajo con el $vehiculo encontrados");
+          return jsonActivoResponse;
+        } else if (response.statusCode == 404) {
+          return {"ordenesTrabajo": []};
+        } else {
+          throw Exception("Error desconocido al obtener las ordenes de trabajo.");
+        }
+      } catch (e) {
+        print("Error al realizar la peticion: $e");
+      }
+      return {"ordenesTrabajo": []};
+    }
 
 
 
