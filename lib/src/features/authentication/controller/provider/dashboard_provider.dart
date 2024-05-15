@@ -12,6 +12,12 @@ import 'package:mantrack_app/src/features/authentication/screens/dashboard/activ
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_historiales.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/activos/activos_registrar.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/home/home_screen.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/home/widgets/widgetmethod1.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/home/widgets/widgetmethod2.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/home/widgets/widgetmethod3.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/home/widgets/widgetmethod4.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/home/widgets/widgetmethod5.dart';
+import 'package:mantrack_app/src/features/authentication/screens/dashboard/home/widgets/widgetmethod6.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/ordenes_detalles.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/ordenes_detalles_vehi.dart';
 import 'package:mantrack_app/src/features/authentication/screens/dashboard/ordenes/ordenes_registar.dart';
@@ -135,6 +141,76 @@ class SelectedDashboardProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Index para manejo de graficas en el dashboard home
+
+  int _selectedIndexIndicador = 0;
+
+  int get selectedIndexIndicador => _selectedIndexIndicador;
+
+  void updateSelectedIndexIndicador(int index) {
+    _selectedIndexIndicador = index;
+    notifyListeners();
+  }
+
+    Widget getSelectedIndicador() {
+    switch (_selectedIndexIndicador) {
+      case 0:
+        return const Column(
+                      children: [
+                          WidgetMethod1(ultimos_n_dias: 0,),
+                          WidgetMethod2(ultimos_n_dias: 0,),
+                          WidgetMethod3(ultimos_n_dias: 0,),
+                          WidgetMethod4(ultimos_n_dias: 0,),                   
+                          WidgetMethod5(ultimos_n_dias: 0,),
+                          WidgetMethod6(ultimos_n_dias: 0,),
+                        // Agrega más condiciones según sea necesario para otros índices
+                      ],
+                    );
+      case 1:
+        return const Column(
+                      children: [
+                          WidgetMethod1_2(ultimos_n_dias: 7,),
+                          WidgetMethod2_2(ultimos_n_dias: 7,),
+                          WidgetMethod3_2(ultimos_n_dias: 7,),
+                          WidgetMethod4_2(ultimos_n_dias: 7,),                   
+                          WidgetMethod5_2(ultimos_n_dias: 7,),
+                          WidgetMethod6_2(ultimos_n_dias: 7,),
+                        // Agrega más condiciones según sea necesario para otros índices
+                      ],
+                    );
+      case 2:
+        return const Column(
+                      children: [
+                          WidgetMethod1_3(ultimos_n_dias: 30,),
+                          WidgetMethod2_3(ultimos_n_dias: 30,),
+                          WidgetMethod3_3(ultimos_n_dias: 30,),
+                          WidgetMethod4_3(ultimos_n_dias: 30,),                   
+                          WidgetMethod5_3(ultimos_n_dias: 30,),
+                          WidgetMethod6_3(ultimos_n_dias: 30,),
+                        // Agrega más condiciones según sea necesario para otros índices
+                      ],
+                    );
+      case 3:
+        return const Column(
+                      children: [
+                          WidgetMethod1_3(ultimos_n_dias: 90,),
+                          WidgetMethod2_3(ultimos_n_dias: 90,),
+                          WidgetMethod3_3(ultimos_n_dias: 90,),
+                          WidgetMethod4_3(ultimos_n_dias: 90,),                   
+                          WidgetMethod5_3(ultimos_n_dias: 90,),
+                          WidgetMethod6_3(ultimos_n_dias: 90,),
+                        // Agrega más condiciones según sea necesario para otros índices
+                      ],
+                    );
+      
+      // case 18:
+      //   return OrdenesTrabajoDetallesVehiculo();
+      default:
+        return Container(); // Puedes devolver un widget vacío o manejar el caso por defecto
+    }
+  }
+
+
   Widget getSelectedWidget() {
     switch (_selectedIndex) {
       case 0:
@@ -181,6 +257,7 @@ class SelectedDashboardProvider extends ChangeNotifier {
         return Container(); // Puedes devolver un widget vacío o manejar el caso por defecto
     }
   }
+
 
   String getTitle(int index) {
     switch (index) {
