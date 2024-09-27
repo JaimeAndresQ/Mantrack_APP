@@ -11,27 +11,6 @@ class TokenProvider extends ChangeNotifier {
   late String lastname;
   late dynamic tokenw;
 
-  String getTokenInfo(String? token, String infoToken) {
-    if (token != null) {
-      Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(token);
-      tokenw = jwtDecodedToken;
-      email = jwtDecodedToken['correo'];
-      name = jwtDecodedToken['nombres'];
-      lastname = jwtDecodedToken['apellidos'];
-      switch (infoToken) {
-        case "email":
-          return email;
-        case "name":
-          return name;
-        case "lastname":
-          return lastname;
-        default:
-          return tokenw;
-      }
-    } else {
-      throw Exception("No hay token");
-    }
-  }
 
   Future<String?> verificarTokenU({bool? rol}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

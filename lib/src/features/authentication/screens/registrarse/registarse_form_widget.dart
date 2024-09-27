@@ -86,17 +86,6 @@ class _RegistrarseFormState extends State<RegistrarseForm> {
     });
   }
 
-  // File? _selectedImage;
-
-  // Future<void> _pickImage(ImageSource source) async {
-  //   final XFile? pickedFile = await ImagePicker().pickImage(source: source);
-  //   if (pickedFile != null) {
-  //     setState(() {
-  //       _selectedImage = File(pickedFile.path);
-  //     });
-  //   }
-  // }
-
   File? _imgFile;
 
   void takeSnapshot() async {
